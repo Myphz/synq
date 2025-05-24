@@ -23,13 +23,11 @@
   onMessage((msg) => {
     const { data } = msg;
     messages.push({
-      content: data.content,
-      id: Date.now(),
+      ...data,
       isRead: false,
-      senderId: msg.userId,
-      sentAt: new Date().toISOString()
+      senderId: msg.userId
     });
-  }, "SEND_MESSAGE");
+  }, "RECEIVE_MESSAGE");
 
   const schema = z.object({
     message: z.string().min(1)
@@ -39,7 +37,6 @@
     const socketMessage: ClientMessage = {
       type: "SEND_MESSAGE",
       chatId,
-      userId: "4a71bb88-8d37-4b33-9231-4233aed3e9ab",
       data: {
         content: message
       }

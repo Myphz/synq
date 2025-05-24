@@ -12,5 +12,5 @@
 </script>
 
 {#each chats as chat (chat.chatId)}
-  <a href="/{chat.chatId}">{chat.members?.[0]?.name}</a>
+  <a href="/{chat.chatId}">{chat.name}</a>
 {/each}
