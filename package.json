@@ -11,7 +11,8 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "fetch-schema": "curl https://raw.githubusercontent.com/Myphz/synq-be/refs/heads/master/src/server/protocol.ts -o src/api/protocol.ts"
+    "fetch-schema": "curl https://raw.githubusercontent.com/Myphz/synq-be/refs/heads/master/src/server/protocol.ts -o src/api/protocol.ts",
+    "generate-types": "npx -y supabase gen types typescript --project-id 'eicdozfiwnotmgsewwmj' --schema public > src/lib/types/supabase.ts"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.2.0",
@@ -45,6 +46,7 @@
     "@capacitor/android": "^7.2.0",
     "@capacitor/core": "^7.2.0",
     "@capacitor/keyboard": "^7.0.1",
+    "@supabase/supabase-js": "^2.49.8",
     "zod": "^3.25.28"
   }
 }

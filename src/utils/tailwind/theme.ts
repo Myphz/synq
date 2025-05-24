@@ -10,7 +10,9 @@ import type { EmptyObject, FontHierarchy } from "./types";
 //   }
 // }
 export function fontHierarchyToTWConfig(
-  fontHierarchy: FontHierarchy | FontHierarchy[string]["sizes"] = FONT_HIERARCHY,
+  fontHierarchy:
+    | FontHierarchy
+    | FontHierarchy[string]["sizes"] = FONT_HIERARCHY,
   currentPath: string[] = [],
   fontFamily = "",
   lineHeight = 0,
@@ -26,8 +28,10 @@ export function fontHierarchyToTWConfig(
 
     const sizes = getFontAttribute(currentSize, "sizes") || currentSize;
     const family = fontFamily || getFontAttribute(currentSize, "font") || "";
-    const height = lineHeight || getFontAttribute(currentSize, "lineHeight") || 0;
-    const spacing = letterSpacing || getFontAttribute(currentSize, "letterSpacing") || 0;
+    const height =
+      lineHeight || getFontAttribute(currentSize, "lineHeight") || 0;
+    const spacing =
+      letterSpacing || getFontAttribute(currentSize, "letterSpacing") || 0;
 
     if (Array.isArray(sizes)) {
       const [desktop, tablet, mobile] = sizes as number[];
@@ -60,7 +64,9 @@ export function fontHierarchyToTWConfig(
 
   return currentPath.length
     ? result
-    : Object.fromEntries(Object.entries(result).map(([k, v]) => [`.text${SEPARATOR}${k}`, v]));
+    : Object.fromEntries(
+        Object.entries(result).map(([k, v]) => [`.text${SEPARATOR}${k}`, v])
+      );
 }
 
 // Example return:

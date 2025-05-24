@@ -1,6 +1,9 @@
 // NB: SvelteKit aliases don't work here!
 import { SCREEN_LABELS } from "./src/utils/tailwind/config";
-import { fontHierarchyToTWConfig, gradientsToTWConfig } from "./src/utils/tailwind/theme";
+import {
+  fontHierarchyToTWConfig,
+  gradientsToTWConfig
+} from "./src/utils/tailwind/theme";
 
 import type { Config } from "tailwindcss";
 import type { PluginCreator } from "tailwindcss/types/config";

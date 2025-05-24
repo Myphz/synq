@@ -23,6 +23,7 @@
   });
 
   onMessage((msg) => (messages = msg.data.messages), "GET_MESSAGES");
+
   onMessage((msg) => {
     const { data } = msg;
     messages.push({
@@ -31,6 +32,17 @@
       senderId: msg.userId
     });
   }, "RECEIVE_MESSAGE");
+
+  onMessage((msg) => {
+    if (msg.chatId !== chatId) return;
+
+    const idx = messages.findIndex(
+      (message) => message.id === msg.data.messageId
+    );
+    if (idx === -1) return console.warn("READ_MESSAGE: unknown message read?");
+
+    messages[idx].isRead = true;
+  }, "READ_MESSAGE");
 
   const schema = z.object({
     message: z.string().min(1)

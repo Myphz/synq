@@ -2,6 +2,7 @@
   import { page } from "$app/state";
   import type { ServerMessage } from "$lib/api/protocol";
   import { sendMessage } from "$lib/api/ws";
+  import { getJWT } from "$lib/supabase/client";
   import { onMount } from "svelte";
 
   type Message = Extract<
@@ -23,8 +24,7 @@
     });
 
   onMount(() => {
-    // TODO: Add || message.senderId is us
-    if (message.isRead) return;
+    if (message.isRead || message.senderId === getJWT().id) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -49,4 +49,7 @@
   });
 </script>
 
-<div bind:this={container}>{message.content}</div>
+<div bind:this={container} class="flex flex-col gap-2">
+  <div>{message.content}</div>
+  <pre>Read: {message.isRead}</pre>
+</div>

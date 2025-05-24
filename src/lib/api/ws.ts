@@ -1,3 +1,4 @@
+import { getJWT } from "$lib/supabase/client";
 import {
   serverMessageSchema,
   type ClientMessage,
@@ -7,34 +8,44 @@ import {
 const SERVER_URL = "ws://localhost:3000";
 
 let socket: WebSocket | null = null;
+let isInitializing = false;
 
-const initializeWs = () => {
-  socket = new WebSocket(SERVER_URL, [
-    "synq",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoyNzQ4MDY5NDA5LCJpYXQiOjE3NDgwNjk0MTAsImlzcyI6Imh0dHBzOi8vZWljZG96Zml3bm90bWdzZXd3bWouc3VwYWJhc2UuY28vYXV0aC92MSIsInN1YiI6IjRhNzFiYjg4LThkMzctNGIzMy05MjMxLTQyMzNhZWQzZTlhYiIsImVtYWlsIjoibWFyaW9AbWFyaW8uY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6e30sInJvbGUiOiJhdXRoZW50aWNhdGVkIiwiYWFsIjoiYWFsMSIsImFtciI6W3sibWV0aG9kIjoib3RwIiwidGltZXN0YW1wIjoxNzQ4MDY5NDEwfV19.X26nA7iYLXas6ROY0gmbhDnUDM1ck2i3CsshCnT6Pjs"
-  ]);
+const initializeWs = async () => {
+  isInitializing = true;
+  const jwt = getJWT().jwt;
+  if (!jwt) throw new Error("initializeWs: no jwt");
 
-  socket.addEventListener("error", (e) =>
+  const ws = new WebSocket(SERVER_URL, ["synq", jwt]);
+
+  ws.addEventListener("error", (e) =>
     console.error("SOCKET ERROR:", JSON.stringify(e))
   );
 
-  return socket;
+  while (ws.readyState !== WebSocket.OPEN) {
+    await new Promise((res) => setTimeout(res, 100));
+  }
+
+  socket = ws;
+
+  isInitializing = false;
+  return ws;
 };
 
-const getSocket = () => {
+const getSocket = async () => {
+  while (isInitializing) {
+    await new Promise((res) => setTimeout(res, 100));
+  }
+
   if (socket) return socket;
-  return initializeWs();
+  return await initializeWs();
 };
 
 export const sendMessage = async (message: ClientMessage) => {
-  const socket = getSocket();
-  while (socket.readyState !== WebSocket.OPEN) {
-    await new Promise((res) => setTimeout(res, 100));
-  }
+  const socket = await getSocket();
   socket.send(JSON.stringify(message));
 };
 
-export const onMessage = <T extends ServerMessage["type"]>(
+export const onMessage = async <T extends ServerMessage["type"]>(
   fn: (
     message: T extends string
       ? Extract<ServerMessage, { type: T }>
@@ -42,7 +53,7 @@ export const onMessage = <T extends ServerMessage["type"]>(
   ) => unknown,
   type?: T
 ) => {
-  const socket = getSocket();
+  const socket = await getSocket();
 
   socket.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
