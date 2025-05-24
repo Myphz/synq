@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { ServerMessage } from "../api/protocol";
-  import { onMessage } from "../api/ws";
+  import type { ServerMessage } from "$lib/api/protocol";
+  import { onMessage } from "$lib/api/ws";
 
   let chats = $state<Extract<ServerMessage, { type: "INITIAL_SYNC" }>["chats"]>(
     []
