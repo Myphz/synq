@@ -2,8 +2,9 @@
   import { page } from "$app/state";
   import type { ServerMessage } from "$lib/api/protocol";
   import { sendMessage } from "$lib/api/ws";
-  import { getJWT } from "$lib/supabase/client";
+  import { getUserId } from "$lib/supabase/auth/utils";
   import { onMount } from "svelte";
+  import { twMerge } from "tailwind-merge";
 
   type Message = Extract<
     ServerMessage,
@@ -11,8 +12,10 @@
   >["data"]["messages"][number];
 
   const message: Message = $props();
-
   let container: HTMLDivElement;
+
+  let ourId = $state("");
+  let isFromOther = $derived(message.senderId !== ourId);
 
   const onRead = () =>
     sendMessage({
@@ -23,8 +26,11 @@
       }
     });
 
-  onMount(() => {
-    if (message.isRead || message.senderId === getJWT().id) return;
+  onMount(async () => {
+    const userId = await getUserId();
+    ourId = userId;
+
+    if (message.isRead || message.senderId === userId) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -42,14 +48,13 @@
     );
 
     observer.observe(container);
-
-    return () => {
-      observer.disconnect();
-    };
   });
 </script>
 
-<div bind:this={container} class="flex flex-col gap-2">
+<div
+  bind:this={container}
+  class={twMerge("flex flex-col gap-2", isFromOther && "ml-20")}
+>
   <div>{message.content}</div>
   <pre>Read: {message.isRead}</pre>
 </div>

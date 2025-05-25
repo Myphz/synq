@@ -22,27 +22,25 @@
     });
   });
 
-  onMessage((msg) => (messages = msg.data.messages), "GET_MESSAGES");
+  onMessage("GET_MESSAGES", (msg) => (messages = msg.data.messages));
 
-  onMessage((msg) => {
+  onMessage("RECEIVE_MESSAGE", (msg) => {
     const { data } = msg;
     messages.push({
       ...data,
       isRead: false,
       senderId: msg.userId
     });
-  }, "RECEIVE_MESSAGE");
+  });
 
-  onMessage((msg) => {
+  onMessage("RECEIVE_MESSAGE", (msg) => {
     if (msg.chatId !== chatId) return;
 
-    const idx = messages.findIndex(
-      (message) => message.id === msg.data.messageId
-    );
+    const idx = messages.findIndex((message) => message.id === msg.data.id);
     if (idx === -1) return console.warn("READ_MESSAGE: unknown message read?");
 
     messages[idx].isRead = true;
-  }, "READ_MESSAGE");
+  });
 
   const schema = z.object({
     message: z.string().min(1)

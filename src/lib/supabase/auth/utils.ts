@@ -1,5 +1,10 @@
 import { throwError } from "@utils/throw-error";
 import { supabase } from "../client";
+import { toAsyncSingleton } from "@utils/async-singleton";
+
+export const getUserId = toAsyncSingleton(
+  async () => (await getSupabaseSession_forced()).user.id
+);
 
 export const getSupabaseSession = async () =>
   (await supabase.auth.getSession()).data.session;
@@ -11,16 +16,6 @@ export const getSupabaseSession_forced = async () => {
   return session;
 };
 
-export const getSupabaseSession_ensureLogged = async () => {
-  const session = await getSupabaseSession_forced();
-  if (!checkIsUserLogged(session))
-    return throwError(
-      "getSupabaseSession_ensureLogged(): user is not logged in?"
-    );
-  return session;
-};
-
-// Check if user is really logged in (i.e., not an anonymous user)
 export const checkIsUserLogged = (
   session: Awaited<ReturnType<typeof getSupabaseSession>>
 ) => !!session && !session?.user.is_anonymous;
