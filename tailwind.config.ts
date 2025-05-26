@@ -1,43 +1,39 @@
 // NB: SvelteKit aliases don't work here!
-import { SCREEN_LABELS } from "./src/utils/tailwind/config";
-import {
-  fontHierarchyToTWConfig,
-  gradientsToTWConfig
-} from "./src/utils/tailwind/theme";
-
 import type { Config } from "tailwindcss";
-import type { PluginCreator } from "tailwindcss/types/config";
-
-const [DESKTOP_SCREEN, TABLET_SCREEN] = SCREEN_LABELS;
 
 export default {
   content: ["./src/**/*.{html,js,svelte,ts}"],
   theme: {
-    fontSize: {},
-    fontFamily: {
-      header: "'Space Grotesk', sans-serif;",
-      body: "'Work Sans', sans-serif;"
+    fontSize: {
+      "h-1": "2.5rem",
+      "h-2": "2.25rem",
+      "h-3": "1.75rem",
+      "h-4": "1.25rem",
+      body: "0.75rem",
+      small: "0.625rem"
     },
-    screens: {
-      mobile: "320px",
-      [TABLET_SCREEN]: "744px",
-      [DESKTOP_SCREEN]: "1440px"
+    fontFamily: {
+      header: "'Rajdhani', sans-serif;",
+      body: "'Inter', sans-serif;"
     },
     colors: {
       transparent: "transparent",
-      text: "#F5F7FA",
-      background: "#131518",
-      "text-secondary": "#C0C5CC",
-      primary: "#F58F38",
-      secondary: "#EF4A55"
+      background: "#0A0A0F",
+      primary: "#6BD0DA",
+      secondary: "#AD0471",
+      accent: "#892F6233",
+      text: "#F2F2F2",
+      "text-muted": "#D2D4D7"
     }
   },
   plugins: [
-    ({ addUtilities }: Parameters<PluginCreator>[0]) => {
-      addUtilities(fontHierarchyToTWConfig());
-    },
-    ({ addUtilities }: Parameters<PluginCreator>[0]) => {
-      addUtilities(gradientsToTWConfig());
+    ({ addUtilities }) => {
+      addUtilities({
+        ".gradient-bg": {
+          background:
+            "linear-gradient(to bottom, oklch(0.1473 0.0107 285.01), oklch(0.1754 0.0783 333.29))"
+        }
+      });
     }
   ]
 } satisfies Config;

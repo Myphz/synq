@@ -1,11 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="min-h-fullscreen h-full w-dvw overflow-x-hidden">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     %sveltekit.head%
   </head>
-  <body data-sveltekit-preload-data="hover">
+  <body
+    data-sveltekit-preload-data="hover"
+    class="min-h-full overflow-x-clip px-4 py-6 pt-12 font-body text-body text-text gradient-bg"
+  >
     <div style="display: contents">%sveltekit.body%</div>
   </body>
 </html>

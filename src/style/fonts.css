@@ -1,1 +1,46 @@
-@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Work+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@font-face {
+  font-family: "Rajdhani";
+  src: url(/fonts/Rajdhani-Regular.woff2) format("woff2");
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Rajdhani";
+  src: url(/fonts/Rajdhani-Medium.woff2) format("woff2");
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Rajdhani";
+  src: url(/fonts/Rajdhani-SemiBold.woff2) format("woff2");
+  font-weight: 600;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Rajdhani";
+  src: url(/fonts/Rajdhani-Bold.woff2) format("woff2");
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Rajdhani";
+  src: url(/fonts/Rajdhani-Light.woff2) format("woff2");
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url(/fonts/Inter.woff2) format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+}

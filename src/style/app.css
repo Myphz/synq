@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+  line-height: 1.2;
+}
+
+[class^="text-h-"] {
+  @apply font-header;
+}
