@@ -6,6 +6,6 @@
   line-height: 1.2;
 }
 
-[class^="text-h-"] {
-  @apply font-header;
+[class*="text-h-"] {
+  @apply !font-header !font-semibold;
 }
