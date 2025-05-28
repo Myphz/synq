@@ -9,8 +9,8 @@
   import "../style/fonts.css";
 
   onMount(() => {
-    getSocket();
     appConfig();
+    getSocket();
   });
 </script>
 

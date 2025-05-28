@@ -1,4 +1,5 @@
 import { goto } from "$app/navigation";
+import { getSocket } from "$lib/api/ws";
 import {
   checkIsUserLogged,
   getSupabaseSession
@@ -10,7 +11,10 @@ import { supabase } from "$lib/supabase/client";
 // - Edit password page (must be logged). If unauthorized tries to view that page, redirect to / (the base app).
 // - Login page (must be NOT logged). If logged user tries to view, redirect to / (base app)
 function redirect(isLogged: boolean, mustBeLogged: boolean) {
-  if (isLogged !== mustBeLogged) goto("/");
+  if (isLogged !== mustBeLogged) {
+    if (mustBeLogged) goto("/auth");
+    else goto("/");
+  }
 }
 
 export async function authGuard(mustBeLogged = true) {
@@ -19,7 +23,8 @@ export async function authGuard(mustBeLogged = true) {
 
   supabase.auth.onAuthStateChange(async (event, session) => {
     const isUserLogged = checkIsUserLogged(session);
-    // Prevent duplicate events
+    if (isUserLogged) getSocket();
+    // Prevent duplicate checks
     if (event === "INITIAL_SESSION") return;
     redirect(isUserLogged, mustBeLogged);
   });

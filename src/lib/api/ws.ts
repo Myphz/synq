@@ -1,4 +1,4 @@
-import { getSupabaseSession_forced } from "$lib/supabase/auth/utils";
+import { getSupabaseSession } from "$lib/supabase/auth/utils";
 import { toAsyncSingleton } from "@utils/async-singleton";
 import {
   serverMessageSchema,
@@ -6,12 +6,14 @@ import {
   type ServerMessage
 } from "./protocol";
 import { setChats } from "$lib/stores/sync.svelte";
+import { authGuard } from "@utils/auth-guard";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
 export const getSocket = toAsyncSingleton(async () => {
-  const { access_token: jwt } = await getSupabaseSession_forced();
-  if (!jwt) throw new Error("initializeWs: no jwt");
+  authGuard();
+  const { access_token: jwt } = (await getSupabaseSession()) || {};
+  if (!jwt) return;
 
   const socket = new WebSocket(SERVER_URL, ["synq", jwt]);
 

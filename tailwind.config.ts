@@ -13,8 +13,8 @@ export default {
       small: "0.625rem"
     },
     fontFamily: {
-      header: "'Rajdhani', sans-serif;",
-      body: "'Inter', sans-serif;"
+      header: "'Rajdhani', sans-serif",
+      body: "'Inter', sans-serif"
     },
     colors: {
       transparent: "transparent",

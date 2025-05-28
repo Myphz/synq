@@ -12,7 +12,9 @@
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "fetch-schema": "curl https://raw.githubusercontent.com/Myphz/synq-be/refs/heads/master/src/server/protocol.ts -o src/api/protocol.ts",
-    "generate-types": "npx -y supabase gen types typescript --project-id 'eicdozfiwnotmgsewwmj' --schema public > src/lib/types/supabase.ts"
+    "generate-types": "npx -y supabase gen types typescript --project-id 'eicdozfiwnotmgsewwmj' --schema public > src/lib/types/supabase.ts",
+    "android-debug": "bash android-debug.sh",
+    "android-release": "bash android-release.sh"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.2.0",
