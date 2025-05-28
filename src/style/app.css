@@ -9,3 +9,17 @@
 [class*="text-h-"] {
   @apply !font-header !font-semibold;
 }
+
+/* Instead of handling navbar styling through context and stores */
+/* (no other way to pass data from page to layout), */
+/* let inner pages just render their own navbar. */
+/* This CSS trick will make it so that only the last navbar gets actually rendered. */
+/* Inner pages are free to override the navbar as they wish. */
+
+#main-navbar > * {
+  display: none;
+}
+
+#main-navbar > *:last-child {
+  display: block;
+}

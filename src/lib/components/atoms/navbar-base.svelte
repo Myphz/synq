@@ -1,11 +1,19 @@
 <script lang="ts">
+  import { portal } from "@utils/portal";
+  import type { Snippet } from "svelte";
+
+  type Props = {
+    children: Snippet;
+  };
+  const { children }: Props = $props();
 </script>
 
 <nav
-  class="relative mb-4 w-full border-b border-secondary bg-secondary/20 p-2 font-semibold"
+  use:portal={"#main-navbar"}
+  class="relative mb-4 h-16 w-full border-b border-secondary bg-secondary/20 p-2 font-semibold"
 >
   <div class="px-4">
-    <span class="text-h-1">SYNQ</span>
+    {@render children()}
   </div>
 </nav>
 

@@ -4,7 +4,7 @@
   import "../style/app.css";
   import "../style/fonts.css";
   import { getSocket } from "$lib/api/ws";
-  import Navbar from "@molecules/navbar.svelte";
+  import DefaultNavbar from "@molecules/default-navbar.svelte";
 
   onMount(() => {
     getSocket();
@@ -12,7 +12,9 @@
   });
 </script>
 
-<Navbar />
+<div id="main-navbar"></div>
+
+<DefaultNavbar />
 
 <main class="px-4 pb-6">
   <slot />
