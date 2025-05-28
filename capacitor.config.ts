@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   webDir: "build",
   server: {
     androidScheme: "https",
-    hostname: "SYNQ"
+    hostname: "synq"
   },
   plugins: {
     Keyboard: {
