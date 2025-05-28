@@ -3,6 +3,7 @@
   import type { ServerMessage } from "$lib/api/protocol";
   import { sendMessage } from "$lib/api/ws";
   import { getUserId } from "$lib/supabase/auth/utils";
+  import { toTime } from "@utils/dates";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
 
@@ -53,8 +54,12 @@
 
 <div
   bind:this={container}
-  class={twMerge("flex flex-col gap-2", isFromOther && "ml-20")}
+  class={twMerge(
+    "cyberpunk flex w-fit items-end gap-1 px-1 py-2",
+    isFromOther && "bg-secondary/20",
+    !isFromOther && "self-end bg-gradient-to-r from-[#AD0471] to-[#47022E]"
+  )}
 >
-  <div>{message.content}</div>
-  <pre>Read: {message.isRead}</pre>
+  <span>{message.content}</span>
+  <span class="text-small text-muted">{toTime(message.sentAt)}</span>
 </div>

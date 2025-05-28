@@ -23,7 +23,7 @@ export default {
       secondary: "#AD0471",
       accent: "#892F6233",
       text: "#F2F2F2",
-      "text-muted": "#D2D4D7"
+      muted: "#D2D4D7"
     }
   },
   plugins: [

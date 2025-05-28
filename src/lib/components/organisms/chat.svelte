@@ -2,6 +2,7 @@
   import type { ClientMessage, ServerMessage } from "$lib/api/protocol";
   import { sendMessage, onMessage } from "$lib/api/ws";
   import Form from "@atoms/form.svelte";
+  import Input from "@atoms/input.svelte";
   import Messages from "@molecules/messages.svelte";
   import { onMount } from "svelte";
   import z from "zod";
@@ -61,7 +62,10 @@
 
 <Messages {...messages} />
 
-<Form {schema} onsubmit={onSubmit}>
-  <input name="message" class="border border-background" type="text" />
-  <button type="submit">submit</button>
+<Form
+  class="escape-x absolute bottom-0 left-0 w-dvw"
+  {schema}
+  onsubmit={onSubmit}
+>
+  <Input name="message" placeholder="Type message..." />
 </Form>

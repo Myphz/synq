@@ -10,11 +10,9 @@
 
 <nav
   use:portal={"#main-navbar"}
-  class="relative mb-4 h-16 w-full border-b border-secondary bg-secondary/20 p-2 font-semibold"
+  class="relative mb-4 h-16 w-full border-b border-secondary bg-secondary/20 p-2 *:px-4"
 >
-  <div class="px-4">
-    {@render children()}
-  </div>
+  {@render children()}
 </nav>
 
 <style>

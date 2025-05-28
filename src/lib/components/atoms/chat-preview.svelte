@@ -21,7 +21,7 @@
   </div>
 
   <div class="flex flex-col items-end gap-1.5">
-    <span class="text-small text-text-muted">
+    <span class="text-muted text-small">
       {toTime(chat.lastMessage?.timestamp)}
     </span>
     <div class="size-4">

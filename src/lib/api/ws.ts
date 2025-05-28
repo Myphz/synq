@@ -7,7 +7,7 @@ import {
 } from "./protocol";
 import { setChats } from "$lib/stores/sync.svelte";
 
-const SERVER_URL = "ws://localhost:3000";
+const SERVER_URL = "wss://synq.fly.dev";
 
 export const getSocket = toAsyncSingleton(async () => {
   const { access_token: jwt } = await getSupabaseSession_forced();
