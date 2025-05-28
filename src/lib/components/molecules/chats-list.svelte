@@ -3,6 +3,8 @@
   import ChatPreview from "@atoms/chat-preview.svelte";
 </script>
 
-{#each chats as chat (chat.chatId)}
-  <ChatPreview {...chat} />
-{/each}
+<div class="flex flex-col gap-4">
+  {#each chats as chat (chat.chatId)}
+    <ChatPreview {...chat} />
+  {/each}
+</div>
