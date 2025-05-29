@@ -4,7 +4,7 @@ import { GOOGLE_CLIENT_ID_WEB } from "./constants";
 import { App } from "@capacitor/app";
 
 export const appConfig = () => {
-  App.addListener("backButton", async () => {
+  App.addListener("backButton", () => {
     window.history.back();
   });
 
