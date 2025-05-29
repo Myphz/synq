@@ -14,7 +14,7 @@
   });
 </script>
 
-<div id="main-navbar"></div>
+<div class="bg-secondary/20 pt-8" id="main-navbar"></div>
 
 <DefaultNavbar />
 

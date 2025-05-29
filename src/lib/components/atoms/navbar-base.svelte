@@ -10,7 +10,7 @@
 
 <nav
   use:portal={"#main-navbar"}
-  class="sticky top-0 h-16 w-full border-b border-secondary bg-secondary/20 p-2 *:px-4"
+  class="relative h-16 w-full border-b border-secondary p-2 *:px-4"
 >
   {@render children()}
 </nav>
