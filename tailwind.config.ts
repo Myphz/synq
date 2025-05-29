@@ -21,6 +21,7 @@ export default {
       background: "#0A0A0F",
       primary: "#6BD0DA",
       secondary: "#AD0471",
+      "secondary/20": "#35112A",
       accent: "#892F6233",
       text: "#F2F2F2",
       muted: "#D2D4D7"

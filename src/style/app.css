@@ -11,7 +11,7 @@
 }
 
 .cyberpunk {
-  clip-path: polygon(0 0, 100% 0, 100% 70%, 80% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 70%, calc(100% - 1rem) 100%, 0 100%);
 }
 
 /* Instead of handling navbar styling through context and stores */

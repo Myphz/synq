@@ -23,7 +23,10 @@
     });
   });
 
-  onMessage("GET_MESSAGES", (msg) => (messages = msg.data.messages));
+  onMessage(
+    "GET_MESSAGES",
+    (msg) => (messages = msg.data.messages.toReversed())
+  );
 
   onMessage("RECEIVE_MESSAGE", (msg) => {
     const { data } = msg;
@@ -34,10 +37,12 @@
     });
   });
 
-  onMessage("RECEIVE_MESSAGE", (msg) => {
+  onMessage("READ_MESSAGE", (msg) => {
     if (msg.chatId !== chatId) return;
 
-    const idx = messages.findIndex((message) => message.id === msg.data.id);
+    const idx = messages.findIndex(
+      (message) => message.id === msg.data.messageId
+    );
     if (idx === -1) return console.warn("READ_MESSAGE: unknown message read?");
 
     messages[idx].isRead = true;
@@ -62,10 +67,6 @@
 
 <Messages {...messages} />
 
-<Form
-  class="escape-x absolute bottom-0 left-0 w-dvw"
-  {schema}
-  onsubmit={onSubmit}
->
+<Form class="absolute bottom-0 left-0 w-dvw" {schema} onsubmit={onSubmit}>
   <Input name="message" placeholder="Type message..." />
 </Form>

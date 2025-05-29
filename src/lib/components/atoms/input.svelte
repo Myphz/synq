@@ -9,6 +9,6 @@
   <input
     {...inputProps}
     type="text"
-    class="w-full bg-accent p-4 placeholder:text-muted"
+    class="w-full bg-secondary/20 p-4 placeholder:text-muted"
   />
 </div>

@@ -18,6 +18,6 @@
 
 <DefaultNavbar />
 
-<main class="px-4 pb-6">
+<main class="flex flex-1 flex-col overflow-hidden px-4 pb-6">
   <slot />
 </main>
