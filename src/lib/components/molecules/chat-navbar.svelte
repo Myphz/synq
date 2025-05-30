@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { chats } from "$lib/stores/sync.svelte";
+  import { getChat } from "$lib/stores/chats.svelte";
   import CyberImage from "@atoms/cyber-image.svelte";
   import NavbarBase from "@atoms/navbar-base.svelte";
 
@@ -8,7 +8,7 @@
   };
 
   const { chatId }: Props = $props();
-  const chat = $derived(chats.find((chat) => chat.chatId === Number(chatId)));
+  const chat = $derived(getChat(chatId));
 </script>
 
 <NavbarBase>

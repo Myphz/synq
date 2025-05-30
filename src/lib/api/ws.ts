@@ -1,25 +1,42 @@
-import { getSupabaseSession } from "$lib/supabase/auth/utils";
+import { getSupabaseSession_forced } from "$lib/supabase/auth/utils";
 import { toAsyncSingleton } from "@utils/async-singleton";
 import {
   serverMessageSchema,
   type ClientMessage,
   type ServerMessage
 } from "./protocol";
-import { setChats } from "$lib/stores/sync.svelte";
 import { authGuard } from "@utils/auth-guard";
+import {
+  addChatMessage,
+  initializeChats,
+  markMessageAsRead,
+  setChatMessages
+} from "$lib/stores/chats.svelte";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
 export const getSocket = toAsyncSingleton(async () => {
-  authGuard();
-  const { access_token: jwt } = (await getSupabaseSession()) || {};
-  if (!jwt) return;
+  await authGuard();
+  const { access_token: jwt } = (await getSupabaseSession_forced()) || {};
 
   const socket = new WebSocket(SERVER_URL, ["synq", jwt]);
-
+  // Message handling
   socket.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
-    if (message.type === "INITIAL_SYNC") setChats(message.chats);
+    if (message.type === "INITIAL_SYNC") initializeChats(message.chats);
+    if (message.type === "GET_MESSAGES")
+      setChatMessages(
+        message.chatId.toString(),
+        message.data.messages.toReversed()
+      );
+    if (message.type === "RECEIVE_MESSAGE")
+      addChatMessage(message.chatId.toString(), {
+        ...message.data,
+        senderId: message.userId,
+        isRead: false
+      });
+    if (message.type === "READ_MESSAGE")
+      markMessageAsRead(message.chatId.toString(), message.data.messageId);
   });
 
   socket.addEventListener("error", (e) =>

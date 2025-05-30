@@ -1,6 +1,7 @@
 <script lang="ts">
-  import type { ClientMessage, ServerMessage } from "$lib/api/protocol";
-  import { sendMessage, onMessage } from "$lib/api/ws";
+  import type { ClientMessage } from "$lib/api/protocol";
+  import { sendMessage } from "$lib/api/ws";
+  import { getChat } from "$lib/stores/chats.svelte";
   import Form from "@atoms/form.svelte";
   import Input from "@atoms/input.svelte";
   import Messages from "@molecules/messages.svelte";
@@ -12,40 +13,13 @@
   };
 
   const { chatId }: Props = $props();
-  let messages = $state<
-    Extract<ServerMessage, { type: "GET_MESSAGES" }>["data"]["messages"]
-  >([]);
+  const chat = $derived(getChat(chatId));
 
   onMount(() => {
     sendMessage({
       type: "REQUEST_MESSAGES",
       chatId
     });
-  });
-
-  onMessage(
-    "GET_MESSAGES",
-    (msg) => (messages = msg.data.messages.toReversed())
-  );
-
-  onMessage("RECEIVE_MESSAGE", (msg) => {
-    const { data } = msg;
-    messages.push({
-      ...data,
-      isRead: false,
-      senderId: msg.userId
-    });
-  });
-
-  onMessage("READ_MESSAGE", (msg) => {
-    if (msg.chatId !== chatId) return;
-
-    const idx = messages.findIndex(
-      (message) => message.id === msg.data.messageId
-    );
-    if (idx === -1) return console.warn("READ_MESSAGE: unknown message read?");
-
-    messages[idx].isRead = true;
   });
 
   const schema = z.object({
@@ -65,7 +39,7 @@
   };
 </script>
 
-<Messages {...messages} />
+<Messages {...chat.messages} />
 
 <Form class="absolute bottom-0 left-0 w-dvw" {schema} onsubmit={onSubmit}>
   <Input name="message" placeholder="Type message..." />

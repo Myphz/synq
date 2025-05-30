@@ -5,6 +5,7 @@
   import Message from "@atoms/message.svelte";
   import { onMount } from "svelte";
   import { Keyboard } from "@capacitor/keyboard";
+  import { Capacitor } from "@capacitor/core";
 
   type Messages = Extract<
     ServerMessage,
@@ -17,6 +18,7 @@
 
   // Scroll to bottom on messages load && when you send a message
   onMessage("GET_MESSAGES", () => {
+    if (!container) return;
     jumpInstant(container.scrollHeight);
   });
 
@@ -32,6 +34,10 @@
   };
 
   onMount(() => {
+    // Immediately scroll to the bottom
+    jumpInstant(container.scrollHeight);
+    if (Capacitor.getPlatform() === "web") return;
+
     let lastScrollBottom = 0;
     Keyboard.addListener("keyboardWillShow", () => {
       // Save the scroll offset from bottom
