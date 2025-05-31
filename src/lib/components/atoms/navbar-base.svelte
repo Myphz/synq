@@ -15,7 +15,7 @@
   {@render children()}
 </nav>
 
-<style>
+<style lang="postcss">
   nav::before,
   nav::after {
     content: "";

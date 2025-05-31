@@ -21,8 +21,8 @@
   </div>
 
   <div class="flex flex-col items-end gap-1.5">
-    <span class="text-muted text-small">
-      {toTime(chat.lastMessage?.timestamp)}
+    <span class="text-small text-muted">
+      {toTime(chat.lastMessage?.sentAt)}
     </span>
     <div class="size-4">
       {#if chat.unreadMessagesCount}
