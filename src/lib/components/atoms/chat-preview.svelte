@@ -7,6 +7,7 @@
   const { chatId }: Props = $props();
 
   const chat = $derived(getChat(chatId));
+  const lastMessage = $derived(chat.messages.at(-1) || chat.lastMessage);
 </script>
 
 <a class="flex w-full items-center justify-between" href="/{chat.chatId}">
@@ -17,13 +18,13 @@
     />
     <div class="flex flex-col justify-center gap-1 leading-none">
       <span class="text-h-4 text-primary">{chat.name}</span>
-      <span>{chat.lastMessage?.content}</span>
+      <span>{lastMessage?.content}</span>
     </div>
   </div>
 
   <div class="flex flex-col items-end gap-1.5">
     <span class="text-small text-muted">
-      {toTime(chat.lastMessage?.sentAt)}
+      {toTime(lastMessage?.sentAt)}
     </span>
     <div class="size-4">
       {#if chat.unreadMessagesCount}

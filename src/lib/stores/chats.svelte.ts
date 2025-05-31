@@ -37,16 +37,25 @@ export const setChatMessages = (chatId: string, newMessages: Message[]) => {
   chats[chatId].messages = newMessages;
 };
 
-export const addChatMessage = (chatId: string, message: Message) => {
+export const addChatMessage = async (chatId: string, message: Message) => {
   if (!chats[chatId]) throw new Error("addChatMessage(): can't find chat");
   chats[chatId].messages.push(message);
+
+  if (message.senderId !== (await getUserId()))
+    chats[chatId].unreadMessagesCount++;
 };
 
 export const markMessageAsRead = (chatId: string, messageId: Message["id"]) => {
   const msgIdx =
     chats[chatId]?.messages.findIndex((msg) => msg.id === messageId) || -1;
   if (msgIdx === -1) throw new Error("markMessageAsRead: can't find message");
+
   chats[chatId].messages[msgIdx].isRead = true;
+
+  chats[chatId].unreadMessagesCount = Math.min(
+    chats[chatId].unreadMessagesCount - 1,
+    0
+  );
 };
 
 export const getChat = (chatId: string | number) =>
