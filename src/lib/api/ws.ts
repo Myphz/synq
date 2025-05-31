@@ -1,5 +1,5 @@
 import { getSupabaseSession_forced } from "$lib/supabase/auth/utils";
-import { toAsyncSingleton } from "@utils/async-singleton";
+import { resetSingletons, toAsyncSingleton } from "@utils/async-singleton";
 import {
   serverMessageSchema,
   type ClientMessage,
@@ -58,9 +58,12 @@ export const getSocket = toAsyncSingleton(async () => {
     })
   );
 
-  socket.addEventListener("error", (e) =>
-    console.error("SOCKET ERROR:", JSON.stringify(e))
-  );
+  socket.addEventListener("error", (e) => {
+    console.error("SOCKET ERROR:", JSON.stringify(e));
+    // Reconnect after 1s
+    resetSingletons();
+    setTimeout(getSocket, 1000);
+  });
 
   while (socket.readyState !== WebSocket.OPEN)
     await new Promise((res) => setTimeout(res, 50));

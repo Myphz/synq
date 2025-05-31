@@ -29,6 +29,7 @@ export const appConfig = () => {
     else resetSingletons();
   });
 
+  // Theoretically not needed
   Network.addListener("networkStatusChange", (status) => {
     if (status.connected) getSocket();
     else resetSingletons();
