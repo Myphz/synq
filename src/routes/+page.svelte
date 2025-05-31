@@ -1,5 +1,11 @@
 <script lang="ts">
+  import { getSocket } from "$lib/api/ws";
   import ChatsList from "@molecules/chats-list.svelte";
-  </script>
+  import { onMount } from "svelte";
+
+  onMount(() => {
+    getSocket();
+  });
+</script>
 
 <ChatsList />

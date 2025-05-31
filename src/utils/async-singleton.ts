@@ -19,3 +19,7 @@ export const toAsyncSingleton = <T>(fn: (...params: any[]) => Promise<T>) => {
     return singletons[singletonId].value as T;
   };
 };
+
+export const resetSingletons = () => {
+  Object.keys(singletons).forEach((key) => delete singletons[key]);
+};

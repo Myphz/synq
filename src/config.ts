@@ -4,6 +4,9 @@ import { GOOGLE_CLIENT_ID_WEB } from "./constants";
 import { App } from "@capacitor/app";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
+import { getSocket } from "$lib/api/ws";
+import { resetSingletons } from "@utils/async-singleton";
+import { Network } from "@capacitor/network";
 
 export const appConfig = () => {
   App.addListener("backButton", () => {
@@ -20,4 +23,14 @@ export const appConfig = () => {
 
   StatusBar.setOverlaysWebView({ overlay: true });
   StatusBar.setStyle({ style: Style.Dark });
+
+  App.addListener("appStateChange", ({ isActive }) => {
+    if (isActive) getSocket();
+    else resetSingletons();
+  });
+
+  Network.addListener("networkStatusChange", (status) => {
+    if (status.connected) getSocket();
+    else resetSingletons();
+  });
 };
