@@ -49,5 +49,5 @@ export const markMessageAsRead = (chatId: string, messageId: Message["id"]) => {
   chats[chatId].messages[msgIdx].isRead = true;
 };
 
-export const getChat = (chatId: string) =>
-  chats[chatId] || throwError("getChat(): chat not found");
+export const getChat = (chatId: string | number) =>
+  chats[chatId.toString()] || throwError("getChat(): chat not found");

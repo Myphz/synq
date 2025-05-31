@@ -13,6 +13,6 @@
 
 <div class="flex flex-col gap-4">
   {#each sortedChats as chat (chat.chatId)}
-    <ChatPreview {...chat} />
+    <ChatPreview chatId={chat.chatId} />
   {/each}
 </div>

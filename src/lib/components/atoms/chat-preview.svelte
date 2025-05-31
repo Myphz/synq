@@ -1,11 +1,12 @@
 <script lang="ts">
-  import type { ServerMessage } from "$lib/api/protocol";
   import { toTime } from "@utils/dates";
   import CyberImage from "./cyber-image.svelte";
+  import { getChat } from "$lib/stores/chats.svelte";
 
-  type Chat = Extract<ServerMessage, { type: "INITIAL_SYNC" }>["chats"][number];
+  type Props = { chatId: number };
+  const { chatId }: Props = $props();
 
-  const chat: Chat = $props();
+  const chat = $derived(getChat(chatId));
 </script>
 
 <a class="flex w-full items-center justify-between" href="/{chat.chatId}">
