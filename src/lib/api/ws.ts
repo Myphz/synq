@@ -23,6 +23,8 @@ export const getSocket = toAsyncSingleton(async () => {
   // Message handling
   socket.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
+    console.log(message);
+
     if (message.type === "INITIAL_SYNC") initializeChats(message.chats);
     if (message.type === "GET_MESSAGES")
       setChatMessages(

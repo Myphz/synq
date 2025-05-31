@@ -11,6 +11,7 @@ type Message = Extract<
 
 type ChatWithMessages = Chat & {
   messages: Message[];
+  isInitialized: boolean;
 };
 
 export const chats = $state<Record<string, ChatWithMessages>>({});
@@ -24,10 +25,11 @@ export const initializeChats = async (chatList: Chat[]) => {
       chat.members.find((m) => m.id !== currentUserId)?.name ||
       "UNKNOWN";
 
-    chats[chat.chatId] = {
+    chats[chat.chatId.toString()] = {
       ...chat,
       name,
-      messages: []
+      messages: [],
+      isInitialized: false
     };
   }
 };
@@ -35,14 +37,19 @@ export const initializeChats = async (chatList: Chat[]) => {
 export const setChatMessages = (chatId: string, newMessages: Message[]) => {
   if (!chats[chatId]) throw new Error("setChatMessages(): can't find chat");
   chats[chatId].messages = newMessages;
+  chats[chatId].isInitialized = true;
 };
 
 export const addChatMessage = async (chatId: string, message: Message) => {
   if (!chats[chatId]) throw new Error("addChatMessage(): can't find chat");
-  chats[chatId].messages.push(message);
+  chats[chatId].lastMessage = message;
 
   if (message.senderId !== (await getUserId()))
     chats[chatId].unreadMessagesCount++;
+
+  // Don't push messages if the chat was not initialized, the chat doesn't contain any message!
+  if (!chats[chatId].isInitialized) return;
+  chats[chatId].messages.push(message);
 };
 
 export const markMessageAsRead = (chatId: string, messageId: Message["id"]) => {
