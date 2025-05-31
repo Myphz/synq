@@ -10,7 +10,8 @@ import {
   addChatMessage,
   initializeChats,
   markMessageAsRead,
-  setChatMessages
+  setChatMessages,
+  updateUser
 } from "$lib/stores/chats.svelte";
 
 const SERVER_URL = "wss://synq.fly.dev";
@@ -20,34 +21,49 @@ export const getSocket = toAsyncSingleton(async () => {
   const { access_token: jwt } = (await getSupabaseSession_forced()) || {};
 
   const socket = new WebSocket(SERVER_URL, ["synq", jwt]);
-  // Message handling
+
   socket.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
     console.log(message);
-
-    if (message.type === "INITIAL_SYNC") initializeChats(message.chats);
-    if (message.type === "GET_MESSAGES")
-      setChatMessages(
-        message.chatId.toString(),
-        message.data.messages.toReversed()
-      );
-    if (message.type === "RECEIVE_MESSAGE")
-      addChatMessage(message.chatId.toString(), {
-        ...message.data,
-        senderId: message.userId,
-        isRead: false
-      });
-    if (message.type === "READ_MESSAGE")
-      markMessageAsRead(message.chatId.toString(), message.data.messageId);
   });
+
+  // Setup socket events
+  onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), socket);
+  onMessage(
+    "GET_MESSAGES",
+    (msg) =>
+      setChatMessages(msg.chatId.toString(), msg.data.messages.toReversed()),
+    socket
+  );
+  onMessage(
+    "RECEIVE_MESSAGE",
+    (msg) =>
+      addChatMessage(msg.chatId.toString(), {
+        ...msg.data,
+        senderId: msg.userId,
+        isRead: false
+      }),
+    socket
+  );
+  onMessage(
+    "READ_MESSAGE",
+    (msg) => markMessageAsRead(msg.chatId.toString(), msg.data.messageId),
+    socket
+  );
+  onMessage("UPDATE_USER_STATUS", (msg) =>
+    updateUser({
+      chatId: msg.chatId.toString(),
+      userId: msg.userId,
+      ...msg.data
+    })
+  );
 
   socket.addEventListener("error", (e) =>
     console.error("SOCKET ERROR:", JSON.stringify(e))
   );
 
-  while (socket.readyState !== WebSocket.OPEN) {
+  while (socket.readyState !== WebSocket.OPEN)
     await new Promise((res) => setTimeout(res, 50));
-  }
 
   return socket;
 });
@@ -63,9 +79,10 @@ export const onMessage = async <T extends ServerMessage["type"]>(
     message: T extends string
       ? Extract<ServerMessage, { type: T }>
       : ServerMessage
-  ) => unknown
+  ) => unknown,
+  sock?: WebSocket
 ) => {
-  const socket = await getSocket();
+  const socket = sock || (await getSocket());
 
   socket.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));

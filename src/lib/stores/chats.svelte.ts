@@ -65,5 +65,21 @@ export const markMessageAsRead = (chatId: string, messageId: Message["id"]) => {
   );
 };
 
+type UpdateUserParams = { userId: string; chatId: string } & Extract<
+  ServerMessage,
+  { type: "UPDATE_USER_STATUS" }
+>["data"];
+
+export const updateUser = ({ userId, chatId, ...status }: UpdateUserParams) => {
+  const chat = chats[chatId] || throwError("updateUser(): chat not found");
+  const memberIdx = chat.members.findIndex((member) => member.id === userId);
+  if (memberIdx === -1) return;
+
+  chats[chatId].members[memberIdx] = {
+    ...chats[chatId].members[memberIdx],
+    ...status
+  };
+};
+
 export const getChat = (chatId: string | number) =>
   chats[chatId.toString()] || throwError("getChat(): chat not found");
