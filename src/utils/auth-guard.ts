@@ -1,5 +1,4 @@
 import { goto } from "$app/navigation";
-import { getSocket } from "$lib/api/ws";
 import {
   checkIsUserLogged,
   getSupabaseSession
@@ -23,7 +22,6 @@ export async function authGuard(mustBeLogged = true) {
 
   supabase.auth.onAuthStateChange(async (event, session) => {
     const isUserLogged = checkIsUserLogged(session);
-    if (isUserLogged) getSocket();
     // Prevent duplicate checks
     if (event === "INITIAL_SESSION") return;
     redirect(isUserLogged, mustBeLogged);

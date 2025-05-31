@@ -65,6 +65,13 @@ export const getSocket = toAsyncSingleton(async () => {
     setTimeout(getSocket, 1000);
   });
 
+  socket.addEventListener("close", () => {
+    console.error("SOCKET CLOSE");
+    // Reconnect after 1s
+    resetSingletons();
+    setTimeout(getSocket, 1000);
+  });
+
   while (socket.readyState !== WebSocket.OPEN)
     await new Promise((res) => setTimeout(res, 50));
 
