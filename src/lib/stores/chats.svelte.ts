@@ -28,8 +28,9 @@ export const initializeChats = async (chatList: Chat[]) => {
     chats[chat.chatId.toString()] = {
       ...chat,
       name,
-      messages: [],
-      isInitialized: false
+      // Retain messages or set them to empty array
+      messages: chats[chat.chatId.toString()]?.messages || [],
+      isInitialized: chats[chat.chatId.toString()]?.isInitialized || false
     };
   }
 };

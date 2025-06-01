@@ -23,7 +23,11 @@
   });
 
   onMessage("RECEIVE_MESSAGE", async (msg) => {
-    if (msg.userId === (await getUserId()))
+    const isNearBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight <=
+      50;
+
+    if (isNearBottom || msg.userId === (await getUserId()))
       container.scrollTo({ top: container.scrollHeight });
   });
 

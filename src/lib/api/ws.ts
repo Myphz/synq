@@ -16,6 +16,16 @@ import {
 
 const SERVER_URL = "wss://synq.fly.dev";
 
+export const closeSocket = async () => {
+  const socket = await getSocket();
+  socket.close();
+};
+
+export const getSocket_forced = async () => {
+  resetSingletons();
+  return await getSocket();
+};
+
 export const getSocket = toAsyncSingleton(async () => {
   await authGuard();
   const { access_token: jwt } = (await getSupabaseSession_forced()) || {};
@@ -67,9 +77,6 @@ export const getSocket = toAsyncSingleton(async () => {
 
   socket.addEventListener("close", () => {
     console.error("SOCKET CLOSE");
-    // Reconnect after 1s
-    resetSingletons();
-    setTimeout(getSocket, 1000);
   });
 
   while (socket.readyState !== WebSocket.OPEN)

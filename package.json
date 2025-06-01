@@ -52,6 +52,7 @@
     "@capacitor/device": "^7.0.1",
     "@capacitor/keyboard": "^7.0.1",
     "@capacitor/network": "^7.0.1",
+    "@capacitor/preferences": "^7.0.1",
     "@capacitor/status-bar": "^7.0.1",
     "@capgo/capacitor-social-login": "^7.6.3",
     "@supabase/supabase-js": "^2.49.8",

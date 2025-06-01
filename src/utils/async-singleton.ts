@@ -3,9 +3,11 @@ const singletons: Record<string, { value: unknown; isFetching: boolean }> = {};
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const toAsyncSingleton = <T>(fn: (...params: any[]) => Promise<T>) => {
   const singletonId = Date.now().toString();
-  singletons[singletonId] = { value: null, isFetching: false };
 
   return async () => {
+    if (!singletons[singletonId])
+      singletons[singletonId] = { value: null, isFetching: false };
+
     while (singletons[singletonId].isFetching)
       await new Promise((res) => setTimeout(res, 100));
 

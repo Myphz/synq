@@ -4,6 +4,7 @@ import {
   type GoogleLoginResponseOnline
 } from "@capgo/capacitor-social-login";
 import { throwError } from "@utils/throw-error";
+import { getSocket_forced } from "./ws";
 
 export const logInWithGoogle = async () => {
   const response = await SocialLogin.login({
@@ -26,4 +27,6 @@ export const logInWithGoogle = async () => {
 
   if (error || !data.user)
     return throwError("Google Login: signInWithIdToken failed?!?");
+
+  getSocket_forced();
 };

@@ -4,9 +4,7 @@ import { GOOGLE_CLIENT_ID_WEB } from "./constants";
 import { App } from "@capacitor/app";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
-import { getSocket } from "$lib/api/ws";
-import { resetSingletons } from "@utils/async-singleton";
-import { Network } from "@capacitor/network";
+import { closeSocket, getSocket_forced } from "$lib/api/ws";
 
 export const appConfig = () => {
   App.addListener("backButton", () => {
@@ -25,16 +23,16 @@ export const appConfig = () => {
   StatusBar.setStyle({ style: Style.Dark });
 
   App.addListener("appStateChange", ({ isActive }) => {
-    if (isActive) getSocket();
-    else resetSingletons();
+    if (isActive) getSocket_forced();
+    else closeSocket();
   });
 
-  App.addListener("pause", resetSingletons);
-  App.addListener("resume", getSocket);
+  // App.addListener("pause", closeSocket);
+  // App.addListener("resume", getSocket_forced);
 
   // Theoretically not needed
-  Network.addListener("networkStatusChange", (status) => {
-    if (status.connected) getSocket();
-    else resetSingletons();
-  });
+  // Network.addListener("networkStatusChange", (status) => {
+  //   if (status.connected) getSocket_forced();
+  //   else closeSocket();
+  // });
 };
