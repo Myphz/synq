@@ -4,6 +4,7 @@
   import CyberImage from "@atoms/cyber-image.svelte";
   import NavbarBase from "@atoms/navbar-base.svelte";
   import { formatUserStatus } from "@utils/dates";
+  import { twMerge } from "tailwind-merge";
 
   type Props = {
     chatId: string;
@@ -35,7 +36,12 @@
           {chat?.name}
         </span>
         {#if otherMember}
-          <span class="text-small">
+          <span
+            class={twMerge(
+              "text-small",
+              (otherMember.isOnline || otherMember.isTyping) && "text-primary"
+            )}
+          >
             {formatUserStatus({
               ...otherMember,
               lastSeen: otherMember.lastSeen || undefined
