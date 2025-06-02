@@ -10,8 +10,49 @@
   @apply !font-header !font-semibold;
 }
 
+:root {
+  --x-size: 1rem;
+  --y-size: 30%;
+}
+
 .cyberpunk {
-  clip-path: polygon(0 0, 100% 0, 100% 70%, calc(100% - 1rem) 100%, 0 100%);
+  clip-path: polygon(
+    var(--cp-top-left-x) 0%,
+    var(--cp-top-right-x) 0%,
+    100% var(--cp-right-top-y),
+    100% var(--cp-right-bottom-y),
+    var(--cp-bottom-right-x) 100%,
+    var(--cp-bottom-left-x) 100%,
+    0% var(--cp-left-bottom-y),
+    0% var(--cp-left-top-y)
+  );
+
+  --cp-top-left-x: 0%;
+  --cp-top-right-x: 100%;
+
+  --cp-right-top-y: 0%;
+  --cp-right-bottom-y: 100%;
+
+  --cp-bottom-right-x: 100%;
+  --cp-bottom-left-x: 0%;
+
+  --cp-left-bottom-y: 100%;
+  --cp-left-top-y: 0%;
+}
+
+.cyberpunk-br {
+  --cp-right-bottom-y: calc(100% - var(--y-size));
+  --cp-bottom-right-x: calc(100% - var(--x-size));
+}
+
+.cyberpunk-tr {
+  --cp-top-right-x: calc(100% - var(--x-size));
+  --cp-right-top-y: var(--y-size);
+}
+
+.cyberpunk-tl {
+  --cp-top-left-x: var(--x-size);
+  --cp-left-top-y: var(--y-size);
 }
 
 /* Instead of handling navbar styling through context and stores */
