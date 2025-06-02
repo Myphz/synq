@@ -6,6 +6,8 @@
   import { onMount } from "svelte";
   import { Keyboard } from "@capacitor/keyboard";
   import { Capacitor } from "@capacitor/core";
+  import { twMerge } from "tailwind-merge";
+  import { isEdgeToEdgeEnabled } from "@utils/edge-to-edge";
 
   type Messages = Extract<
     ServerMessage,
@@ -84,9 +86,17 @@
 <div
   bind:this={container}
   id="messages"
-  class="flex flex-1 flex-col gap-2 overflow-y-scroll scroll-smooth pb-8"
+  class={twMerge(
+    "flex flex-1 flex-col gap-2 overflow-y-scroll scroll-smooth pb-8"
+  )}
 >
   {#each messages as msg (msg.id)}
     <Message {...msg} />
   {/each}
+
+  {#await isEdgeToEdgeEnabled() then edgeToEdge}
+    {#if edgeToEdge}
+      <div class="h-12 w-full"></div>
+    {/if}
+  {/await}
 </div>

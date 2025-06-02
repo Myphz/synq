@@ -13,6 +13,9 @@
   import z from "zod";
   import { debounceWithStartStop } from "@utils/debounce";
   import { page } from "$app/state";
+  import { twMerge } from "tailwind-merge";
+  import { isEdgeToEdgeEnabled } from "@utils/edge-to-edge";
+  import { Keyboard } from "@capacitor/keyboard";
 
   type Props = {
     chatId: string;
@@ -20,12 +23,23 @@
 
   const { chatId }: Props = $props();
   const chat = $derived(getChat(chatId));
+  let shouldShowBottomPadding = $state(true);
 
   onMount(() => {
+    Keyboard.addListener("keyboardWillShow", () => {
+      shouldShowBottomPadding = false;
+    });
+
+    Keyboard.addListener("keyboardWillHide", () => {
+      shouldShowBottomPadding = true;
+    });
+
     sendMessage({
       type: "REQUEST_MESSAGES",
       chatId
     });
+
+    return Keyboard.removeAllListeners;
   });
 
   const schema = z.object({
@@ -57,6 +71,15 @@
 
 <Messages {...chat.messages} />
 
-<Form class="absolute bottom-0 left-0 w-dvw" {schema} onsubmit={onSubmit}>
+<Form
+  class={twMerge("absolute bottom-0 left-0 w-dvw")}
+  {schema}
+  onsubmit={onSubmit}
+>
   <Input oninput={onTyping} name="message" placeholder="Type message..." />
+  {#await isEdgeToEdgeEnabled() then edgeToEdge}
+    {#if edgeToEdge && shouldShowBottomPadding}
+      <div class="h-12 w-full bg-background"></div>
+    {/if}
+  {/await}
 </Form>
