@@ -71,6 +71,12 @@
 
 <Messages {...chat.messages} />
 
+{#await isEdgeToEdgeEnabled() then edgeToEdge}
+  {#if edgeToEdge && shouldShowBottomPadding}
+    <div class="h-12 w-full"></div>
+  {/if}
+{/await}
+
 <Form
   class={twMerge("absolute bottom-0 left-0 w-dvw")}
   {schema}
