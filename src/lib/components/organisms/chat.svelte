@@ -16,6 +16,7 @@
   import { twMerge } from "tailwind-merge";
   import { isEdgeToEdgeEnabled } from "@utils/edge-to-edge";
   import { Keyboard } from "@capacitor/keyboard";
+  import { Capacitor } from "@capacitor/core";
 
   type Props = {
     chatId: string;
@@ -26,17 +27,18 @@
   let shouldShowBottomPadding = $state(true);
 
   onMount(() => {
+    sendMessage({
+      type: "REQUEST_MESSAGES",
+      chatId
+    });
+    if (Capacitor.getPlatform() === "web") return;
+
     Keyboard.addListener("keyboardWillShow", () => {
       shouldShowBottomPadding = false;
     });
 
     Keyboard.addListener("keyboardWillHide", () => {
       shouldShowBottomPadding = true;
-    });
-
-    sendMessage({
-      type: "REQUEST_MESSAGES",
-      chatId
     });
 
     return Keyboard.removeAllListeners;
