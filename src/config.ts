@@ -10,6 +10,16 @@ import { supabase } from "$lib/supabase/client";
 import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 
 export const setupNotifications = async () => {
+  if (!(await getSupabaseSession()))
+    return supabase.auth.onAuthStateChange((event, session) => {
+      if (event !== "SIGNED_IN" || !session) return;
+      configNotifications();
+    });
+
+  configNotifications();
+};
+
+const configNotifications = async () => {
   let permStatus = await PushNotifications.checkPermissions();
 
   if (permStatus.receive === "prompt") {
@@ -34,15 +44,6 @@ export const setupNotifications = async () => {
   });
 
   await PushNotifications.register();
-
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    if (event === "INITIAL_SESSION") return;
-    // Register again so that the token can be saved on Supabase
-    if (session) {
-      await PushNotifications.unregister();
-      await PushNotifications.register();
-    }
-  });
 };
 
 export const appConfig = () => {
