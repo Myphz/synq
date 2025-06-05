@@ -15,7 +15,3 @@ export const getSupabaseSession_forced = async () => {
     return throwError("getSupabaseSession_forced(): session is null?");
   return session;
 };
-
-export const checkIsUserLogged = (
-  session: Awaited<ReturnType<typeof getSupabaseSession>>
-) => !!session && !session?.user.is_anonymous;

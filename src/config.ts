@@ -22,10 +22,10 @@ export const setupNotifications = async () => {
 
   await PushNotifications.addListener("registration", async (token) => {
     const fcmToken = token.value;
-    // Save token in supabase
     if (!(await getSupabaseSession())) return;
     const userId = await getUserId();
 
+    // Save token in supabase
     await supabase
       .from("profiles")
       .update({ fcm_token: fcmToken })
@@ -34,6 +34,15 @@ export const setupNotifications = async () => {
   });
 
   await PushNotifications.register();
+
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === "INITIAL_SESSION") return;
+    // Register again so that the token can be saved on Supabase
+    if (session) {
+      await PushNotifications.unregister();
+      await PushNotifications.register();
+    }
+  });
 };
 
 export const appConfig = () => {

@@ -1,8 +1,5 @@
 import { goto } from "$app/navigation";
-import {
-  checkIsUserLogged,
-  getSupabaseSession
-} from "$lib/supabase/auth/utils";
+import { getSupabaseSession } from "$lib/supabase/auth/utils";
 import { supabase } from "$lib/supabase/client";
 
 // Redirect to / if the user auth status is not what is supposed to be.
@@ -17,11 +14,11 @@ function redirect(isLogged: boolean, mustBeLogged: boolean) {
 }
 
 export async function authGuard(mustBeLogged = true) {
-  const isUserLogged = checkIsUserLogged(await getSupabaseSession());
+  const isUserLogged = !!(await getSupabaseSession());
   redirect(isUserLogged, mustBeLogged);
 
   supabase.auth.onAuthStateChange(async (event, session) => {
-    const isUserLogged = checkIsUserLogged(session);
+    const isUserLogged = !!session;
     // Prevent duplicate checks
     if (event === "INITIAL_SESSION") return;
     redirect(isUserLogged, mustBeLogged);
