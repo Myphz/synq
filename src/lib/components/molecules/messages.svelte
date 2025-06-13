@@ -17,68 +17,37 @@
   let container: HTMLDivElement;
   const messages: Messages = $props();
 
-  let lastScrollBottom = 0;
-  let isNearBottom = true;
-
-  const onScroll = () => {
-    if (!container) return;
-    lastScrollBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight;
-    isNearBottom = lastScrollBottom <= 50;
-  };
-
-  const jumpInstant = (y: number) => {
-    container.style.scrollBehavior = "auto";
-    container.scrollTop = y;
-    requestAnimationFrame(() => (container.style.scrollBehavior = "smooth"));
+  const scrollToBottom = (behavior: "smooth" | "instant" = "smooth") => {
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior
+    });
   };
 
   onMessage("GET_MESSAGES", () => {
     if (!container) return;
-    jumpInstant(container.scrollHeight);
+    scrollToBottom("instant");
   });
 
   onMessage("RECEIVE_MESSAGE", async (msg) => {
     // Scroll to view the last message if
     // the user is near bottom or the message is ours
-    if (isNearBottom || msg.userId === (await getUserId())) {
-      container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+    if (msg.userId === (await getUserId())) {
+      scrollToBottom();
     }
   });
 
   onMount(() => {
     // Initial scroll to bottom
-    jumpInstant(container.scrollHeight);
-
-    // Update scroll state initially
-    onScroll();
-
-    container.addEventListener("scroll", onScroll);
+    scrollToBottom("instant");
 
     if (Capacitor.getPlatform() === "web") return;
 
-    Keyboard.addListener("keyboardWillShow", () => {
-      // Save offset from bottom before keyboard appears
-      onScroll();
-    });
-
-    Keyboard.addListener("keyboardDidShow", () => {
-      // Restore offset after keyboard shows
-      jumpInstant(
-        container.scrollHeight - container.clientHeight - lastScrollBottom
-      );
-    });
-
-    Keyboard.addListener("keyboardDidHide", () => {
-      // Restore offset after keyboard hides
-      jumpInstant(
-        container.scrollHeight - container.clientHeight - lastScrollBottom
-      );
-    });
+    Keyboard.addListener("keyboardDidShow", () => scrollToBottom());
+    Keyboard.addListener("keyboardWillShow", () => scrollToBottom());
 
     return () => {
       Keyboard.removeAllListeners();
-      container.removeEventListener("scroll", onScroll);
     };
   });
 </script>
