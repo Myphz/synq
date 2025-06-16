@@ -15,6 +15,7 @@ type ChatWithMessages = Chat & {
 };
 
 export const chats = $state<Record<string, ChatWithMessages>>({});
+export const chatResults = $state<Record<string, ChatWithMessages>>({});
 
 export const initializeChats = async (chatList: Chat[]) => {
   const currentUserId = await getUserId();
@@ -83,4 +84,6 @@ export const updateUser = ({ userId, chatId, ...status }: UpdateUserParams) => {
 };
 
 export const getChat = (chatId: string | number) =>
-  chats[chatId.toString()] || throwError("getChat(): chat not found");
+  chatResults[chatId.toString()] ||
+  chats[chatId.toString()] ||
+  throwError("getChat(): chat not found");

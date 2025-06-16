@@ -1,17 +1,34 @@
 <script lang="ts">
+  import type { Snippet } from "svelte";
   import type { HTMLInputAttributes } from "svelte/elements";
-  type Props = HTMLInputAttributes & {};
+  import { twMerge } from "tailwind-merge";
+  type Props = HTMLInputAttributes & {
+    children?: Snippet;
+    cyberpunkStyle?: string;
+    class?: string;
+  };
 
-  const { ...inputProps }: Props = $props();
+  const {
+    children,
+    class: className,
+    cyberpunkStyle = "cyberpunk-tl cyberpunk-br",
+    ...inputProps
+  }: Props = $props();
 </script>
 
 <div
-  class="cyberpunk cyberpunk-tl cyberpunk-br relative bg-secondary p-4 after:absolute after:inset-px after:bg-secondary/20"
+  class={twMerge(
+    `cyberpunk ${cyberpunkStyle} relative flex items-center gap-2 bg-secondary p-4 *:relative *:z-10 after:absolute after:inset-px after:bg-secondary/20`,
+    className
+  )}
 >
+  {#if children}
+    {@render children()}
+  {/if}
   <input
     {...inputProps}
     type="text"
-    class="relative z-10 w-full bg-secondary/20 placeholder:text-muted"
+    class="w-full bg-secondary/20 placeholder:text-muted"
   />
 </div>
 

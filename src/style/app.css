@@ -7,7 +7,7 @@
 }
 
 [class*="text-h-"] {
-  @apply !font-header !font-semibold;
+  @apply font-header !font-semibold;
 }
 
 :root {
