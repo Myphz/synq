@@ -1,5 +1,7 @@
 <script lang="ts">
   import { chatResults } from "$lib/stores/chats.svelte";
+  import { getUserId } from "$lib/supabase/auth/utils";
+  import { supabase } from "$lib/supabase/client";
   import Icon from "@atoms/icon.svelte";
   import Input from "@atoms/input.svelte";
   import NavbarBase from "@atoms/navbar-base.svelte";
@@ -10,20 +12,33 @@
   const onInput = debounceAsync(async (e: Event) => {
     // @ts-expect-error its ok
     const search = e.target.value;
-    // TODO: Get chat results
-    chatResults[0] = {
-      chatId: 0,
-      name: "mario",
-      lastMessage: null,
-      unreadMessagesCount: 0,
-      members: [],
-      messages: [],
-      isInitialized: true
-    };
+    let { data: profiles } = await supabase
+      .from("profiles")
+      .select("*")
+      .ilike("username", `${search}%`)
+      .throwOnError();
+
+    const me = await getUserId();
+    // Remove current user from any search result
+    profiles = profiles.filter((profile) => profile.id !== me);
+
+    profiles.forEach((profile) => {
+      chatResults[profile.id] = {
+        // @ts-expect-error profile.id is a string not number
+        chatId: profile.id,
+        name: profile.name,
+        lastMessage: null,
+        unreadMessagesCount: 0,
+        members: [],
+        messages: [],
+        isInitialized: true
+      };
+    });
   }, 1000);
 
-  const closeSearch = () => {
+  const closeSearch = async () => {
     // Empty chat results
+    await new Promise((res) => setTimeout(res, 500));
     Object.keys(chatResults).forEach((key) => delete chatResults[key]);
     isSearch = false;
   };

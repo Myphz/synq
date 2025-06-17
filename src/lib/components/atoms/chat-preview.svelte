@@ -1,15 +1,20 @@
 <script lang="ts">
   import { toTime } from "@utils/dates";
   import CyberImage from "./cyber-image.svelte";
-  import { getChat } from "$lib/stores/chats.svelte";
+  import { chatResults, getChat } from "$lib/stores/chats.svelte";
+  import { isObjectBlank } from "@utils/objects";
 
   type Props = { chatId: number };
   const { chatId }: Props = $props();
+  let isNewChat = $derived(!isObjectBlank(chatResults));
 
   const chat = $derived(getChat(chatId));
 </script>
 
-<a class="flex w-full items-center justify-between" href="/{chat.chatId}">
+<a
+  class="flex w-full items-center justify-between"
+  href="/{chat.chatId}{isNewChat ? '?isnew=1' : ''}"
+>
   <div class="flex items-center gap-2">
     <CyberImage
       src="https://media.newyorker.com/photos/5e49bf473399bf0008132231/master/pass/Kenseth-CatProfile.jpg"

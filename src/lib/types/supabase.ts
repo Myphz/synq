@@ -134,6 +134,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_direct_chat: {
+        Args: { p_other_user_id: string }
+        Returns: number
+      }
       get_initial_sync_data: {
         Args: Record<PropertyKey, never> | { p_user_id: string }
         Returns: Json

@@ -1,5 +1,6 @@
 import type { ServerMessage } from "$lib/api/protocol";
 import { getUserId } from "$lib/supabase/auth/utils";
+import { supabase } from "$lib/supabase/client";
 import { throwError } from "@utils/throw-error";
 
 type Chat = Extract<ServerMessage, { type: "INITIAL_SYNC" }>["chats"][number];
@@ -87,3 +88,21 @@ export const getChat = (chatId: string | number) =>
   chatResults[chatId.toString()] ||
   chats[chatId.toString()] ||
   throwError("getChat(): chat not found");
+
+export const createChat = async (userId: string) => {
+  const { data: chatId } = await supabase
+    .rpc("create_direct_chat", { p_other_user_id: userId })
+    .throwOnError();
+
+  chats[chatId] = {
+    chatId,
+    name: null,
+    unreadMessagesCount: 0,
+    messages: [],
+    members: [],
+    lastMessage: null,
+    isInitialized: false
+  };
+
+  return chatId;
+};
