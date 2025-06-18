@@ -1,9 +1,13 @@
 import type { ServerMessage } from "$lib/api/protocol";
 import { getUserId } from "$lib/supabase/auth/utils";
 import { supabase } from "$lib/supabase/client";
+import { getChatName } from "@utils/chat";
 import { throwError } from "@utils/throw-error";
 
-type Chat = Extract<ServerMessage, { type: "INITIAL_SYNC" }>["chats"][number];
+export type Chat = Extract<
+  ServerMessage,
+  { type: "INITIAL_SYNC" }
+>["chats"][number];
 
 type Message = Extract<
   ServerMessage,
@@ -13,19 +17,17 @@ type Message = Extract<
 type ChatWithMessages = Chat & {
   messages: Message[];
   isInitialized: boolean;
+  isNew?: boolean;
 };
+
+export const filter = $state<{ chats: "full" | "search" }>({ chats: "full" });
 
 export const chats = $state<Record<string, ChatWithMessages>>({});
 export const chatResults = $state<Record<string, ChatWithMessages>>({});
 
 export const initializeChats = async (chatList: Chat[]) => {
-  const currentUserId = await getUserId();
-
   for (const chat of chatList) {
-    const name =
-      chat.name ||
-      chat.members.find((m) => m.id !== currentUserId)?.name ||
-      "UNKNOWN";
+    const name = await getChatName(chat);
 
     chats[chat.chatId.toString()] = {
       ...chat,
@@ -84,25 +86,51 @@ export const updateUser = ({ userId, chatId, ...status }: UpdateUserParams) => {
   };
 };
 
-export const getChat = (chatId: string | number) =>
-  chatResults[chatId.toString()] ||
-  chats[chatId.toString()] ||
-  throwError("getChat(): chat not found");
+export const getChat = (chatId: string | number) => {
+  return (
+    chatResults[chatId.toString()] ||
+    chats[chatId.toString()] ||
+    throwError(`getChat(): chat '${chatId}' not found`)
+  );
+};
+
+type Member = {
+  id: string;
+  name: string;
+  username: string;
+  last_seen: string | null;
+};
+
+type CreateDirectChatResult = {
+  chat_id: number;
+  current_user: Member;
+  other_user: Member;
+};
 
 export const createChat = async (userId: string) => {
-  const { data: chatId } = await supabase
+  const { data } = await supabase
     .rpc("create_direct_chat", { p_other_user_id: userId })
     .throwOnError();
 
-  chats[chatId] = {
-    chatId,
+  const { chat_id, current_user, other_user } = data as CreateDirectChatResult;
+
+  const newChat: ChatWithMessages = {
+    chatId: chat_id,
     name: null,
     unreadMessagesCount: 0,
     messages: [],
-    members: [],
+    members: [current_user, other_user].map((user) => ({
+      ...user,
+      isOnline: false,
+      isTyping: false,
+      lastSeen: user.last_seen
+    })),
     lastMessage: null,
-    isInitialized: false
+    isInitialized: true
   };
 
-  return chatId;
+  newChat.name = await getChatName(newChat);
+  chats[chat_id] = newChat;
+
+  return chat_id;
 };

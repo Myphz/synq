@@ -5,7 +5,6 @@
 <script lang="ts">
   import type { ClientMessage } from "$lib/api/protocol";
   import { sendMessage } from "$lib/api/ws";
-  import { getChat } from "$lib/stores/chats.svelte";
   import Form from "@atoms/form.svelte";
   import Input from "@atoms/input.svelte";
   import Messages from "@molecules/messages.svelte";
@@ -23,11 +22,15 @@
   };
 
   const { chatId }: Props = $props();
-  const chat = $derived(getChat(chatId));
+  const isNew = $derived(!!page.url.searchParams.get("isnew"));
+
+  // Disable sending socket messages if current chat is new
+  const send = $derived(isNew ? () => {} : sendMessage);
+
   let shouldShowBottomPadding = $state(true);
 
   onMount(() => {
-    sendMessage({
+    send({
       type: "REQUEST_MESSAGES",
       chatId
     });
@@ -57,11 +60,11 @@
       }
     };
 
-    sendMessage(socketMessage);
+    send(socketMessage);
   };
 
   const onTyping = debounceWithStartStop((isTyping) => {
-    sendMessage({
+    send({
       type: "UPDATE_USER_TYPING",
       chatId: page.params.chat,
       data: {
@@ -71,7 +74,7 @@
   }, TYPING_TIMEOUT_MS);
 </script>
 
-<Messages {...chat.messages} />
+<Messages {chatId} />
 
 {#await isEdgeToEdgeEnabled() then edgeToEdge}
   {#if edgeToEdge && shouldShowBottomPadding}

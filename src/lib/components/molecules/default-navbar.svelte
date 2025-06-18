@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { chatResults } from "$lib/stores/chats.svelte";
+  import { chatResults, chats, filter } from "$lib/stores/chats.svelte";
   import { getUserId } from "$lib/supabase/auth/utils";
   import { supabase } from "$lib/supabase/client";
   import Icon from "@atoms/icon.svelte";
@@ -9,9 +9,17 @@
 
   let isSearch = $state(false);
 
+  $effect(() => {
+    filter.chats = isSearch ? "search" : "full";
+  });
+
   const onInput = debounceAsync(async (e: Event) => {
+    // Empty any previous chat results
+    Object.keys(chatResults).forEach((key) => delete chatResults[key]);
     // @ts-expect-error its ok
     const search = e.target.value;
+    if (!search) return;
+
     let { data: profiles } = await supabase
       .from("profiles")
       .select("*")
@@ -23,23 +31,31 @@
     profiles = profiles.filter((profile) => profile.id !== me);
 
     profiles.forEach((profile) => {
-      chatResults[profile.id] = {
-        // @ts-expect-error profile.id is a string not number
-        chatId: profile.id,
-        name: profile.name,
-        lastMessage: null,
-        unreadMessagesCount: 0,
-        members: [],
-        messages: [],
-        isInitialized: true
-      };
+      const existingChat = Object.values(chats).find((chat) =>
+        chat.members.map((member) => member.id).includes(profile.id)
+      );
+
+      if (existingChat) {
+        chatResults[existingChat.chatId] = existingChat;
+      } else {
+        chatResults[profile.id] = {
+          // @ts-expect-error profile.id is a string not number
+          chatId: profile.id,
+          name: profile.name,
+          lastMessage: null,
+          unreadMessagesCount: 0,
+          // TODO: Add members!
+          members: [],
+          messages: [],
+          isInitialized: true,
+          isNew: true
+        };
+      }
     });
   }, 1000);
 
   const closeSearch = async () => {
-    // Empty chat results
     await new Promise((res) => setTimeout(res, 500));
-    Object.keys(chatResults).forEach((key) => delete chatResults[key]);
     isSearch = false;
   };
 </script>

@@ -14,7 +14,7 @@ import {
   updateUser
 } from "$lib/stores/chats.svelte";
 
-const SERVER_URL = "wss://synq.fly.dev";
+const SERVER_URL = "ws://localhost:3000";
 
 export const closeSocket = async () => {
   const socket = await getSocket();

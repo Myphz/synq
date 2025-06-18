@@ -5,23 +5,18 @@
   import ChatNavbar from "@molecules/chat-navbar.svelte";
   import Chat from "@organisms/chat.svelte";
 
-  const chatId = page.params.chat;
-  let shouldRender = $state(true);
+  const chatId = $derived(page.params.chat);
 
   $effect(() => {
     (async () => {
-      shouldRender = !page.url.searchParams.get("isnew");
-      // If isnew search param is passed - chatId is actually
-      // a user id we should create a chat with
-      if (!shouldRender) {
-        const realChatId = await createChat(chatId);
-        goto(`/${realChatId}`);
-      }
+      const isNew = !!page.url.searchParams.get("isnew");
+      if (!isNew) return;
+
+      const realChatId = await createChat(chatId);
+      goto(`/${realChatId}`);
     })();
   });
 </script>
 
-{#if shouldRender}
-  <ChatNavbar {chatId} />
-  <Chat {chatId} />
-{/if}
+<ChatNavbar {chatId} />
+<Chat {chatId} />

@@ -1,14 +1,13 @@
 <script lang="ts">
   import { toTime } from "@utils/dates";
   import CyberImage from "./cyber-image.svelte";
-  import { chatResults, getChat } from "$lib/stores/chats.svelte";
-  import { isObjectBlank } from "@utils/objects";
+  import { getChat } from "$lib/stores/chats.svelte";
 
   type Props = { chatId: number };
   const { chatId }: Props = $props();
-  let isNewChat = $derived(!isObjectBlank(chatResults));
 
   const chat = $derived(getChat(chatId));
+  let isNewChat = $derived(chat.isNew);
 </script>
 
 <a

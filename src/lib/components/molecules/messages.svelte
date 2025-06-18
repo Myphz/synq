@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { ServerMessage } from "$lib/api/protocol";
   import { onMessage } from "$lib/api/ws";
   import { getUserId } from "$lib/supabase/auth/utils";
   import Message from "@atoms/message.svelte";
@@ -8,14 +7,16 @@
   import { Capacitor } from "@capacitor/core";
   import { twMerge } from "tailwind-merge";
   import { isEdgeToEdgeEnabled } from "@utils/edge-to-edge";
+  import { getChat } from "$lib/stores/chats.svelte";
 
-  type Messages = Extract<
-    ServerMessage,
-    { type: "GET_MESSAGES" }
-  >["data"]["messages"];
+  type Props = {
+    chatId: string;
+  };
+
+  const { chatId }: Props = $props();
+  const chat = $derived(getChat(chatId));
 
   let container: HTMLDivElement;
-  const messages: Messages = $props();
 
   const scrollToBottom = (behavior: "smooth" | "instant" = "smooth") => {
     container.scrollTo({
@@ -59,7 +60,7 @@
     "flex flex-1 flex-col gap-2 overflow-y-scroll scroll-smooth pb-8"
   )}
 >
-  {#each messages as msg (msg.id)}
+  {#each chat.messages as msg (msg.id)}
     <Message {...msg} />
   {/each}
 

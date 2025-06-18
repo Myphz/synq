@@ -1,11 +1,8 @@
 <script lang="ts">
-  import { chatResults, chats } from "$lib/stores/chats.svelte";
+  import { chatResults, chats, filter } from "$lib/stores/chats.svelte";
   import ChatPreview from "@atoms/chat-preview.svelte";
-  import { isObjectBlank } from "@utils/objects";
 
-  const chatsToShow = $derived(
-    isObjectBlank(chatResults) ? chats : chatResults
-  );
+  const chatsToShow = $derived(filter.chats === "full" ? chats : chatResults);
 
   const sortedChats = $derived(
     Object.values(chatsToShow).toSorted((c1, c2) => {
