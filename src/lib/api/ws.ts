@@ -1,11 +1,10 @@
-import { getSupabaseSession_forced } from "$lib/supabase/auth/utils";
+import { getSupabaseSession } from "$lib/supabase/auth/utils";
 import { resetSingletons, toAsyncSingleton } from "@utils/async-singleton";
 import {
   serverMessageSchema,
   type ClientMessage,
   type ServerMessage
 } from "./protocol";
-import { authGuard } from "@utils/auth-guard";
 import {
   addChatMessage,
   initializeChats,
@@ -14,7 +13,7 @@ import {
   updateUser
 } from "$lib/stores/chats.svelte";
 
-const SERVER_URL = "ws://localhost:3000";
+const SERVER_URL = "wss://synq.fly.dev";
 
 export const closeSocket = async () => {
   const socket = await getSocket();
@@ -27,8 +26,9 @@ export const getSocket_forced = async () => {
 };
 
 export const getSocket = toAsyncSingleton(async () => {
-  await authGuard();
-  const { access_token: jwt } = (await getSupabaseSession_forced()) || {};
+  const session = await getSupabaseSession();
+  if (!session) throw new Error("getSocket(): unauthorized");
+  const { access_token: jwt } = session;
 
   const socket = new WebSocket(SERVER_URL, ["synq", jwt]);
 
