@@ -2,6 +2,7 @@
   import { getChat } from "$lib/stores/chats.svelte";
   import { getUserId } from "$lib/supabase/auth/utils";
   import CyberImage from "@atoms/cyber-image.svelte";
+  import Icon from "@atoms/icon.svelte";
   import NavbarBase from "@atoms/navbar-base.svelte";
   import { formatUserStatus } from "@utils/dates";
   import { twMerge } from "tailwind-merge";
@@ -24,8 +25,10 @@
 </script>
 
 <NavbarBase>
-  <div class="flex gap-4">
-    <span>b</span>
+  <div class="flex items-center gap-2">
+    <button onclick={() => window.history.back()}>
+      <Icon name="arrow_back_ios" class="w-fit text-h-2 text-primary" />
+    </button>
     <div class="flex gap-2">
       <CyberImage
         src="https://media.newyorker.com/photos/5e49bf473399bf0008132231/master/pass/Kenseth-CatProfile.jpg"

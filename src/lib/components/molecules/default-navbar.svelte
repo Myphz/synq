@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
+  import { page } from "$app/state";
   import { chatResults, chats, filter } from "$lib/stores/chats.svelte";
   import { getUserId } from "$lib/supabase/auth/utils";
   import { supabase } from "$lib/supabase/client";
@@ -13,6 +15,11 @@
   $effect(() => {
     filter.chats = isSearch ? "search" : "full";
   });
+
+  const openSearch = () => {
+    isSearch = true;
+    if (page.route.id !== "/") goto("/");
+  };
 
   const onInput = debounceAsync(async (e: Event) => {
     // Empty any previous chat results
@@ -56,7 +63,7 @@
   }, 1000);
 
   const closeSearch = async () => {
-    await new Promise((res) => setTimeout(res, 500));
+    await new Promise((res) => setTimeout(res, 100));
     isSearch = false;
   };
 </script>
@@ -68,7 +75,7 @@
         <Menu />
         <span class="text-h-1">SYNQ</span>
       </div>
-      <button onclick={() => (isSearch = true)}>
+      <button onclick={openSearch}>
         <Icon class="text-h-3 text-primary" name="search" />
       </button>
     </div>
