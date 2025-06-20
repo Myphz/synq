@@ -14,7 +14,8 @@ export default {
     },
     fontFamily: {
       header: "'Rajdhani', sans-serif",
-      body: "'Inter', sans-serif"
+      body: "'Inter', sans-serif",
+      logo: "'Audiowide', sans-serif"
     },
     colors: {
       transparent: "transparent",
@@ -23,6 +24,7 @@ export default {
       secondary: "#AD0471",
       "secondary/20": "#35112A",
       accent: "#892F6233",
+      "accent-2": "#2A0E1E",
       text: "#F2F2F2",
       muted: "#D2D4D7"
     }
