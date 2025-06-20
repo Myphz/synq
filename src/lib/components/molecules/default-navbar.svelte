@@ -5,6 +5,7 @@
   import Icon from "@atoms/icon.svelte";
   import Input from "@atoms/input.svelte";
   import NavbarBase from "@atoms/navbar-base.svelte";
+  import Menu from "@organisms/menu";
   import { debounceAsync } from "@utils/debounce";
 
   let isSearch = $state(false);
@@ -63,9 +64,12 @@
 <NavbarBase>
   {#if !isSearch}
     <div class="flex w-full items-center justify-between">
-      <span class="text-h-1">SYNQ</span>
+      <div class="flex items-center gap-2">
+        <Menu />
+        <span class="text-h-1">SYNQ</span>
+      </div>
       <button onclick={() => (isSearch = true)}>
-        <Icon class="text-h-3" name="search" />
+        <Icon class="text-h-3 text-primary" name="search" />
       </button>
     </div>
   {:else}

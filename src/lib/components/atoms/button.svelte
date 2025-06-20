@@ -10,7 +10,7 @@
 </script>
 
 <button
-  class="relative flex w-full -skew-x-[20deg] items-center justify-center border-4 border-[#6BD0DA66] bg-accent-2 py-1.5 text-h-3 text-primary"
+  class="relative flex w-full -skew-x-[20deg] items-center justify-center border-4 border-[#6BD0DA66] bg-secondary/20 py-1.5 text-h-3 text-primary"
   {...rest}
 >
   <div class="skew-x-[20deg]">
