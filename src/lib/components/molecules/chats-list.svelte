@@ -13,7 +13,7 @@
   );
 </script>
 
-<div class="flex flex-col gap-4 pt-4">
+<div class="flex flex-col gap-4">
   {#each sortedChats as chat (chat.chatId)}
     <ChatPreview chatId={chat.chatId} />
   {/each}

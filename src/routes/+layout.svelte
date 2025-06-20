@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  const NO_NAVBAR_PAGES = ["/auth", "/profile"];
+  const NO_NAVBAR_PAGES = ["/auth"];
 </script>
 
 <script lang="ts">
@@ -22,7 +22,7 @@
 </script>
 
 {#if !NO_NAVBAR_PAGES.includes(page.route.id || "")}
-  <div class="bg-secondary/20 pt-8" id="main-navbar"></div>
+  <div class="mb-4 bg-secondary/20 pt-8" id="main-navbar"></div>
   <DefaultNavbar />
 {:else}
   <div class="mt-16"></div>
