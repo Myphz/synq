@@ -18,7 +18,7 @@
 
 <div
   class={twMerge(
-    `cyberpunk ${cyberpunkStyle} relative flex items-center gap-2 bg-secondary p-4 *:relative *:z-10 after:absolute after:inset-px after:bg-secondary/20`,
+    `cyberpunk ${cyberpunkStyle} relative flex items-center gap-2 bg-secondary p-4 *:relative *:z-10 after:absolute after:inset-px after:bg-accent`,
     className
   )}
 >
@@ -28,7 +28,7 @@
   <input
     {...inputProps}
     type="text"
-    class="w-full bg-secondary/20 placeholder:text-muted"
+    class="w-full bg-accent placeholder:text-muted"
   />
 </div>
 

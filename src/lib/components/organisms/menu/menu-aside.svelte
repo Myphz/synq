@@ -24,7 +24,7 @@
   onclickoutside={closeMenu}
   use:portal={"body"}
   class={twMerge(
-    "epic-transition absolute left-0 top-0 h-dvh w-0 min-w-0 overflow-hidden bg-secondary/20 pt-10 *:px-4",
+    "epic-transition absolute left-0 top-0 h-dvh w-0 min-w-0 overflow-hidden bg-accent pt-10 *:px-4",
     isOpen && "min-w-[70%]"
   )}
 >

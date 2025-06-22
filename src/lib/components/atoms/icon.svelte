@@ -3,4 +3,4 @@
   const { name, class: className }: Props = $props();
 </script>
 
-<span class="material-symbols-outlined {className}">{name}</span>
+<span class="material-symbols-outlined text-primary {className}">{name}</span>

@@ -13,6 +13,9 @@
   class="relative h-16 w-full border-b border-secondary p-2 *:px-3"
 >
   {@render children()}
+  <div
+    class="absolute bottom-0 left-0 -z-10 h-2 w-full translate-y-[70%] bg-secondary blur-[20px]"
+  ></div>
 </nav>
 
 <style lang="postcss">

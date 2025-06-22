@@ -27,7 +27,7 @@
 <NavbarBase>
   <div class="flex items-center gap-2">
     <button onclick={() => window.history.back()}>
-      <Icon name="arrow_back_ios" class="w-fit text-h-2 text-primary" />
+      <Icon name="arrow_back_ios" class="w-fit text-h-2" />
     </button>
     <div class="flex gap-2">
       <CyberImage

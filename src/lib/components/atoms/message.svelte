@@ -56,9 +56,8 @@
   bind:this={container}
   class={twMerge(
     "cyberpunk flex w-fit max-w-[70dvw] items-end gap-1 px-1 py-2 first-of-type:mt-2",
-    isFromOther && "cyberpunk-br bg-secondary/20",
-    !isFromOther &&
-      "cyberpunk-tr self-end bg-gradient-to-r from-[#AD0471] to-[#47022E]"
+    isFromOther && "cyberpunk-br bg-accent",
+    !isFromOther && "cyberpunk-tr self-end gradient-msg"
   )}
 >
   <span>{message.content}</span>

@@ -17,7 +17,7 @@
 </script>
 
 <button onclick={() => (isOpen = !isOpen)}>
-  <Icon class="text-h-2 text-primary" name="dehaze" />
+  <Icon class="text-h-2" name="dehaze" />
 </button>
 
 <MenuAside {isOpen} {closeMenu} />

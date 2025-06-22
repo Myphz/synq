@@ -76,7 +76,7 @@
         <span class="text-h-1">SYNQ</span>
       </div>
       <button onclick={openSearch}>
-        <Icon class="text-h-3 text-primary" name="search" />
+        <Icon class="text-h-3" name="search" />
       </button>
     </div>
   {:else}

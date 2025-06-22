@@ -19,11 +19,10 @@ export default {
     },
     colors: {
       transparent: "transparent",
-      background: "#0A0A0F",
-      primary: "#6BD0DA",
-      secondary: "#AD0471",
-      "secondary/20": "#35112A",
-      accent: "#892F6233",
+      background: "#070D12",
+      primary: "#00FF9C",
+      secondary: "#FF5F1F",
+      accent: "#112029",
       text: "#F2F2F2",
       muted: "#D2D4D7"
     }
@@ -31,9 +30,13 @@ export default {
   plugins: [
     ({ addUtilities }) => {
       addUtilities({
+        ".gradient-msg": {
+          background:
+            "linear-gradient(to right, oklch(0.6406 0.2041 37.89), oklch(0.155 0.0147 242.71))"
+        },
         ".gradient-bg": {
           background:
-            "linear-gradient(to bottom, oklch(0.1473 0.0107 285.01), oklch(0.1754 0.0783 333.29))"
+            "linear-gradient(to bottom, oklch(0.1473 0.0107 285.01), oklch(0.1848 0.0169 233.21))"
         }
       });
     }
