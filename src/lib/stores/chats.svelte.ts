@@ -134,3 +134,13 @@ export const createChat = async (userId: string) => {
 
   return chat_id;
 };
+
+export const isUserOnline = (userId: string) => {
+  const relevantChat = Object.values(chats).find(
+    (chat) => !!chat.members.find((member) => member.id === userId)
+  );
+
+  // We have no idea if the user is online or not...
+  if (!relevantChat) return false;
+  return relevantChat.members.find((member) => member.id === userId)!.isOnline;
+};

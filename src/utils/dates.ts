@@ -28,10 +28,10 @@ const pluralize = (
   return plural ?? `${baseName}s`;
 };
 
-type FormatUserStatusParams = Extract<
-  ServerMessage,
-  { type: "UPDATE_USER_STATUS" }
->["data"];
+type FormatUserStatusParams = Omit<
+  Extract<ServerMessage, { type: "UPDATE_USER_STATUS" }>["data"],
+  "lastSeen"
+> & { lastSeen: string | null };
 
 export const formatUserStatus = ({
   isOnline,

@@ -29,7 +29,7 @@
     <button onclick={() => window.history.back()}>
       <Icon name="arrow_back_ios" class="w-fit text-h-2" />
     </button>
-    <div class="flex gap-2">
+    <a href="/profile?id={otherMember?.id}" class="flex gap-2">
       <CyberImage
         src="https://media.newyorker.com/photos/5e49bf473399bf0008132231/master/pass/Kenseth-CatProfile.jpg"
         class="size-[42.67px]"
@@ -45,13 +45,10 @@
               (otherMember.isOnline || otherMember.isTyping) && "text-primary"
             )}
           >
-            {formatUserStatus({
-              ...otherMember,
-              lastSeen: otherMember.lastSeen || undefined
-            })}
+            {formatUserStatus(otherMember)}
           </span>
         {/if}
       </div>
-    </div>
+    </a>
   </div>
 </NavbarBase>

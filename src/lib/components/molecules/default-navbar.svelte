@@ -73,7 +73,7 @@
     <div class="flex w-full items-center justify-between">
       <div class="flex items-center gap-2">
         <Menu />
-        <span class="text-h-1">SYNQ</span>
+        <a class="text-h-1" href="/">SYNQ</a>
       </div>
       <button onclick={openSearch}>
         <Icon class="text-h-3" name="search" />

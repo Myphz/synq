@@ -5,6 +5,7 @@ import {
 } from "@capgo/capacitor-social-login";
 import { throwError } from "@utils/throw-error";
 import { getSocket_forced } from "./ws";
+import { getUserId } from "$lib/supabase/auth/utils";
 
 export const logInWithGoogle = async () => {
   const response = await SocialLogin.login({
@@ -29,4 +30,16 @@ export const logInWithGoogle = async () => {
     return throwError("Google Login: signInWithIdToken failed?!?");
 
   getSocket_forced();
+};
+
+export const getProfile = async (userId?: string) => {
+  const id = userId || (await getUserId());
+  const { data } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", id)
+    .single()
+    .throwOnError();
+
+  return data;
 };
