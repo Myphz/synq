@@ -1,6 +1,7 @@
 <script lang="ts">
   import { chatResults, chats, filter } from "$lib/stores/chats.svelte";
   import ChatPreview from "@atoms/chat-preview.svelte";
+  import EmptyState from "@atoms/empty-state.svelte";
 
   const chatsToShow = $derived(filter.chats === "full" ? chats : chatResults);
 
@@ -13,8 +14,12 @@
   );
 </script>
 
-<div class="flex flex-col gap-4">
-  {#each sortedChats as chat (chat.chatId)}
-    <ChatPreview chatId={chat.chatId} />
-  {/each}
-</div>
+{#if sortedChats.length}
+  <div class="flex flex-col gap-4">
+    {#each sortedChats as chat (chat.chatId)}
+      <ChatPreview chatId={chat.chatId} />
+    {/each}
+  </div>
+{:else}
+  <EmptyState />
+{/if}
