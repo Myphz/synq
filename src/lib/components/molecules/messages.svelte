@@ -19,6 +19,7 @@
   let container: HTMLDivElement;
 
   const scrollToBottom = (behavior: "smooth" | "instant" = "smooth") => {
+    if (!container) return;
     container.scrollTo({
       top: container.scrollHeight,
       behavior
@@ -26,16 +27,13 @@
   };
 
   onMessage("GET_MESSAGES", () => {
-    if (!container) return;
     scrollToBottom("instant");
   });
 
   onMessage("RECEIVE_MESSAGE", async (msg) => {
     // Scroll to view the last message if
     // the user is near bottom or the message is ours
-    if (msg.userId === (await getUserId())) {
-      scrollToBottom();
-    }
+    if (msg.userId === (await getUserId())) scrollToBottom();
   });
 
   onMount(() => {
