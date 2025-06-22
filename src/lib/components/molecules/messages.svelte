@@ -1,3 +1,7 @@
+<script lang="ts" module>
+  const IS_NEAR_BOTTOM_THRESHOLD = 100;
+</script>
+
 <script lang="ts">
   import { onMessage } from "$lib/api/ws";
   import { getUserId } from "$lib/supabase/auth/utils";
@@ -31,9 +35,13 @@
   });
 
   onMessage("RECEIVE_MESSAGE", async (msg) => {
+    const isNearBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight <
+      IS_NEAR_BOTTOM_THRESHOLD;
+
     // Scroll to view the last message if
     // the user is near bottom or the message is ours
-    if (msg.userId === (await getUserId())) scrollToBottom();
+    if (isNearBottom || msg.userId === (await getUserId())) scrollToBottom();
   });
 
   onMount(() => {
