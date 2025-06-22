@@ -31,8 +31,7 @@ export default {
     ({ addUtilities }) => {
       addUtilities({
         ".gradient-msg": {
-          background:
-            "linear-gradient(to right, oklch(0.6406 0.2041 37.89), oklch(0.155 0.0147 242.71))"
+          background: "linear-gradient(87.6deg, #ED4F10 0%, #2E1703 116.89%)"
         },
         ".gradient-bg": {
           background:
