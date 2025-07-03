@@ -3,6 +3,7 @@
   import { getProfile } from "$lib/api/auth";
   import { isUserOnline } from "$lib/stores/chats.svelte";
   import CyberImage from "@atoms/cyber-image.svelte";
+  import AvatarEditor from "@molecules/avatar-editor.svelte";
   import { authGuard } from "@utils/auth-guard";
   import { formatUserStatus } from "@utils/dates";
   import { onMount } from "svelte";
@@ -23,10 +24,13 @@
 
   {#await profilePromise then profile}
     <div class="flex items-center gap-6">
-      <CyberImage
-        src="https://media.newyorker.com/photos/5e49bf473399bf0008132231/master/pass/Kenseth-CatProfile.jpg"
-        class="size-32"
-      />
+      <div class="relative">
+        <CyberImage
+          src="https://media.newyorker.com/photos/5e49bf473399bf0008132231/master/pass/Kenseth-CatProfile.jpg"
+          class="size-32"
+        />
+        <AvatarEditor />
+      </div>
       <div class="flex flex-col gap-4">
         <div class="flex flex-col gap-1 *:leading-none">
           <span class="text-h-3">{profile.name}</span>
