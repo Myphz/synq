@@ -8,6 +8,7 @@ import { closeSocket, getSocket_forced } from "$lib/api/ws";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { supabase } from "$lib/supabase/client";
 import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
+import { goto } from "$app/navigation";
 
 export const setupNotifications = async () => {
   if (!(await getSupabaseSession()))
@@ -42,6 +43,16 @@ const configNotifications = async () => {
       .eq("id", userId)
       .throwOnError();
   });
+
+  await PushNotifications.addListener(
+    "pushNotificationActionPerformed",
+    (event) => {
+      const { chatId } = event.notification.data || {};
+      if (chatId) {
+        goto(`/${chatId}`);
+      }
+    }
+  );
 
   await PushNotifications.register();
 };

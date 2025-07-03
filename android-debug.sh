@@ -8,7 +8,7 @@ mkdir bundle
 npx cap sync
 
 rm -rf ./build
-# npx -y @capacitor/assets generate --android
+npx -y @capacitor/assets generate --android
 
 cd android
 
