@@ -9,6 +9,7 @@ import { PushNotifications } from "@capacitor/push-notifications";
 import { supabase } from "$lib/supabase/client";
 import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { goto } from "$app/navigation";
+import { restoreAppState, saveAppState } from "$lib/api/cache";
 
 export const setupNotifications = async () => {
   if (!(await getSupabaseSession()))
@@ -47,6 +48,8 @@ const configNotifications = async () => {
   await PushNotifications.addListener(
     "pushNotificationActionPerformed",
     (event) => {
+      // Not sure if this is needed
+      restoreAppState();
       const { chatId } = event.notification.data || {};
       if (chatId) {
         goto(`/${chatId}`);
@@ -58,6 +61,8 @@ const configNotifications = async () => {
 };
 
 export const appConfig = () => {
+  restoreAppState();
+
   App.addListener("backButton", () => {
     window.history.back();
   });
@@ -68,15 +73,20 @@ export const appConfig = () => {
     }
   });
 
+  App.addListener("appStateChange", ({ isActive }) => {
+    if (isActive) {
+      restoreAppState();
+      getSocket_forced();
+    } else {
+      saveAppState();
+      closeSocket();
+    }
+  });
+
   if (Capacitor.getPlatform() === "web") return;
 
   StatusBar.setOverlaysWebView({ overlay: true });
   StatusBar.setStyle({ style: Style.Dark });
-
-  App.addListener("appStateChange", ({ isActive }) => {
-    if (isActive) getSocket_forced();
-    else closeSocket();
-  });
 
   setupNotifications();
 

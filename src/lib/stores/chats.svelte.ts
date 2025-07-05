@@ -15,7 +15,7 @@ type Message = Extract<
   { type: "GET_MESSAGES" }
 >["data"]["messages"][number];
 
-type ChatWithMessages = Chat & {
+export type ChatWithMessages = Chat & {
   messages: Message[];
   image: string;
   isInitialized: boolean;
@@ -150,4 +150,10 @@ export const isUserOnline = (userId: string) => {
   // We have no idea if the user is online or not...
   if (!relevantChat) return false;
   return relevantChat.members.find((member) => member.id === userId)!.isOnline;
+};
+
+export const setChats = (newChats: Record<string, ChatWithMessages>) => {
+  Object.entries(newChats).forEach(([key, value]) => {
+    chats[key] = value;
+  });
 };
