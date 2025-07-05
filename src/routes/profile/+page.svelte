@@ -1,6 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { getProfile } from "$lib/api/auth";
+  import { getDefaultAvatar } from "$lib/api/avatar";
   import { isUserOnline } from "$lib/stores/chats.svelte";
   import CyberImage from "@atoms/cyber-image.svelte";
   import AvatarEditor from "@molecules/avatar-editor.svelte";
@@ -26,7 +27,7 @@
     <div class="flex items-center gap-6">
       <div class="relative">
         <CyberImage
-          src="https://media.newyorker.com/photos/5e49bf473399bf0008132231/master/pass/Kenseth-CatProfile.jpg"
+          src={profile.avatar_url || getDefaultAvatar(profile.id)}
           class="size-32"
         />
         <AvatarEditor />

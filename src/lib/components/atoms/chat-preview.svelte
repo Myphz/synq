@@ -15,10 +15,7 @@
   href="/{chat.chatId}{isNewChat ? '?isnew=1' : ''}"
 >
   <div class="flex items-center gap-2">
-    <CyberImage
-      src="https://media.newyorker.com/photos/5e49bf473399bf0008132231/master/pass/Kenseth-CatProfile.jpg"
-      class="size-12"
-    />
+    <CyberImage src={chat.image} class="size-12" />
     <div class="flex flex-col justify-center gap-1 leading-none">
       <span class="text-h-4 text-primary">{chat.name}</span>
       <span>{chat.lastMessage?.content}</span>

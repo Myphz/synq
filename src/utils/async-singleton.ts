@@ -1,8 +1,11 @@
 const singletons: Record<string, { value: unknown; isFetching: boolean }> = {};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const toAsyncSingleton = <T>(fn: (...params: any[]) => Promise<T>) => {
-  const singletonId = Date.now().toString();
+export const toAsyncSingleton = <T>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fn: (...params: any[]) => Promise<T>,
+  id?: string
+) => {
+  const singletonId = id || Date.now().toString();
 
   return async () => {
     if (!singletons[singletonId])
@@ -22,6 +25,4 @@ export const toAsyncSingleton = <T>(fn: (...params: any[]) => Promise<T>) => {
   };
 };
 
-export const resetSingletons = () => {
-  Object.keys(singletons).forEach((key) => delete singletons[key]);
-};
+export const resetSingleton = (id: string) => delete singletons[id];

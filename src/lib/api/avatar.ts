@@ -2,6 +2,10 @@ import { getUserId } from "$lib/supabase/auth/utils";
 import { supabase } from "$lib/supabase/client";
 import { pickImage } from "@utils/files/pick";
 import { readFileAsBlob } from "@utils/files/read";
+import { refetchUserProfileResource } from "$lib/stores/me.svelte";
+
+export const getDefaultAvatar = (id: string) =>
+  `https://api.dicebear.com/9.x/identicon/svg?seed=${id}&flip=true&backgroundRotation=0&backgroundColor=ffdfbf,ffd5dc,d1d4f9,c0aede,b6e3f4`;
 
 export const uploadAvatar = async () => {
   const file = await pickImage();
@@ -32,6 +36,8 @@ export const uploadAvatar = async () => {
     .update({ avatar_url: publicUrl })
     .eq("id", userId)
     .throwOnError();
+
+  refetchUserProfileResource();
 };
 
 export const deleteAvatar = async () => {
@@ -64,4 +70,6 @@ export const deleteAvatar = async () => {
     .update({ avatar_url: null })
     .eq("id", userId)
     .throwOnError();
+
+  refetchUserProfileResource();
 };

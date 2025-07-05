@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import { getDefaultAvatar } from "$lib/api/avatar";
   import { chatResults, chats, filter } from "$lib/stores/chats.svelte";
   import { getUserId } from "$lib/supabase/auth/utils";
   import { supabase } from "$lib/supabase/client";
@@ -49,10 +50,11 @@
         chatResults[profile.id] = {
           // @ts-expect-error profile.id is a string not number
           chatId: profile.id,
+          image: profile.avatar_url || getDefaultAvatar(profile.id),
           name: profile.name,
           lastMessage: null,
           unreadMessagesCount: 0,
-          // TODO: Add members!
+          // TODO: Add members?
           members: [],
           messages: [],
           isInitialized: true,

@@ -30,10 +30,7 @@
       <Icon name="arrow_back_ios" class="w-fit text-h-2" />
     </button>
     <a href="/profile?id={otherMember?.id}" class="flex gap-2">
-      <CyberImage
-        src="https://media.newyorker.com/photos/5e49bf473399bf0008132231/master/pass/Kenseth-CatProfile.jpg"
-        class="size-[42.67px]"
-      />
+      <CyberImage src={chat.image} class="size-[42.67px]" />
       <div class="flex flex-col justify-between *:leading-none">
         <span class="text-h-2">
           {chat?.name}

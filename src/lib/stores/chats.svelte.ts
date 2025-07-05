@@ -1,7 +1,8 @@
+import { getDefaultAvatar } from "$lib/api/avatar";
 import type { ServerMessage } from "$lib/api/protocol";
 import { getUserId } from "$lib/supabase/auth/utils";
 import { supabase } from "$lib/supabase/client";
-import { getChatName } from "@utils/chat";
+import { getChatImage, getChatName } from "@utils/chat";
 import { throwError } from "@utils/throw-error";
 
 export type Chat = Extract<
@@ -16,6 +17,7 @@ type Message = Extract<
 
 type ChatWithMessages = Chat & {
   messages: Message[];
+  image: string;
   isInitialized: boolean;
   isNew?: boolean;
 };
@@ -28,10 +30,12 @@ export const chatResults = $state<Record<string, ChatWithMessages>>({});
 export const initializeChats = async (chatList: Chat[]) => {
   for (const chat of chatList) {
     const name = await getChatName(chat);
+    const image = await getChatImage(chat);
 
     chats[chat.chatId.toString()] = {
       ...chat,
       name,
+      image,
       // Retain messages or set them to empty array
       messages: chats[chat.chatId.toString()]?.messages || [],
       isInitialized: chats[chat.chatId.toString()]?.isInitialized || false
@@ -99,6 +103,7 @@ type Member = {
   name: string;
   username: string;
   last_seen: string | null;
+  avatar_url: string;
 };
 
 type CreateDirectChatResult = {
@@ -119,11 +124,13 @@ export const createChat = async (userId: string) => {
     name: null,
     unreadMessagesCount: 0,
     messages: [],
+    image: other_user.avatar_url || getDefaultAvatar(other_user.id),
     members: [current_user, other_user].map((user) => ({
       ...user,
       isOnline: false,
       isTyping: false,
-      lastSeen: user.last_seen
+      lastSeen: user.last_seen,
+      avatarUrl: user.avatar_url
     })),
     lastMessage: null,
     isInitialized: true

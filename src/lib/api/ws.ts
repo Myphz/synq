@@ -1,5 +1,5 @@
 import { getSupabaseSession } from "$lib/supabase/auth/utils";
-import { resetSingletons, toAsyncSingleton } from "@utils/async-singleton";
+import { resetSingleton, toAsyncSingleton } from "@utils/async-singleton";
 import {
   serverMessageSchema,
   type ClientMessage,
@@ -14,6 +14,7 @@ import {
 } from "$lib/stores/chats.svelte";
 
 const SERVER_URL = "wss://synq.fly.dev";
+const SOCKET_SINGLETON_ID = "SOCKET";
 
 export const closeSocket = async () => {
   const socket = await getSocket();
@@ -21,7 +22,7 @@ export const closeSocket = async () => {
 };
 
 export const getSocket_forced = async () => {
-  resetSingletons();
+  resetSingleton(SOCKET_SINGLETON_ID);
   return await getSocket();
 };
 
@@ -71,7 +72,7 @@ export const getSocket = toAsyncSingleton(async () => {
   socket.addEventListener("error", (e) => {
     console.error("SOCKET ERROR:", JSON.stringify(e));
     // Reconnect after 1s
-    resetSingletons();
+    resetSingleton(SOCKET_SINGLETON_ID);
     setTimeout(getSocket, 1000);
   });
 
@@ -83,7 +84,7 @@ export const getSocket = toAsyncSingleton(async () => {
     await new Promise((res) => setTimeout(res, 50));
 
   return socket;
-});
+}, "SOCKET");
 
 export const sendMessage = async (message: ClientMessage) => {
   const socket = await getSocket();
