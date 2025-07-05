@@ -6,6 +6,7 @@
   import { toTime } from "@utils/dates";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
+  import Icon from "./icon.svelte";
 
   type Message = Extract<
     ServerMessage,
@@ -62,4 +63,11 @@
 >
   <span class="w-full break-words">{message.content}</span>
   <span class="text-small text-muted">{toTime(message.sentAt)}</span>
+  {#if message.senderId === ourId}
+    {#if message.isRead}
+      <Icon name="done_all" />
+    {:else}
+      <Icon name="check" class="text-text" />
+    {/if}
+  {/if}
 </div>

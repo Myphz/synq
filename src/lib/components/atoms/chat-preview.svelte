@@ -18,7 +18,9 @@
     <CyberImage src={chat.image} class="size-12" />
     <div class="flex flex-col justify-center gap-1 leading-none">
       <span class="text-h-4 text-primary">{chat.name}</span>
-      <span>{chat.lastMessage?.content}</span>
+      <span class="line-clamp-1 text-ellipsis">
+        {chat.lastMessage?.content}
+      </span>
     </div>
   </div>
 
