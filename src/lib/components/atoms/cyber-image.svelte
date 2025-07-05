@@ -11,7 +11,7 @@
 
 <div class="p-[3px]">
   <div class={twMerge("relative", className)}>
-    <img {src} class="h-full w-full" alt="Profile" />
+    <img {src} class="h-full w-full object-cover" alt="Profile" />
     <div class="absolute -bottom-[7%] -left-[7%] aspect-square w-[50%]">
       <div class="absolute bottom-0 left-0 h-full w-[5%] bg-secondary"></div>
       <div class="absolute bottom-0 left-0 h-[5%] w-full bg-secondary"></div>

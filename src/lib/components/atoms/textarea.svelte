@@ -17,9 +17,10 @@
 
   export const resetSize = () => {
     textareaEl.style.height = `${HEIGHT_PER_LINE}px`;
+    textareaEl.focus();
   };
 
-  export const resize = () => {
+  const resize = () => {
     // Auto-shrink
     textareaEl.style.height = "auto";
     // Calculate lines
