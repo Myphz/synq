@@ -1,5 +1,4 @@
-import { getUserId } from "$lib/supabase/auth/utils";
-import { supabase } from "$lib/supabase/client";
+import { getProfile } from "$lib/api/auth";
 import {
   createDynamicResource,
   getDynamicResource,
@@ -7,17 +6,7 @@ import {
 } from "./resources.svelte";
 
 export const createUserProfileResource = () =>
-  createDynamicResource("profile", async () => {
-    const id = await getUserId();
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", id)
-      .single()
-      .throwOnError();
-
-    return data;
-  });
+  createDynamicResource("profile", getProfile);
 
 export const getUserProfileResource = () =>
   getDynamicResource<typeof createUserProfileResource>("profile").value;

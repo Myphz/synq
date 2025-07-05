@@ -1,5 +1,3 @@
-import { throwError } from "@utils/throw-error";
-
 export type Resource<T> = {
   value: T | null;
   refetch: () => Promise<void>;
@@ -16,15 +14,6 @@ export const createDynamicResource = <T>(
 ) => {
   if (opts?.replace && resources[key]) delete resources[key];
   if (resources[key]) return resources[key] as Resource<T>;
-
-  const [type, id] = key.split("-");
-  if (!id && !opts?.replace)
-    return throwError(`createDynamicResource(): invalid key ${key}`);
-  // Delete pre-existing resources which starts with `type`
-  const existingKeys = Object.keys(resources);
-  existingKeys.forEach((key) => {
-    if (key.startsWith(`${type}-`)) delete resources[key];
-  });
 
   const refetch = async () => {
     if (resources[key].isRefetching) return;
