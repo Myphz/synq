@@ -32,6 +32,7 @@ export const initializeChats = async (chatList: Chat[]) => {
     const name = await getChatName(chat);
     const image = await getChatImage(chat);
 
+    // NB: We are not emptying chats from cache
     chats[chat.chatId.toString()] = {
       ...chat,
       name,

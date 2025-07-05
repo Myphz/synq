@@ -24,7 +24,12 @@ export const saveAppState = async () => {
   const state: Cache = {
     url: page.url.pathname,
     version: APP_VERSION,
-    chats
+    // Override isInitialized of chats
+    chats: Object.fromEntries(
+      Object.entries(chats).map(([key, value]) => {
+        return [key, { ...value, isInitialized: false }];
+      })
+    )
   };
 
   await Preferences.set({
