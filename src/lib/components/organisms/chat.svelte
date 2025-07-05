@@ -6,7 +6,6 @@
   import type { ClientMessage } from "$lib/api/protocol";
   import { sendMessage } from "$lib/api/ws";
   import Form from "@atoms/form.svelte";
-  import Input from "@atoms/input.svelte";
   import Messages from "@molecules/messages.svelte";
   import { onMount } from "svelte";
   import z from "zod";
@@ -16,6 +15,7 @@
   import { isEdgeToEdgeEnabled } from "@utils/edge-to-edge";
   import { Keyboard } from "@capacitor/keyboard";
   import { Capacitor } from "@capacitor/core";
+  import Textarea from "@atoms/textarea.svelte";
 
   type Props = {
     chatId: string;
@@ -27,6 +27,7 @@
   // Disable sending socket messages if current chat is new
   const send = $derived(isNew ? () => {} : sendMessage);
 
+  let textareaRef: Textarea;
   let shouldShowBottomPadding = $state(true);
 
   onMount(() => {
@@ -61,6 +62,7 @@
     };
 
     send(socketMessage);
+    textareaRef.resetSize();
   };
 
   const onTyping = debounceWithStartStop((isTyping) => {
@@ -87,7 +89,12 @@
   {schema}
   onsubmit={onSubmit}
 >
-  <Input oninput={onTyping} name="message" placeholder="Type message..." />
+  <Textarea
+    bind:this={textareaRef}
+    oninput={onTyping}
+    name="message"
+    placeholder="Type message..."
+  />
   {#await isEdgeToEdgeEnabled() then edgeToEdge}
     {#if edgeToEdge && shouldShowBottomPadding}
       <div class="h-12 w-full bg-background"></div>

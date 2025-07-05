@@ -20,9 +20,8 @@
   const { chatId }: Props = $props();
   const chat = $derived(getChat(chatId));
 
-  let container: HTMLDivElement;
-
   const scrollToBottom = (behavior: "smooth" | "instant" = "smooth") => {
+    const container = document.getElementById("messages");
     if (!container) return;
     container.scrollTo({
       top: container.scrollHeight,
@@ -35,6 +34,7 @@
   });
 
   onMessage("RECEIVE_MESSAGE", async (msg) => {
+    const container = document.getElementById("messages")!;
     const isNearBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight <
       IS_NEAR_BOTTOM_THRESHOLD;
@@ -60,11 +60,8 @@
 </script>
 
 <div
-  bind:this={container}
   id="messages"
-  class={twMerge(
-    "flex flex-1 flex-col gap-2 overflow-y-scroll scroll-smooth pb-8"
-  )}
+  class={twMerge("flex flex-1 flex-col gap-2 overflow-y-scroll pb-8")}
 >
   {#each chat.messages as msg (msg.id)}
     <Message {...msg} />
