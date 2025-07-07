@@ -21,8 +21,12 @@ type Cache = {
 };
 
 export const saveAppState = async () => {
+  const urlToSave = /^\/\d+\/?$/.test(page.url.pathname)
+    ? page.url.pathname
+    : "/";
+
   const state: Cache = {
-    url: page.url.pathname,
+    url: urlToSave,
     version: APP_VERSION,
     // Override isInitialized of chats
     chats: Object.fromEntries(

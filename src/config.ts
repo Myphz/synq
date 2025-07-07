@@ -48,12 +48,8 @@ const configNotifications = async () => {
   await PushNotifications.addListener(
     "pushNotificationActionPerformed",
     (event) => {
-      // Not sure if this is needed
-      restoreAppState();
       const { chatId } = event.notification.data || {};
-      if (chatId) {
-        goto(`/${chatId}`);
-      }
+      if (chatId) goto(`/${chatId}`);
     }
   );
 
@@ -64,7 +60,7 @@ export const appConfig = () => {
   restoreAppState();
 
   App.addListener("backButton", () => {
-    window.history.back();
+    goto("/");
   });
 
   SocialLogin.initialize({

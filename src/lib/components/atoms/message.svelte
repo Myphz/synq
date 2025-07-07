@@ -54,6 +54,7 @@
 </script>
 
 <div
+  style="--y-size: 0.65rem"
   bind:this={container}
   class={twMerge(
     "cyberpunk flex w-fit max-w-[70dvw] items-end gap-1 whitespace-pre-wrap px-1 py-2 first-of-type:mt-2",
