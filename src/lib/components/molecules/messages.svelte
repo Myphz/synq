@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  const IS_NEAR_BOTTOM_THRESHOLD = 100;
+  const IS_NEAR_BOTTOM_THRESHOLD = 300;
 </script>
 
 <script lang="ts">
