@@ -9,6 +9,7 @@
     onsubmit: (formParams: z.infer<z.ZodObject<Schema>>) => unknown;
     defaultValues?: Partial<z.infer<z.ZodObject<Schema>>>;
     class?: string;
+    id?: string;
     schema: z.ZodObject<Schema>;
   };
 
@@ -70,13 +71,14 @@
     onsubmit,
     defaultValues,
     schema,
-    class: className
+    class: className,
+    id
   }: Props = $props();
 
   setContext("defaultValues", defaultValues);
   setContext("isSubmitting", isSubmitting);
 </script>
 
-<form onsubmit={onsubmitWrapper} class={className}>
+<form {id} onsubmit={onsubmitWrapper} class={className}>
   {@render children()}
 </form>

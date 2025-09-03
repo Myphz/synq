@@ -57,18 +57,18 @@
   style="--y-size: 0.65rem"
   bind:this={container}
   class={twMerge(
-    "cyberpunk flex w-fit max-w-[70dvw] items-end gap-1 whitespace-pre-wrap px-1 py-2 first-of-type:mt-2",
+    "cyberpunk flex w-fit max-w-[70dvw] items-end gap-2 whitespace-pre-wrap p-2 first-of-type:mt-2",
     isFromOther && "cyberpunk-br bg-accent",
     !isFromOther && "cyberpunk-tr self-end gradient-msg"
   )}
 >
-  <span class="w-full break-words">{message.content}</span>
+  <span class="w-full break-words leading-5">{message.content}</span>
   <span class="text-small text-muted">{toTime(message.sentAt)}</span>
   {#if message.senderId === ourId}
     {#if message.isRead}
-      <Icon name="done_all" />
+      <Icon name="done_all" class="-ml-1" />
     {:else}
-      <Icon name="check" class="text-text" />
+      <Icon name="check" class="-ml-1 text-text" />
     {/if}
   {/if}
 </div>

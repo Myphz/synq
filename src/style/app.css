@@ -68,3 +68,8 @@
 #main-navbar > *:last-child {
   display: block;
 }
+
+.escape-x {
+  left: -1rem;
+  width: 100dvw;
+}

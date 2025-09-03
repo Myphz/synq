@@ -1,7 +1,9 @@
+import { goto } from "$app/navigation";
 import { getDefaultAvatar } from "$lib/api/avatar";
 import type { ServerMessage } from "$lib/api/protocol";
 import { getUserId } from "$lib/supabase/auth/utils";
 import { supabase } from "$lib/supabase/client";
+import { Capacitor } from "@capacitor/core";
 import { getChatImage, getChatName } from "@utils/chat";
 import { throwError } from "@utils/throw-error";
 
@@ -92,11 +94,12 @@ export const updateUser = ({ userId, chatId, ...status }: UpdateUserParams) => {
 };
 
 export const getChat = (chatId: string | number) => {
-  return (
-    chatResults[chatId.toString()] ||
-    chats[chatId.toString()] ||
-    throwError(`getChat(): chat '${chatId}' not found`)
-  );
+  const ret = chatResults[chatId.toString()] || chats[chatId.toString()];
+  if (!ret)
+    if (Capacitor.getPlatform() === "web") goto("/");
+    else throwError(`getChat(): chat '${chatId}' not found`);
+
+  return ret;
 };
 
 type Member = {

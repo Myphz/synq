@@ -24,28 +24,30 @@
   );
 </script>
 
-<NavbarBase>
-  <div class="flex items-center gap-2">
-    <button onclick={() => window.history.back()}>
-      <Icon name="arrow_back_ios" class="w-fit text-h-2" />
-    </button>
-    <a href="/profile?id={otherMember?.id}" class="flex gap-2">
-      <CyberImage src={chat.image} class="size-[42.67px]" />
-      <div class="flex flex-col justify-between *:leading-none">
-        <span class="text-h-2">
-          {chat?.name}
-        </span>
-        {#if otherMember}
-          <span
-            class={twMerge(
-              "text-small",
-              (otherMember.isOnline || otherMember.isTyping) && "text-primary"
-            )}
-          >
-            {formatUserStatus(otherMember)}
+{#if chat}
+  <NavbarBase>
+    <div class="flex items-center gap-2">
+      <button onclick={() => window.history.back()}>
+        <Icon name="arrow_back_ios" class="w-fit text-h-2" />
+      </button>
+      <a href="/profile?id={otherMember?.id}" class="flex gap-2">
+        <CyberImage src={chat.image} class="size-[42.67px]" />
+        <div class="flex flex-col justify-between *:leading-none">
+          <span class="text-h-2">
+            {chat?.name}
           </span>
-        {/if}
-      </div>
-    </a>
-  </div>
-</NavbarBase>
+          {#if otherMember}
+            <span
+              class={twMerge(
+                "text-small",
+                (otherMember.isOnline || otherMember.isTyping) && "text-primary"
+              )}
+            >
+              {formatUserStatus(otherMember)}
+            </span>
+          {/if}
+        </div>
+      </a>
+    </div>
+  </NavbarBase>
+{/if}

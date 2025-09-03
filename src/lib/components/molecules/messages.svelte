@@ -20,18 +20,16 @@
   const { chatId }: Props = $props();
   const chat = $derived(getChat(chatId));
 
-  const scrollToBottom = (behavior: "smooth" | "instant" = "smooth") => {
-    const container = document.getElementById("messages");
-    if (!container) return;
+  export const scrollToBottom = async (
+    behavior: "smooth" | "instant" = "smooth"
+  ) => {
+    const container = document.getElementById("messages")!;
+
     container.scrollTo({
       top: container.scrollHeight,
       behavior
     });
   };
-
-  onMessage("GET_MESSAGES", () => {
-    scrollToBottom("instant");
-  });
 
   onMessage("RECEIVE_MESSAGE", async (msg) => {
     const container = document.getElementById("messages")!;
@@ -45,9 +43,6 @@
   });
 
   onMount(() => {
-    // Initial scroll to bottom
-    scrollToBottom("instant");
-
     if (Capacitor.getPlatform() === "web") return;
 
     Keyboard.addListener("keyboardDidShow", () => scrollToBottom());
@@ -59,17 +54,19 @@
   });
 </script>
 
-<div
-  id="messages"
-  class={twMerge("flex flex-1 flex-col gap-2 overflow-y-scroll pb-8")}
->
-  {#each chat.messages as msg (msg.id)}
-    <Message {...msg} />
-  {/each}
+{#if chat}
+  <div
+    id="messages"
+    class={twMerge("flex flex-1 flex-col gap-2 overflow-y-scroll")}
+  >
+    {#each chat.messages as msg (msg.id)}
+      <Message {...msg} />
+    {/each}
 
-  {#await isEdgeToEdgeEnabled() then edgeToEdge}
-    {#if edgeToEdge}
-      <div class="h-12 w-full"></div>
-    {/if}
-  {/await}
-</div>
+    {#await isEdgeToEdgeEnabled() then edgeToEdge}
+      {#if edgeToEdge}
+        <div class="h-12 w-full"></div>
+      {/if}
+    {/await}
+  </div>
+{/if}

@@ -29,23 +29,32 @@
 
   let textareaRef: Textarea;
   let shouldShowBottomPadding = $state(true);
+  let messagesRef: Messages;
+
+  const isEdgeToEdge = isEdgeToEdgeEnabled();
 
   onMount(() => {
     send({
       type: "REQUEST_MESSAGES",
       chatId
     });
-    if (Capacitor.getPlatform() === "web") return;
 
-    Keyboard.addListener("keyboardWillShow", () => {
-      shouldShowBottomPadding = false;
-    });
+    if (Capacitor.getPlatform() !== "web") {
+      Keyboard.addListener("keyboardWillShow", () => {
+        shouldShowBottomPadding = false;
+      });
 
-    Keyboard.addListener("keyboardWillHide", () => {
-      shouldShowBottomPadding = true;
-    });
+      Keyboard.addListener("keyboardWillHide", () => {
+        shouldShowBottomPadding = true;
+      });
+    }
 
-    return Keyboard.removeAllListeners;
+    // Scroll to bottom on chat load after evaluating isEdgeToEdge
+    isEdgeToEdge.then(() => messagesRef.scrollToBottom("instant"));
+
+    return () => {
+      if (Capacitor.getPlatform() !== "web") Keyboard.removeAllListeners();
+    };
   });
 
   const schema = z.object({
@@ -76,16 +85,17 @@
   }, TYPING_TIMEOUT_MS);
 </script>
 
-<Messages {chatId} />
+<Messages bind:this={messagesRef} {chatId} />
 
-{#await isEdgeToEdgeEnabled() then edgeToEdge}
+{#await isEdgeToEdge then edgeToEdge}
   {#if edgeToEdge && shouldShowBottomPadding}
     <div class="h-12 w-full"></div>
   {/if}
 {/await}
 
 <Form
-  class={twMerge("absolute bottom-0 left-0 w-dvw")}
+  id="chat-form"
+  class={twMerge("escape-x relative -bottom-6")}
   {schema}
   onsubmit={onSubmit}
 >
@@ -95,7 +105,7 @@
     name="message"
     placeholder="Type message..."
   />
-  {#await isEdgeToEdgeEnabled() then edgeToEdge}
+  {#await isEdgeToEdge then edgeToEdge}
     {#if edgeToEdge && shouldShowBottomPadding}
       <div class="h-12 w-full bg-background"></div>
     {/if}
