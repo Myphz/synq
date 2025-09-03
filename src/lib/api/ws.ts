@@ -12,6 +12,7 @@ import {
   setChatMessages,
   updateUser
 } from "$lib/stores/chats.svelte";
+import { sleep } from "@utils/sleep";
 
 const SERVER_URL = "wss://synq.fly.dev";
 const SOCKET_SINGLETON_ID = "SOCKET";
@@ -69,19 +70,19 @@ export const getSocket = toAsyncSingleton(async () => {
     })
   );
 
-  socket.addEventListener("error", (e) => {
+  socket.addEventListener("error", async (e) => {
     console.error("SOCKET ERROR:", JSON.stringify(e));
     // Reconnect after 1s
     resetSingleton(SOCKET_SINGLETON_ID);
-    setTimeout(getSocket, 1000);
+    await sleep(1000);
+    getSocket();
   });
 
   socket.addEventListener("close", () => {
     console.error("SOCKET CLOSE");
   });
 
-  while (socket.readyState !== WebSocket.OPEN)
-    await new Promise((res) => setTimeout(res, 50));
+  while (socket.readyState !== WebSocket.OPEN) await sleep(50);
 
   return socket;
 }, "SOCKET");

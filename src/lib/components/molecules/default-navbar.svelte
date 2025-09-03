@@ -10,6 +10,7 @@
   import NavbarBase from "@atoms/navbar-base.svelte";
   import Menu from "@organisms/menu";
   import { debounceAsync } from "@utils/debounce";
+  import { sleep } from "@utils/sleep";
 
   let isSearch = $state(false);
 
@@ -65,7 +66,7 @@
   }, 1000);
 
   const closeSearch = async () => {
-    await new Promise((res) => setTimeout(res, 100));
+    await sleep(100);
     isSearch = false;
   };
 </script>

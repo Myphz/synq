@@ -7,7 +7,7 @@
   import { sendMessage } from "$lib/api/ws";
   import Form from "@atoms/form.svelte";
   import Messages from "@molecules/messages.svelte";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import z from "zod";
   import { debounceWithStartStop } from "@utils/debounce";
   import { page } from "$app/state";
@@ -50,7 +50,10 @@
     }
 
     // Scroll to bottom on chat load after evaluating isEdgeToEdge
-    isEdgeToEdge.then(() => messagesRef.scrollToBottom("instant"));
+    isEdgeToEdge.then(async () => {
+      await tick();
+      messagesRef.scrollToBottom("instant");
+    });
 
     return () => {
       if (Capacitor.getPlatform() !== "web") Keyboard.removeAllListeners();
@@ -86,12 +89,6 @@
 </script>
 
 <Messages bind:this={messagesRef} {chatId} />
-
-{#await isEdgeToEdge then edgeToEdge}
-  {#if edgeToEdge && shouldShowBottomPadding}
-    <div class="h-12 w-full"></div>
-  {/if}
-{/await}
 
 <Form
   id="chat-form"

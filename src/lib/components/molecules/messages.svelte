@@ -10,7 +10,6 @@
   import { Keyboard } from "@capacitor/keyboard";
   import { Capacitor } from "@capacitor/core";
   import { twMerge } from "tailwind-merge";
-  import { isEdgeToEdgeEnabled } from "@utils/edge-to-edge";
   import { getChat } from "$lib/stores/chats.svelte";
 
   type Props = {
@@ -20,9 +19,7 @@
   const { chatId }: Props = $props();
   const chat = $derived(getChat(chatId));
 
-  export const scrollToBottom = async (
-    behavior: "smooth" | "instant" = "smooth"
-  ) => {
+  export const scrollToBottom = (behavior: "smooth" | "instant" = "smooth") => {
     const container = document.getElementById("messages")!;
 
     container.scrollTo({
@@ -45,8 +42,8 @@
   onMount(() => {
     if (Capacitor.getPlatform() === "web") return;
 
-    Keyboard.addListener("keyboardDidShow", () => scrollToBottom());
-    Keyboard.addListener("keyboardWillShow", () => scrollToBottom());
+    Keyboard.addListener("keyboardDidShow", () => scrollToBottom("instant"));
+    Keyboard.addListener("keyboardWillShow", () => scrollToBottom("instant"));
 
     return () => {
       Keyboard.removeAllListeners();
@@ -62,11 +59,5 @@
     {#each chat.messages as msg (msg.id)}
       <Message {...msg} />
     {/each}
-
-    {#await isEdgeToEdgeEnabled() then edgeToEdge}
-      {#if edgeToEdge}
-        <div class="h-12 w-full"></div>
-      {/if}
-    {/await}
   </div>
 {/if}

@@ -1,3 +1,5 @@
+import { sleep } from "./sleep";
+
 const singletons: Record<string, { value: unknown; isFetching: boolean }> = {};
 
 export const toAsyncSingleton = <T>(
@@ -11,8 +13,7 @@ export const toAsyncSingleton = <T>(
     if (!singletons[singletonId])
       singletons[singletonId] = { value: null, isFetching: false };
 
-    while (singletons[singletonId].isFetching)
-      await new Promise((res) => setTimeout(res, 100));
+    while (singletons[singletonId].isFetching) await sleep(100);
 
     if (singletons[singletonId].value)
       return singletons[singletonId].value as T;
