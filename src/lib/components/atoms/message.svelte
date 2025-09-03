@@ -3,21 +3,30 @@
   import type { ServerMessage } from "$lib/api/protocol";
   import { sendMessage } from "$lib/api/ws";
   import { getUserId } from "$lib/supabase/auth/utils";
-  import { toTime } from "@utils/dates";
+  import { toDate, toTime } from "@utils/dates";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
   import Icon from "./icon.svelte";
+  import { isSameDay } from "date-fns";
 
   type Message = Extract<
     ServerMessage,
     { type: "GET_MESSAGES" }
   >["data"]["messages"][number];
 
-  const message: Message = $props();
+  type Props = Message & { prevMessageTime?: string };
+
+  const { prevMessageTime, ...message }: Props = $props();
   let container: HTMLDivElement;
 
   let ourId = $state("");
   let isFromOther = $derived(message.senderId !== ourId);
+  let shouldDisplayDividerDate = $derived.by(() => {
+    if (!prevMessageTime) return true;
+    const prevMessageDate = new Date(prevMessageTime);
+    const currentMessageDate = new Date(message.sentAt);
+    return !isSameDay(prevMessageDate, currentMessageDate);
+  });
 
   const onRead = () =>
     sendMessage({
@@ -52,6 +61,12 @@
     observer.observe(container);
   });
 </script>
+
+{#if shouldDisplayDividerDate}
+  <div class="mt-2 flex items-start justify-center first-of-type:mt-0">
+    <span>{toDate(message.sentAt)}</span>
+  </div>
+{/if}
 
 <div
   style="--y-size: 0.65rem"

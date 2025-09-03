@@ -58,8 +58,8 @@
       "flex flex-1 flex-col gap-2 overflow-x-clip overflow-y-scroll"
     )}
   >
-    {#each chat.messages as msg (msg.id)}
-      <Message {...msg} />
+    {#each chat.messages as msg, i (msg.id)}
+      <Message {...msg} prevMessageTime={chat.messages[i - 1]?.sentAt} />
     {/each}
   </div>
 {/if}
