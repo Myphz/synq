@@ -54,7 +54,9 @@
 {#if chat}
   <div
     id="messages"
-    class={twMerge("flex flex-1 flex-col gap-2 overflow-y-scroll")}
+    class={twMerge(
+      "flex flex-1 flex-col gap-2 overflow-x-clip overflow-y-scroll"
+    )}
   >
     {#each chat.messages as msg (msg.id)}
       <Message {...msg} />

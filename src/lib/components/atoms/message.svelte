@@ -62,7 +62,7 @@
     !isFromOther && "cyberpunk-tr self-end gradient-msg"
   )}
 >
-  <span class="w-full break-words leading-5">{message.content}</span>
+  <span class="w-full break-words leading-[18px]">{message.content}</span>
   <span class="text-small text-muted">{toTime(message.sentAt)}</span>
   {#if message.senderId === ourId}
     {#if message.isRead}
