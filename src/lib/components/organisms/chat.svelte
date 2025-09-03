@@ -99,6 +99,8 @@
   <Textarea
     bind:this={textareaRef}
     oninput={onTyping}
+    onresize={(forced) =>
+      messagesRef?.scrollToBottom(forced ? "smooth" : "instant")}
     name="message"
     placeholder="Type message..."
   />

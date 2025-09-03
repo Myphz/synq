@@ -1,15 +1,18 @@
 <script lang="ts" module>
   const HEIGHT_PER_LINE = 14;
+  const TRANSITION_CLASS = "epic-transition";
 </script>
 
 <script lang="ts">
   import type { HTMLTextareaAttributes } from "svelte/elements";
   import { twMerge } from "tailwind-merge";
   import Icon from "./icon.svelte";
+  import { sleep } from "@utils/sleep";
 
   type Props = HTMLTextareaAttributes & {
     cyberpunkStyle?: string;
     class?: string;
+    onresize?: (forced?: boolean) => unknown;
   };
 
   let textareaEl: HTMLTextAreaElement;
@@ -21,11 +24,27 @@
   };
 
   const resize = () => {
+    const prevHeight = textareaEl.style.height;
+
     // Auto-shrink
     textareaEl.style.height = "auto";
     // Calculate lines
     const lines = Math.ceil(textareaEl.scrollHeight / HEIGHT_PER_LINE) - 1;
-    textareaEl.style.height = `${(lines || 1) * HEIGHT_PER_LINE}px`;
+
+    textareaEl.style.height = prevHeight;
+    const newHeight = `${(lines || 1) * HEIGHT_PER_LINE}px`;
+
+    onresize?.();
+
+    if (prevHeight !== newHeight) {
+      textareaEl.classList.add(TRANSITION_CLASS);
+      requestAnimationFrame(async () => {
+        textareaEl.style.height = newHeight;
+        await sleep(150);
+        requestAnimationFrame(() => onresize?.(true));
+        textareaEl.classList.remove(TRANSITION_CLASS);
+      });
+    }
   };
 
   const onInput = (e: Event) => {
@@ -37,6 +56,7 @@
   const {
     class: className,
     cyberpunkStyle = "cyberpunk-tl cyberpunk-br",
+    onresize,
     ...textareaProps
   }: Props = $props();
 </script>
@@ -54,7 +74,7 @@
     bind:value
     autocomplete="off"
     rows="1"
-    class="epic-transition max-h-[6em] min-h-0 w-[90%] resize-none break-words bg-accent transition-all placeholder:text-muted"
+    class="epic-transition max-h-[20vh] min-h-0 w-[90%] resize-none break-words bg-accent placeholder:text-muted"
   ></textarea>
 
   {#if value}
