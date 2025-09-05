@@ -4,12 +4,13 @@ import { GOOGLE_CLIENT_ID_WEB } from "./constants";
 import { App } from "@capacitor/app";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { Capacitor } from "@capacitor/core";
-import { closeSocket, getSocket_forced } from "$lib/api/ws";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { supabase } from "$lib/supabase/client";
 import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { goto } from "$app/navigation";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
+import { closeSocket, getSocket } from "$lib/stores/socket.svelte";
+import { Network } from "@capacitor/network";
 
 export const setupNotifications = async () => {
   if (!(await getSupabaseSession()))
@@ -72,7 +73,7 @@ export const appConfig = () => {
   App.addListener("appStateChange", ({ isActive }) => {
     if (isActive) {
       restoreAppState();
-      getSocket_forced();
+      getSocket();
     } else {
       saveAppState();
       closeSocket();
@@ -86,12 +87,12 @@ export const appConfig = () => {
 
   setupNotifications();
 
-  // App.addListener("pause", closeSocket);
-  // App.addListener("resume", getSocket_forced);
+  App.addListener("pause", closeSocket);
+  App.addListener("resume", getSocket);
 
   // Theoretically not needed
-  // Network.addListener("networkStatusChange", (status) => {
-  //   if (status.connected) getSocket_forced();
-  //   else closeSocket();
-  // });
+  Network.addListener("networkStatusChange", (status) => {
+    if (status.connected) getSocket();
+    else closeSocket();
+  });
 };

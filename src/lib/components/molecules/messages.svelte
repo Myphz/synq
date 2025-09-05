@@ -3,7 +3,6 @@
 </script>
 
 <script lang="ts">
-  import { onMessage } from "$lib/api/ws";
   import { getUserId } from "$lib/supabase/auth/utils";
   import Message from "@atoms/message.svelte";
   import { onMount } from "svelte";
@@ -11,6 +10,7 @@
   import { Capacitor } from "@capacitor/core";
   import { twMerge } from "tailwind-merge";
   import { getChat } from "$lib/stores/chats.svelte";
+  import { onMessage } from "$lib/stores/socket.svelte";
 
   type Props = {
     chatId: string;

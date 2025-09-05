@@ -4,7 +4,6 @@
 
 <script lang="ts">
   import type { ClientMessage } from "$lib/api/protocol";
-  import { sendMessage } from "$lib/api/ws";
   import Form from "@atoms/form.svelte";
   import Messages from "@molecules/messages.svelte";
   import { onMount, tick } from "svelte";
@@ -16,6 +15,7 @@
   import { Keyboard } from "@capacitor/keyboard";
   import { Capacitor } from "@capacitor/core";
   import Textarea from "@atoms/textarea.svelte";
+  import { sendMessage } from "$lib/stores/socket.svelte";
 
   type Props = {
     chatId: string;

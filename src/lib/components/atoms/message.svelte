@@ -1,13 +1,13 @@
 <script lang="ts">
   import { page } from "$app/state";
   import type { ServerMessage } from "$lib/api/protocol";
-  import { sendMessage } from "$lib/api/ws";
   import { getUserId } from "$lib/supabase/auth/utils";
   import { toDate, toTime } from "@utils/dates";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
   import Icon from "./icon.svelte";
   import { isSameDay } from "date-fns";
+  import { sendMessage } from "$lib/stores/socket.svelte";
 
   type Message = Extract<
     ServerMessage,

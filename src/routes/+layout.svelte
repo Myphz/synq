@@ -5,7 +5,6 @@
 <script lang="ts">
   import { appConfig } from "../config";
   import { onMount } from "svelte";
-  import { getSocket } from "$lib/api/ws";
   import DefaultNavbar from "@molecules/default-navbar.svelte";
 
   import "../style/app.css";
@@ -14,6 +13,7 @@
   import "../style/anim.css";
   import "../style/material-symbols.css";
   import { page } from "$app/state";
+  import { getSocket } from "$lib/stores/socket.svelte";
 
   onMount(() => {
     appConfig();
