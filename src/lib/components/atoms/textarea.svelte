@@ -63,7 +63,7 @@
 
 <div
   class={twMerge(
-    `cyberpunk ${cyberpunkStyle} relative flex items-center gap-2 bg-secondary p-4 *:relative *:z-10 after:absolute after:inset-px after:bg-accent`,
+    `cyberpunk ${cyberpunkStyle} relative flex items-center gap-2 bg-secondary p-3 *:relative *:z-10 after:absolute after:inset-px after:bg-accent`,
     className
   )}
 >
@@ -78,8 +78,8 @@
   ></textarea>
 
   {#if value}
-    <button type="submit" class="!absolute bottom-3 right-4 text-h-4">
-      <Icon name="send" class="align-bottom" />
+    <button type="submit" class="!absolute bottom-2 right-4 text-h-4">
+      <Icon name="send" class="align-bottom text-[1.2em]" />
     </button>
   {/if}
 </div>

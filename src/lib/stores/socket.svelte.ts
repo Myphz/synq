@@ -4,7 +4,7 @@ import {
   type ServerMessage
 } from "$lib/api/protocol";
 
-import { getSupabaseSession } from "$lib/supabase/auth/utils";
+import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { sleep } from "@utils/sleep";
 
 import {
@@ -14,6 +14,8 @@ import {
   setChatMessages,
   addChatMessage
 } from "./chats.svelte";
+import { scrollChatToBottom } from "@utils/chat";
+import { page } from "$app/state";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
@@ -58,6 +60,22 @@ const setupSocket = (sock: WebSocket) => {
       }),
     sock
   );
+
+  onMessage("RECEIVE_MESSAGE", async (msg) => {
+    if (page.url.pathname !== `/${msg.chatId}`) return;
+    const IS_NEAR_BOTTOM_THRESHOLD = 300;
+
+    const container = document.getElementById("messages")!;
+    const isNearBottom =
+      container.scrollHeight - container.scrollTop - container.clientHeight <
+      IS_NEAR_BOTTOM_THRESHOLD;
+
+    // Scroll to view the last message if
+    // the user is near bottom or the message is ours
+    if (isNearBottom || msg.userId === (await getUserId()))
+      scrollChatToBottom();
+  });
+
   sock.addEventListener("error", (e) => {
     console.error("SOCK ERROR", e);
   });

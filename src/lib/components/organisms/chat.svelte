@@ -16,6 +16,7 @@
   import { Capacitor } from "@capacitor/core";
   import Textarea from "@atoms/textarea.svelte";
   import { sendMessage } from "$lib/stores/socket.svelte";
+  import { scrollChatToBottom } from "@utils/chat";
 
   type Props = {
     chatId: string;
@@ -55,7 +56,7 @@
     // Scroll to bottom on chat load after evaluating isEdgeToEdge
     isEdgeToEdge.then(async () => {
       await tick();
-      messagesRef.scrollToBottom("instant");
+      scrollChatToBottom("instant");
     });
 
     return () => {
@@ -102,8 +103,7 @@
   <Textarea
     bind:this={textareaRef}
     oninput={onTyping}
-    onresize={(forced) =>
-      messagesRef?.scrollToBottom(forced ? "smooth" : "instant")}
+    onresize={(forced) => scrollChatToBottom(forced ? "smooth" : "instant")}
     name="message"
     placeholder="Type message..."
   />

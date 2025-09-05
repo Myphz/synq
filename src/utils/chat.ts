@@ -21,3 +21,15 @@ export const getChatImage = async (chat: Chat) => {
     getDefaultAvatar(otherUser?.id || chat.chatId.toString())
   );
 };
+
+export const scrollChatToBottom = (
+  behavior: "smooth" | "instant" = "smooth"
+) => {
+  const container = document.getElementById("messages");
+  if (!container) return;
+
+  container.scrollTo({
+    top: container.scrollHeight,
+    behavior
+  });
+};
