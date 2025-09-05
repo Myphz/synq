@@ -25,7 +25,10 @@
   const isNew = $derived(!!page.url.searchParams.get("isnew"));
 
   // Disable sending socket messages if current chat is new
-  const send = $derived(isNew ? () => {} : sendMessage);
+  const send = (...props: Parameters<typeof sendMessage>) => {
+    if (isNew) return;
+    return sendMessage(...props);
+  };
 
   let textareaRef: Textarea;
   let shouldShowBottomPadding = $state(true);

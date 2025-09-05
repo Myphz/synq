@@ -5,7 +5,7 @@ import {
 } from "@capgo/capacitor-social-login";
 import { throwError } from "@utils/throw-error";
 import { getUserId } from "$lib/supabase/auth/utils";
-import { closeSocket, getSocket } from "$lib/stores/socket.svelte";
+import { getSocket } from "$lib/stores/socket.svelte";
 
 export const logInWithGoogle = async () => {
   const response = await SocialLogin.login({
@@ -29,8 +29,8 @@ export const logInWithGoogle = async () => {
   if (error || !data.user)
     return throwError("Google Login: signInWithIdToken failed?!?");
 
-  closeSocket();
-  getSocket();
+  // await closeSocket();
+  await getSocket();
 };
 
 export const getProfile = async (userId?: string) => {

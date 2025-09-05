@@ -5,7 +5,6 @@ import {
 } from "$lib/api/protocol";
 
 import { getSupabaseSession } from "$lib/supabase/auth/utils";
-
 import { sleep } from "@utils/sleep";
 
 import {
@@ -18,21 +17,24 @@ import {
 
 const SERVER_URL = "wss://synq.fly.dev";
 
-let socket = $state<null | WebSocket>(null);
+export const socket = $state<{ value: null | WebSocket; isLoading: boolean }>({
+  value: null,
+  isLoading: false
+});
 
-const setupSocket = (socket: WebSocket) => {
-  socket.addEventListener("message", (msg) => {
+const setupSocket = (sock: WebSocket) => {
+  sock.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
     console.log(message);
   });
 
-  // Setup socket events
-  onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), socket);
+  // Setup sock events
+  onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), sock);
   onMessage(
     "GET_MESSAGES",
     (msg) =>
       setChatMessages(msg.chatId.toString(), msg.data.messages.toReversed()),
-    socket
+    sock
   );
   onMessage("RECEIVE_MESSAGE", (msg) =>
     addChatMessage(msg.chatId.toString(), {
@@ -44,7 +46,7 @@ const setupSocket = (socket: WebSocket) => {
   onMessage(
     "READ_MESSAGE",
     (msg) => markMessageAsRead(msg.chatId.toString(), msg.data.messageId),
-    socket
+    sock
   );
   onMessage(
     "UPDATE_USER_STATUS",
@@ -54,17 +56,15 @@ const setupSocket = (socket: WebSocket) => {
         userId: msg.userId,
         ...msg.data
       }),
-    socket
+    sock
   );
-  socket.addEventListener("error", async (e) => {
-    console.error("SOCKET ERROR:", JSON.stringify(e));
-    // Reconnect after 1s
-    await sleep(1000);
-    getSocket();
+  sock.addEventListener("error", (e) => {
+    console.error("SOCK ERROR", e);
   });
 
-  socket.addEventListener("close", () => {
-    console.error("SOCKET CLOSE");
+  sock.addEventListener("close", (e) => {
+    console.error("sock CLOSE", e);
+    socket.value = null;
   });
 };
 
@@ -87,12 +87,19 @@ export const onMessage = async <T extends ServerMessage["type"]>(
 };
 
 export const sendMessage = async (message: ClientMessage) => {
-  const socket = await getSocket();
-  socket.send(JSON.stringify(message));
+  const sock = await getSocket();
+  while (sock.readyState !== WebSocket.OPEN) await sleep(50);
+  sock.send(JSON.stringify(message));
 };
 
-export const getSocket = async () => {
-  if (socket) return socket;
+export const getSocket = async (): Promise<WebSocket> => {
+  if (socket.value) return socket.value;
+  if (socket.isLoading) {
+    while (socket.isLoading) await sleep(50);
+    return await getSocket();
+  }
+
+  socket.isLoading = true;
 
   const session = await getSupabaseSession();
   if (!session) throw new Error("getSocket(): unauthorized");
@@ -101,13 +108,14 @@ export const getSocket = async () => {
   const newSocket = new WebSocket(SERVER_URL, ["synq", jwt]);
   setupSocket(newSocket);
 
-  socket = newSocket;
-  return socket;
+  socket.value = newSocket;
+  socket.isLoading = false;
+
+  return socket.value;
 };
 
 export const closeSocket = async () => {
-  if (!socket) return;
-  const oldSocket = await getSocket();
-  oldSocket.close();
-  socket = null;
+  if (!socket.value) return;
+  socket.value.close();
+  socket.value = null;
 };

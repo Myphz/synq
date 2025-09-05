@@ -10,7 +10,6 @@ import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { goto } from "$app/navigation";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
 import { closeSocket, getSocket } from "$lib/stores/socket.svelte";
-import { Network } from "@capacitor/network";
 
 export const setupNotifications = async () => {
   if (!(await getSupabaseSession()))
@@ -91,8 +90,8 @@ export const appConfig = () => {
   App.addListener("resume", getSocket);
 
   // Theoretically not needed
-  Network.addListener("networkStatusChange", (status) => {
-    if (status.connected) getSocket();
-    else closeSocket();
-  });
+  // Network.addListener("networkStatusChange", (status) => {
+  //   if (status.connected) getSocket();
+  //   else closeSocket();
+  // });
 };

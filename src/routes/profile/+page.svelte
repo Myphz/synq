@@ -4,6 +4,7 @@
   import { getDefaultAvatar } from "$lib/api/avatar";
   import { isUserOnline } from "$lib/stores/chats.svelte";
   import { getUserProfileResource } from "$lib/stores/me.svelte";
+  import { socket } from "$lib/stores/socket.svelte";
   import CyberImage from "@atoms/cyber-image.svelte";
   import AvatarEditor from "@molecules/avatar-editor.svelte";
   import { authGuard } from "@utils/auth-guard";
@@ -22,6 +23,10 @@
     userId ? getProfile(userId) : getUserProfileResource()
   );
   const isOnline = $derived(userId ? isUserOnline(userId) : true);
+
+  const isConnected = $derived(
+    socket.value && socket.value.readyState !== WebSocket.CLOSED
+  );
 </script>
 
 <section class="flex flex-col gap-8">
@@ -52,13 +57,17 @@
                 isOnline ? "bg-primary" : "bg-muted"
               )}
             ></div>
-            <span class={isOnline ? "text-primary" : "text-muted"}>
-              {isOnline
-                ? "Online"
-                : formatUserStatus({
-                    lastSeen: realProfile.last_seen
-                  })}
-            </span>
+            {#if isConnected}
+              <span class={isOnline ? "text-primary" : "text-muted"}>
+                {isOnline
+                  ? "Online"
+                  : formatUserStatus({
+                      lastSeen: realProfile.last_seen
+                    })}
+              </span>
+            {:else}
+              <span class="text-[#ff0000]">DISCONNECTED</span>
+            {/if}
           </div>
         </div>
       </div>

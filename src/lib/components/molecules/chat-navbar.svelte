@@ -1,5 +1,6 @@
 <script lang="ts">
   import { getChat } from "$lib/stores/chats.svelte";
+  import { socket } from "$lib/stores/socket.svelte";
   import { getUserId } from "$lib/supabase/auth/utils";
   import CyberImage from "@atoms/cyber-image.svelte";
   import Icon from "@atoms/icon.svelte";
@@ -22,6 +23,10 @@
   let otherMember = $derived(
     chat.members.find((member) => member.id !== userId)
   );
+
+  const isConnected = $derived(
+    socket.value && socket.value.readyState !== WebSocket.CLOSED
+  );
 </script>
 
 {#if chat}
@@ -36,15 +41,20 @@
           <span class="text-h-2">
             {chat?.name}
           </span>
-          {#if otherMember}
-            <span
-              class={twMerge(
-                "text-small",
-                (otherMember.isOnline || otherMember.isTyping) && "text-primary"
-              )}
-            >
-              {formatUserStatus(otherMember)}
-            </span>
+          {#if isConnected}
+            {#if otherMember}
+              <span
+                class={twMerge(
+                  "text-small",
+                  (otherMember.isOnline || otherMember.isTyping) &&
+                    "text-primary"
+                )}
+              >
+                {formatUserStatus(otherMember)}
+              </span>
+            {/if}
+          {:else}
+            <span class="text-small text-[#ff0000]">DISCONNECTED</span>
           {/if}
         </div>
       </a>
