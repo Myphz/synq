@@ -17,6 +17,7 @@ import {
 import { getCurrentChatByUrl, scrollChatToBottom } from "@utils/chat";
 import { page } from "$app/state";
 import { debugLog } from "@utils/debug";
+import { dev } from "$app/environment";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
@@ -26,10 +27,12 @@ export const socket = $state<{ value: null | WebSocket; isLoading: boolean }>({
 });
 
 const setupSocket = (sock: WebSocket) => {
-  sock.addEventListener("message", (msg) => {
-    const message = serverMessageSchema.parse(JSON.parse(msg.data));
-    debugLog(message);
-  });
+  if (dev) {
+    sock.addEventListener("message", (msg) => {
+      const message = serverMessageSchema.parse(JSON.parse(msg.data));
+      debugLog(message);
+    });
+  }
 
   // Setup sock events
   onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), sock);

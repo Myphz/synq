@@ -19,6 +19,7 @@ const formatISOString = (date: string | undefined, fmt: string) => {
 
 export const toTime = (date?: string) => formatISOString(date, "HH:mm");
 export const toDate = (date?: string) => formatISOString(date, "MMMM d");
+export const toWeekDayInitials = (date?: string) => formatISOString(date, "E");
 
 const pluralize = (
   baseName: string,

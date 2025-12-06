@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { toTime } from "@utils/dates";
+  import { toTime, toWeekDayInitials } from "@utils/dates";
   import CyberImage from "./cyber-image.svelte";
   import { getChat } from "$lib/stores/chats.svelte";
+  import { isToday } from "date-fns";
 
   type Props = { chatId: number };
   const { chatId }: Props = $props();
@@ -18,16 +19,24 @@
     <CyberImage src={chat.image} class="size-12" />
     <div class="flex flex-col justify-center gap-1 leading-none">
       <span class="text-h-4 text-primary">{chat.name}</span>
-      <span class="line-clamp-1 text-ellipsis">
-        {chat.lastMessage?.content}
-      </span>
+      {#if chat.lastMessage}
+        <span class="line-clamp-1 text-ellipsis">
+          {chat.lastMessage.content}
+        </span>
+      {/if}
     </div>
   </div>
 
   <div class="flex flex-col items-end gap-1.5">
-    <span class="text-small text-muted">
-      {toTime(chat.lastMessage?.sentAt)}
-    </span>
+    {#if chat.lastMessage}
+      <span class="text-small text-muted">
+        {#if isToday(chat.lastMessage.sentAt)}
+          {toTime(chat.lastMessage.sentAt)}
+        {:else}
+          {toWeekDayInitials(chat.lastMessage.sentAt)}
+        {/if}
+      </span>
+    {/if}
     <div class="size-4">
       {#if chat.unreadMessagesCount > 0}
         <span
