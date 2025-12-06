@@ -1,3 +1,4 @@
+import { page } from "$app/state";
 import { getDefaultAvatar } from "$lib/api/avatar";
 import type { Chat } from "$lib/stores/chats.svelte";
 import { getUserId } from "$lib/supabase/auth/utils";
@@ -32,4 +33,9 @@ export const scrollChatToBottom = (
     top: container.scrollHeight,
     behavior
   });
+};
+
+export const getCurrentChatByUrl = () => {
+  const regex = /^\/\d+$/;
+  if (regex.test(page.url.pathname)) return Number(page.url.pathname.slice(1));
 };

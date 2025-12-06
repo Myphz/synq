@@ -9,7 +9,7 @@ import { supabase } from "$lib/supabase/client";
 import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { goto } from "$app/navigation";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
-import { closeSocket, getSocket } from "$lib/stores/socket.svelte";
+import { connect, disconnect } from "$lib/stores/socket.svelte";
 
 export const setupNotifications = async () => {
   if (!(await getSupabaseSession()))
@@ -69,13 +69,13 @@ export const appConfig = () => {
     }
   });
 
-  App.addListener("appStateChange", ({ isActive }) => {
+  App.addListener("appStateChange", async ({ isActive }) => {
     if (isActive) {
-      restoreAppState();
-      getSocket();
+      await restoreAppState();
+      await connect();
     } else {
-      saveAppState();
-      closeSocket();
+      await saveAppState();
+      await disconnect();
     }
   });
 
@@ -85,13 +85,4 @@ export const appConfig = () => {
   StatusBar.setStyle({ style: Style.Dark });
 
   setupNotifications();
-
-  App.addListener("pause", closeSocket);
-  App.addListener("resume", getSocket);
-
-  // Theoretically not needed
-  // Network.addListener("networkStatusChange", (status) => {
-  //   if (status.connected) getSocket();
-  //   else closeSocket();
-  // });
 };

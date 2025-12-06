@@ -20,9 +20,6 @@
     Keyboard.addListener("keyboardDidShow", () =>
       scrollChatToBottom("instant")
     );
-    Keyboard.addListener("keyboardWillShow", () =>
-      scrollChatToBottom("instant")
-    );
 
     return () => {
       Keyboard.removeAllListeners();

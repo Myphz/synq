@@ -14,6 +14,7 @@
   import "../style/material-symbols.css";
   import { page } from "$app/state";
   import { getSocket } from "$lib/stores/socket.svelte";
+  import DebugInfo from "@atoms/debug-info.svelte";
 
   onMount(() => {
     appConfig();
@@ -31,3 +32,5 @@
 <main class="flex flex-1 flex-col overflow-hidden px-4 pb-6">
   <slot />
 </main>
+
+<DebugInfo />

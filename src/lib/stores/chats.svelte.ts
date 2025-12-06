@@ -20,7 +20,7 @@ type Message = Extract<
 export type ChatWithMessages = Chat & {
   messages: Message[];
   image: string;
-  isInitialized: boolean;
+  hasLatestUpdates: boolean;
   isNew?: boolean;
 };
 
@@ -41,7 +41,7 @@ export const initializeChats = async (chatList: Chat[]) => {
       image,
       // Retain messages or set them to empty array
       messages: chats[chat.chatId.toString()]?.messages || [],
-      isInitialized: chats[chat.chatId.toString()]?.isInitialized || false
+      hasLatestUpdates: chats[chat.chatId.toString()]?.hasLatestUpdates || false
     };
   }
 };
@@ -49,7 +49,7 @@ export const initializeChats = async (chatList: Chat[]) => {
 export const setChatMessages = (chatId: string, newMessages: Message[]) => {
   if (!chats[chatId]) throw new Error("setChatMessages(): can't find chat");
   chats[chatId].messages = newMessages;
-  chats[chatId].isInitialized = true;
+  chats[chatId].hasLatestUpdates = true;
 };
 
 export const addChatMessage = async (chatId: string, message: Message) => {
@@ -60,7 +60,7 @@ export const addChatMessage = async (chatId: string, message: Message) => {
     chats[chatId].unreadMessagesCount++;
 
   // Don't push messages if the chat was not initialized, the chat doesn't contain any message!
-  if (!chats[chatId].isInitialized) return;
+  if (!chats[chatId].hasLatestUpdates) return;
   chats[chatId].messages.push(message);
 };
 
@@ -137,7 +137,7 @@ export const createChat = async (userId: string) => {
       avatarUrl: user.avatar_url
     })),
     lastMessage: null,
-    isInitialized: true
+    hasLatestUpdates: true
   };
 
   newChat.name = await getChatName(newChat);

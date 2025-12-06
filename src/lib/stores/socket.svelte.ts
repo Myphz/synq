@@ -14,8 +14,9 @@ import {
   setChatMessages,
   addChatMessage
 } from "./chats.svelte";
-import { scrollChatToBottom } from "@utils/chat";
+import { getCurrentChatByUrl, scrollChatToBottom } from "@utils/chat";
 import { page } from "$app/state";
+import { debugLog } from "@utils/debug";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
@@ -27,7 +28,7 @@ export const socket = $state<{ value: null | WebSocket; isLoading: boolean }>({
 const setupSocket = (sock: WebSocket) => {
   sock.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
-    console.log(message);
+    debugLog(message);
   });
 
   // Setup sock events
@@ -38,13 +39,13 @@ const setupSocket = (sock: WebSocket) => {
       setChatMessages(msg.chatId.toString(), msg.data.messages.toReversed()),
     sock
   );
-  onMessage("RECEIVE_MESSAGE", (msg) =>
+  onMessage("RECEIVE_MESSAGE", (msg) => {
     addChatMessage(msg.chatId.toString(), {
       ...msg.data,
       senderId: msg.userId,
       isRead: false
-    })
-  );
+    });
+  });
   onMessage(
     "READ_MESSAGE",
     (msg) => markMessageAsRead(msg.chatId.toString(), msg.data.messageId),
@@ -79,11 +80,6 @@ const setupSocket = (sock: WebSocket) => {
   sock.addEventListener("error", (e) => {
     console.error("SOCK ERROR", e);
   });
-
-  sock.addEventListener("close", (e) => {
-    console.error("sock CLOSE", e);
-    socket.value = null;
-  });
 };
 
 export const onMessage = async <T extends ServerMessage["type"]>(
@@ -110,13 +106,7 @@ export const sendMessage = async (message: ClientMessage) => {
   sock.send(JSON.stringify(message));
 };
 
-export const getSocket = async (): Promise<WebSocket> => {
-  if (socket.value) return socket.value;
-  if (socket.isLoading) {
-    while (socket.isLoading) await sleep(50);
-    return await getSocket();
-  }
-
+export const connect = async () => {
   socket.isLoading = true;
 
   const session = await getSupabaseSession();
@@ -129,10 +119,27 @@ export const getSocket = async (): Promise<WebSocket> => {
   socket.value = newSocket;
   socket.isLoading = false;
 
-  return socket.value;
+  // If the user is currently viewing a chat
+  // when the connection is created,
+  // fetch messages for that chat
+  const currentChat = getCurrentChatByUrl();
+  if (currentChat)
+    sendMessage({ type: "REQUEST_MESSAGES", chatId: currentChat });
+
+  return newSocket;
 };
 
-export const closeSocket = async () => {
+export const getSocket = async (): Promise<WebSocket> => {
+  if (socket.value) return socket.value;
+  if (socket.isLoading) {
+    while (socket.isLoading) await sleep(50);
+    return await getSocket();
+  }
+
+  return await connect();
+};
+
+export const disconnect = async () => {
   if (!socket.value) return;
   socket.value.close();
   socket.value = null;
