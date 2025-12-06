@@ -12,7 +12,6 @@ export const createDynamicResource = <T>(
   get: () => Promise<T>,
   opts?: { replace: boolean }
 ) => {
-  console.log("createDynamicResource:", key);
   // if (opts?.replace && resources[key]) delete resources[key];
   // Replace by default
   if (resources[key]) delete resources[key];

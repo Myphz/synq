@@ -1,19 +1,19 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { createChat } from "$lib/stores/chats.svelte";
+  import { createChat, getChat } from "$lib/stores/chats.svelte";
   import ChatNavbar from "@molecules/chat-navbar.svelte";
   import Chat from "@organisms/chat.svelte";
 
-  const chatId = $derived(page.params.chat);
+  const chatId = $derived(Number(page.params.chat));
+  const chat = $derived(getChat(chatId));
 
   $effect(() => {
     (async () => {
-      const isNew = !!page.url.searchParams.get("isnew");
-      if (!isNew) return;
-
-      const realChatId = await createChat(chatId);
-      goto(`/${realChatId}`);
+      if (!chat.isNew) return;
+      // If the chat is new, it only has 1 member (the other)
+      const realChatId = await createChat(chat.members[0].id);
+      goto(`/${realChatId}`, { replaceState: true });
     })();
   });
 </script>

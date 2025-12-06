@@ -34,6 +34,7 @@ export const logInWithGoogle = async () => {
 
 export const getProfile = async (userId?: string) => {
   const id = userId || (await getUserId());
+
   const { data } = await supabase
     .from("profiles")
     .select("*")

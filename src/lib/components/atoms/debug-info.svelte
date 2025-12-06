@@ -18,7 +18,9 @@
 </script>
 
 {#key rerenderKey}
-  <div class="absolute right-2 top-2 w-[50vw] bg-background bg-opacity-50 p-4">
+  <div
+    class="pointer-events-none absolute right-2 top-2 w-[50vw] bg-background bg-opacity-50 p-4"
+  >
     {#if !socket.value}
       <div>Socket IS UNDEFINED!</div>
     {:else}

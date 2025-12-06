@@ -32,7 +32,7 @@
   const onRead = () =>
     sendMessage({
       type: "READ_MESSAGE",
-      chatId: page.params.chat,
+      chatId: Number(page.params.chat),
       data: {
         messageId: message.id
       }

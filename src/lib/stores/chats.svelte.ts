@@ -5,7 +5,10 @@ import { getUserId } from "$lib/supabase/auth/utils";
 import { supabase } from "$lib/supabase/client";
 import { Capacitor } from "@capacitor/core";
 import { getChatImage, getChatName } from "@utils/chat";
+import { debugAlert_FORCE_DO_NOT_USE } from "@utils/debug";
 import { throwError } from "@utils/throw-error";
+
+type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 
 export type Chat = Extract<
   ServerMessage,
@@ -21,41 +24,49 @@ export type ChatWithMessages = Chat & {
   messages: Message[];
   image: string;
   hasLatestUpdates: boolean;
-  isNew?: boolean;
+  isNew: false;
 };
+
+export type NewChat = Overwrite<ChatWithMessages, { isNew: true }>;
 
 export const filter = $state<{ chats: "full" | "search" }>({ chats: "full" });
 
-export const chats = $state<Record<string, ChatWithMessages>>({});
+export const chats = $state<Record<number, ChatWithMessages | NewChat>>({});
 export const chatResults = $state<{
-  chats: Record<string, ChatWithMessages>;
+  chats: Record<number, ChatWithMessages | NewChat>;
   isLoading: boolean;
 }>({ chats: {}, isLoading: false });
 
 export const initializeChats = async (chatList: Chat[]) => {
+  const alreadyExistingChatIds = new Set(Object.keys(chats).map(Number));
+  const serverChatIds = new Set(chatList.map((chat) => chat.chatId));
+  const toDelete = alreadyExistingChatIds.difference(serverChatIds);
+
+  for (const chatId of toDelete) delete chats[chatId];
+
   for (const chat of chatList) {
     const name = await getChatName(chat);
     const image = await getChatImage(chat);
 
-    // NB: We are not emptying chats from cache
-    chats[chat.chatId.toString()] = {
+    chats[chat.chatId] = {
       ...chat,
       name,
       image,
       // Retain messages or set them to empty array
-      messages: chats[chat.chatId.toString()]?.messages || [],
-      hasLatestUpdates: chats[chat.chatId.toString()]?.hasLatestUpdates || false
+      messages: chats[chat.chatId]?.messages || [],
+      hasLatestUpdates: chats[chat.chatId]?.hasLatestUpdates || false,
+      isNew: false
     };
   }
 };
 
-export const setChatMessages = (chatId: string, newMessages: Message[]) => {
+export const setChatMessages = (chatId: number, newMessages: Message[]) => {
   if (!chats[chatId]) throw new Error("setChatMessages(): can't find chat");
   chats[chatId].messages = newMessages;
   chats[chatId].hasLatestUpdates = true;
 };
 
-export const addChatMessage = async (chatId: string, message: Message) => {
+export const addChatMessage = async (chatId: number, message: Message) => {
   if (!chats[chatId]) throw new Error("addChatMessage(): can't find chat");
   chats[chatId].lastMessage = message;
 
@@ -63,11 +74,12 @@ export const addChatMessage = async (chatId: string, message: Message) => {
     chats[chatId].unreadMessagesCount++;
 
   // Don't push messages if the chat was not initialized, the chat doesn't contain any message!
-  if (!chats[chatId].hasLatestUpdates) return;
+  if (!chats[chatId].hasLatestUpdates)
+    return debugAlert_FORCE_DO_NOT_USE(`not initialized! ${chatId}`);
   chats[chatId].messages.push(message);
 };
 
-export const markMessageAsRead = (chatId: string, messageId: Message["id"]) => {
+export const markMessageAsRead = (chatId: number, messageId: Message["id"]) => {
   const msgIdx =
     chats[chatId]?.messages.findIndex((msg) => msg.id === messageId) || -1;
   if (msgIdx === -1) throw new Error("markMessageAsRead: can't find message");
@@ -80,7 +92,7 @@ export const markMessageAsRead = (chatId: string, messageId: Message["id"]) => {
   );
 };
 
-type UpdateUserParams = { userId: string; chatId: string } & Extract<
+type UpdateUserParams = { userId: string; chatId: number } & Extract<
   ServerMessage,
   { type: "UPDATE_USER_STATUS" }
 >["data"];
@@ -96,8 +108,8 @@ export const updateUser = ({ userId, chatId, ...status }: UpdateUserParams) => {
   };
 };
 
-export const getChat = (chatId: string | number) => {
-  const ret = chatResults.chats[chatId.toString()] || chats[chatId.toString()];
+export const getChat = (chatId: number) => {
+  const ret = chatResults.chats[chatId] || chats[chatId];
   if (!ret)
     if (Capacitor.getPlatform() === "web") goto("/");
     else throwError(`getChat(): chat '${chatId}' not found`);
@@ -128,9 +140,10 @@ export const createChat = async (userId: string) => {
 
   const newChat: ChatWithMessages = {
     chatId: chat_id,
+    lastMessage: null,
+    messages: [],
     name: null,
     unreadMessagesCount: 0,
-    messages: [],
     image: other_user.avatar_url || getDefaultAvatar(other_user.id),
     members: [current_user, other_user].map((user) => ({
       ...user,
@@ -139,11 +152,12 @@ export const createChat = async (userId: string) => {
       lastSeen: user.last_seen,
       avatarUrl: user.avatar_url
     })),
-    lastMessage: null,
-    hasLatestUpdates: true
+    hasLatestUpdates: true,
+    isNew: false
   };
 
   newChat.name = await getChatName(newChat);
+
   chats[chat_id] = newChat;
 
   return chat_id;
@@ -159,8 +173,9 @@ export const isUserOnline = (userId: string) => {
   return relevantChat.members.find((member) => member.id === userId)!.isOnline;
 };
 
-export const setChats = (newChats: Record<string, ChatWithMessages>) => {
+export const setChats = (newChats: Record<number, ChatWithMessages>) => {
   Object.entries(newChats).forEach(([key, value]) => {
-    chats[key] = value;
+    if (chats[Number(key)]?.hasLatestUpdates) return;
+    chats[Number(key)] = value;
   });
 };

@@ -32,9 +32,14 @@ export const saveAppState = async () => {
     // to make sure the client refetches them and gets the latest updates
     // (cache might be outdated, can't be trusted!!)
     chats: Object.fromEntries(
-      Object.entries(chats).map(([key, value]) => {
-        return [key, { ...value, hasLatestUpdates: false }];
-      })
+      Object.entries(chats)
+        .filter(([_, value]) => !value.isNew)
+        .map(([key, value]) => {
+          return [
+            Number(key),
+            { ...value, hasLatestUpdates: false, isNew: false }
+          ];
+        })
     )
   };
 

@@ -17,7 +17,6 @@ import {
 import { getCurrentChatByUrl, scrollChatToBottom } from "@utils/chat";
 import { page } from "$app/state";
 import { debugLog } from "@utils/debug";
-import { dev } from "$app/environment";
 import { monitorConnection } from "./connection.svelte";
 
 const SERVER_URL = "wss://synq.fly.dev";
@@ -28,23 +27,21 @@ export const socket = $state<{ value: null | WebSocket; isLoading: boolean }>({
 });
 
 const setupSocket = (sock: WebSocket) => {
-  if (dev) {
-    sock.addEventListener("message", (msg) => {
-      const message = serverMessageSchema.parse(JSON.parse(msg.data));
-      debugLog(message);
-    });
-  }
+  sock.addEventListener("message", (msg) => {
+    const message = serverMessageSchema.parse(JSON.parse(msg.data));
+
+    debugLog(message);
+  });
 
   // Setup sock events
   onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), sock);
   onMessage(
     "GET_MESSAGES",
-    (msg) =>
-      setChatMessages(msg.chatId.toString(), msg.data.messages.toReversed()),
+    (msg) => setChatMessages(msg.chatId, msg.data.messages.toReversed()),
     sock
   );
   onMessage("RECEIVE_MESSAGE", (msg) => {
-    addChatMessage(msg.chatId.toString(), {
+    addChatMessage(msg.chatId, {
       ...msg.data,
       senderId: msg.userId,
       isRead: false
@@ -52,14 +49,14 @@ const setupSocket = (sock: WebSocket) => {
   });
   onMessage(
     "READ_MESSAGE",
-    (msg) => markMessageAsRead(msg.chatId.toString(), msg.data.messageId),
+    (msg) => markMessageAsRead(msg.chatId, msg.data.messageId),
     sock
   );
   onMessage(
     "UPDATE_USER_STATUS",
     (msg) =>
       updateUser({
-        chatId: msg.chatId.toString(),
+        chatId: msg.chatId,
         userId: msg.userId,
         ...msg.data
       }),

@@ -31,7 +31,7 @@
   const filterChats = debounceAsync(async (e: Event) => {
     // Empty any previous chat results
     Object.keys(chatResults.chats).forEach(
-      (key) => delete chatResults.chats[key]
+      (key) => delete chatResults.chats[Number(key)]
     );
     // @ts-expect-error its ok
     const search = e.target.value;
@@ -55,15 +55,24 @@
       if (existingChat) {
         chatResults.chats[existingChat.chatId] = existingChat;
       } else {
-        chatResults.chats[profile.id] = {
-          // @ts-expect-error profile.id is a string not number
-          chatId: profile.id,
+        const fakeChatId = Date.now();
+        chatResults.chats[fakeChatId] = {
+          chatId: fakeChatId,
           image: profile.avatar_url || getDefaultAvatar(profile.id),
           name: profile.name,
           lastMessage: null,
           unreadMessagesCount: 0,
-          // TODO: Add members?
-          members: [],
+          members: [
+            {
+              name: profile.name,
+              avatarUrl: profile.avatar_url,
+              id: profile.id,
+              isOnline: false,
+              isTyping: false,
+              lastSeen: null,
+              username: profile.username
+            }
+          ],
           messages: [],
           hasLatestUpdates: true,
           isNew: true

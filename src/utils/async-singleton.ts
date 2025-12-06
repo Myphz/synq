@@ -19,12 +19,7 @@ export const toAsyncSingleton = <T>(
       return singletons[singletonId].value as T;
 
     singletons[singletonId].isFetching = true;
-    try {
-      singletons[singletonId].value = await fn();
-    } catch {
-      delete singletons[singletonId];
-      return;
-    }
+    singletons[singletonId].value = await fn();
     singletons[singletonId].isFetching = false;
 
     return singletons[singletonId].value as T;

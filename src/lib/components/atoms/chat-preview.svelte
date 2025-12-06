@@ -8,13 +8,9 @@
   const { chatId }: Props = $props();
 
   const chat = $derived(getChat(chatId));
-  let isNewChat = $derived(chat.isNew);
 </script>
 
-<a
-  class="flex w-full items-center justify-between"
-  href="/{chat.chatId}{isNewChat ? '?isnew=1' : ''}"
->
+<a class="flex w-full items-center justify-between" href="/{chat.chatId}">
   <div class="flex items-center gap-2">
     <CyberImage src={chat.image} class="size-12" />
     <div class="flex flex-col justify-center gap-1 leading-none">

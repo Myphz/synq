@@ -9,7 +9,7 @@
   import { twMerge } from "tailwind-merge";
 
   type Props = {
-    chatId: string;
+    chatId: number;
   };
 
   const { chatId }: Props = $props();

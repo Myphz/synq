@@ -3,11 +3,7 @@ import { supabase } from "../client";
 import { toAsyncSingleton } from "@utils/async-singleton";
 
 export const getUserId = toAsyncSingleton(
-  async () => {
-    console.log("getting user id");
-    return (await getSupabaseSession_forced()).user.id;
-  },
-
+  async () => (await getSupabaseSession_forced()).user.id,
   "id"
 );
 

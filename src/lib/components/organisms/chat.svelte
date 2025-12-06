@@ -9,7 +9,6 @@
   import { onMount, tick } from "svelte";
   import z from "zod";
   import { debounceWithStartStop } from "@utils/debounce";
-  import { page } from "$app/state";
   import { twMerge } from "tailwind-merge";
   import { isEdgeToEdgeEnabled } from "@utils/edge-to-edge";
   import { Keyboard } from "@capacitor/keyboard";
@@ -20,15 +19,15 @@
   import { getChat } from "$lib/stores/chats.svelte";
 
   type Props = {
-    chatId: string;
+    chatId: number;
   };
 
   const { chatId }: Props = $props();
-  const isNew = $derived(!!page.url.searchParams.get("isnew"));
+  const chat = $derived(getChat(chatId));
 
   // Disable sending socket messages if current chat is new
   const send = (...props: Parameters<typeof sendMessage>) => {
-    if (isNew) return;
+    if (chat.isNew) return;
     return sendMessage(...props);
   };
 
@@ -39,7 +38,7 @@
   const isEdgeToEdge = isEdgeToEdgeEnabled();
 
   onMount(() => {
-    if (!isNew && !getChat(chatId).hasLatestUpdates)
+    if (!chat.isNew && !getChat(chatId).hasLatestUpdates)
       send({
         type: "REQUEST_MESSAGES",
         chatId
@@ -84,7 +83,7 @@
   const onTyping = debounceWithStartStop((isTyping) => {
     send({
       type: "UPDATE_USER_TYPING",
-      chatId: page.params.chat,
+      chatId: chatId,
       data: {
         isTyping
       }

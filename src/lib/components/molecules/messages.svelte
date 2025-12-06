@@ -8,7 +8,7 @@
   import { scrollChatToBottom } from "@utils/chat";
 
   type Props = {
-    chatId: string;
+    chatId: number;
   };
 
   const { chatId }: Props = $props();
