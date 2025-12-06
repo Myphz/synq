@@ -35,6 +35,20 @@ export const scrollChatToBottom = (
   });
 };
 
+export const scrollChatToBottomIfNear = () => {
+  const IS_NEAR_BOTTOM_THRESHOLD = 300;
+
+  const container = document.getElementById("messages")!;
+  if (!container) return;
+
+  const isNearBottom =
+    container.scrollHeight - container.scrollTop - container.clientHeight <
+    IS_NEAR_BOTTOM_THRESHOLD;
+
+  // Scroll to view the last message if the user is near bottom
+  if (isNearBottom) scrollChatToBottom();
+};
+
 export const getCurrentChatByUrl = () => {
   const regex = /^\/\d+$/;
   if (regex.test(page.url.pathname)) return Number(page.url.pathname.slice(1));

@@ -10,7 +10,7 @@
 
   $effect(() => {
     (async () => {
-      if (!chat.isNew) return;
+      if (!chat?.isNew) return;
       // If the chat is new, it only has 1 member (the other)
       const realChatId = await createChat(chat.members[0].id);
       goto(`/${realChatId}`, { replaceState: true });

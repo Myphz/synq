@@ -14,7 +14,6 @@
   import "../style/material-symbols.css";
   import { page } from "$app/state";
   import { connect } from "$lib/stores/socket.svelte";
-  import DebugInfo from "@atoms/debug-info.svelte";
 
   onMount(() => {
     appConfig();
@@ -33,4 +32,4 @@
   <slot />
 </main>
 
-<DebugInfo />
+<!-- <DebugInfo /> -->

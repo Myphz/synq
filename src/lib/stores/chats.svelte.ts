@@ -67,15 +67,15 @@ export const setChatMessages = (chatId: number, newMessages: Message[]) => {
 };
 
 export const addChatMessage = async (chatId: number, message: Message) => {
-  if (!chats[chatId]) throw new Error("addChatMessage(): can't find chat");
+  if (!chats[chatId]) throwError("addChatMessage(): can't find chat");
+
   chats[chatId].lastMessage = message;
 
   if (message.senderId !== (await getUserId()))
     chats[chatId].unreadMessagesCount++;
 
   // Don't push messages if the chat was not initialized, the chat doesn't contain any message!
-  if (!chats[chatId].hasLatestUpdates)
-    return debugAlert_FORCE_DO_NOT_USE(`not initialized! ${chatId}`);
+  if (!chats[chatId].hasLatestUpdates) return;
   chats[chatId].messages.push(message);
 };
 

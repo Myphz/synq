@@ -3,9 +3,13 @@ import { connect, socket } from "./socket.svelte";
 let intervalId: NodeJS.Timeout | null = null;
 export const isConnected = $state<{ value: boolean }>({ value: false });
 
+export const clearMonitorConnection = () => {
+  if (intervalId) clearInterval(intervalId);
+};
+
 // Not the most elegant way to do this... But who cares.
 export const monitorConnection = () => {
-  if (intervalId) clearInterval(intervalId);
+  clearMonitorConnection();
 
   intervalId = setInterval(() => {
     isConnected.value =

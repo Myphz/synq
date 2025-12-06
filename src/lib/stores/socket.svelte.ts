@@ -14,10 +14,14 @@ import {
   setChatMessages,
   addChatMessage
 } from "./chats.svelte";
-import { getCurrentChatByUrl, scrollChatToBottom } from "@utils/chat";
+import {
+  getCurrentChatByUrl,
+  scrollChatToBottom,
+  scrollChatToBottomIfNear
+} from "@utils/chat";
 import { page } from "$app/state";
 import { debugLog } from "@utils/debug";
-import { monitorConnection } from "./connection.svelte";
+import { clearMonitorConnection, monitorConnection } from "./connection.svelte";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
@@ -37,7 +41,10 @@ const setupSocket = (sock: WebSocket) => {
   onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), sock);
   onMessage(
     "GET_MESSAGES",
-    (msg) => setChatMessages(msg.chatId, msg.data.messages.toReversed()),
+    (msg) => {
+      setChatMessages(msg.chatId, msg.data.messages.toReversed());
+      scrollChatToBottomIfNear();
+    },
     sock
   );
   onMessage("RECEIVE_MESSAGE", (msg) => {
@@ -65,17 +72,7 @@ const setupSocket = (sock: WebSocket) => {
 
   onMessage("RECEIVE_MESSAGE", async (msg) => {
     if (page.url.pathname !== `/${msg.chatId}`) return;
-    const IS_NEAR_BOTTOM_THRESHOLD = 300;
-
-    const container = document.getElementById("messages")!;
-    const isNearBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight <
-      IS_NEAR_BOTTOM_THRESHOLD;
-
-    // Scroll to view the last message if
-    // the user is near bottom or the message is ours
-    if (isNearBottom || msg.userId === (await getUserId()))
-      scrollChatToBottom();
+    scrollChatToBottomIfNear();
   });
 
   sock.addEventListener("error", (e) => {
@@ -150,6 +147,7 @@ export const getSocket = async (): Promise<WebSocket> => {
 };
 
 export const disconnect = async () => {
+  clearMonitorConnection();
   if (!socket.value) return;
   socket.value.close();
   socket.value = null;

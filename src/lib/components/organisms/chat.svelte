@@ -27,7 +27,7 @@
 
   // Disable sending socket messages if current chat is new
   const send = (...props: Parameters<typeof sendMessage>) => {
-    if (chat.isNew) return;
+    if (chat?.isNew) return;
     return sendMessage(...props);
   };
 
@@ -38,7 +38,7 @@
   const isEdgeToEdge = isEdgeToEdgeEnabled();
 
   onMount(() => {
-    if (!chat.isNew && !getChat(chatId).hasLatestUpdates)
+    if (!chat?.isNew && !chat?.hasLatestUpdates)
       send({
         type: "REQUEST_MESSAGES",
         chatId
