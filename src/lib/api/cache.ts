@@ -31,7 +31,7 @@ export const saveAppState = async () => {
     // Override isInitialized of chats
     chats: Object.fromEntries(
       Object.entries(chats).map(([key, value]) => {
-        return [key, { ...value, isInitialized: false }];
+        return [key, { ...value, hasLatestUpdates: false }];
       })
     )
   };

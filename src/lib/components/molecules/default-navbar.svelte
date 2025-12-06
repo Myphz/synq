@@ -58,7 +58,7 @@
           // TODO: Add members?
           members: [],
           messages: [],
-          isInitialized: true,
+          hasLatestUpdates: true,
           isNew: true
         };
       }

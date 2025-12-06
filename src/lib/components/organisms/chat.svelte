@@ -17,6 +17,7 @@
   import Textarea from "@atoms/textarea.svelte";
   import { sendMessage } from "$lib/stores/socket.svelte";
   import { scrollChatToBottom } from "@utils/chat";
+  import { getChat } from "$lib/stores/chats.svelte";
 
   type Props = {
     chatId: string;
@@ -38,20 +39,21 @@
   const isEdgeToEdge = isEdgeToEdgeEnabled();
 
   onMount(() => {
-    send({
-      type: "REQUEST_MESSAGES",
-      chatId
+    if (!isNew && !getChat(chatId).hasLatestUpdates)
+      send({
+        type: "REQUEST_MESSAGES",
+        chatId
+      });
+
+    if (Capacitor.getPlatform() === "web") return;
+
+    Keyboard.addListener("keyboardWillShow", () => {
+      shouldShowBottomPadding = false;
     });
 
-    if (Capacitor.getPlatform() !== "web") {
-      Keyboard.addListener("keyboardWillShow", () => {
-        shouldShowBottomPadding = false;
-      });
-
-      Keyboard.addListener("keyboardWillHide", () => {
-        shouldShowBottomPadding = true;
-      });
-    }
+    Keyboard.addListener("keyboardWillHide", () => {
+      shouldShowBottomPadding = true;
+    });
 
     // Scroll to bottom on chat load after evaluating isEdgeToEdge
     isEdgeToEdge.then(async () => {
@@ -59,9 +61,7 @@
       scrollChatToBottom("instant");
     });
 
-    return () => {
-      if (Capacitor.getPlatform() !== "web") Keyboard.removeAllListeners();
-    };
+    return Keyboard.removeAllListeners;
   });
 
   const schema = z.object({
