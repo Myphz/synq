@@ -2,12 +2,13 @@
   import { page } from "$app/state";
   import type { ServerMessage } from "$lib/api/protocol";
   import { getUserId } from "$lib/supabase/auth/utils";
-  import { toDate, toTime } from "@utils/dates";
+  import { toTime } from "@utils/dates";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
   import Icon from "./icon.svelte";
   import { isSameDay } from "date-fns";
   import { sendMessage } from "$lib/stores/socket.svelte";
+  import DateDivider from "./date-divider.svelte";
 
   type Message = Extract<
     ServerMessage,
@@ -63,9 +64,7 @@
 </script>
 
 {#if shouldDisplayDividerDate}
-  <div class="mt-2 flex items-start justify-center first-of-type:mt-0">
-    <span>{toDate(message.sentAt)}</span>
-  </div>
+  <DateDivider date={message.sentAt} />
 {/if}
 
 <div

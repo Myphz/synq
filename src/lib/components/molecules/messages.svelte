@@ -28,10 +28,15 @@
 </script>
 
 {#if chat}
+  <img
+    alt="decoration"
+    src="/assets/chat-wave.png"
+    class="absolute left-0 w-full"
+  />
   <div
     id="messages"
     class={twMerge(
-      "flex flex-1 flex-col gap-2 overflow-x-clip overflow-y-scroll"
+      "relative flex flex-1 flex-col gap-2 overflow-x-clip overflow-y-scroll pt-4"
     )}
   >
     {#each chat.messages as msg, i (msg.id)}

@@ -45,6 +45,12 @@
         chatId
       });
 
+    // Scroll to bottom on chat load after evaluating isEdgeToEdge
+    isEdgeToEdge.then(async () => {
+      await tick();
+      scrollChatToBottom("instant");
+    });
+
     if (Capacitor.getPlatform() === "web") return;
 
     Keyboard.addListener("keyboardWillShow", () => {
@@ -53,12 +59,6 @@
 
     Keyboard.addListener("keyboardWillHide", () => {
       shouldShowBottomPadding = true;
-    });
-
-    // Scroll to bottom on chat load after evaluating isEdgeToEdge
-    isEdgeToEdge.then(async () => {
-      await tick();
-      scrollChatToBottom("instant");
     });
 
     return Keyboard.removeAllListeners;

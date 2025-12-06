@@ -22,7 +22,7 @@
 </script>
 
 {#if !NO_NAVBAR_PAGES.includes(page.route.id || "")}
-  <div class="mb-4 bg-accent pt-8" id="main-navbar"></div>
+  <div class="bg-accent pt-8" id="main-navbar"></div>
   <DefaultNavbar />
 {:else}
   <div class="mt-16"></div>
