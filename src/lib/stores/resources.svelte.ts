@@ -12,7 +12,9 @@ export const createDynamicResource = <T>(
   get: () => Promise<T>,
   opts?: { replace: boolean }
 ) => {
-  if (opts?.replace && resources[key]) delete resources[key];
+  // if (opts?.replace && resources[key]) delete resources[key];
+  // Replace by default
+  if (resources[key]) delete resources[key];
   if (resources[key]) return resources[key] as Resource<T>;
 
   const refetch = async () => {

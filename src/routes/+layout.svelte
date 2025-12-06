@@ -13,11 +13,11 @@
   import "../style/anim.css";
   import "../style/material-symbols.css";
   import { page } from "$app/state";
-  import { getSocket } from "$lib/stores/socket.svelte";
+  import { connect } from "$lib/stores/socket.svelte";
 
   onMount(() => {
     appConfig();
-    getSocket();
+    connect();
   });
 </script>
 

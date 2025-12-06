@@ -18,6 +18,7 @@ import { getCurrentChatByUrl, scrollChatToBottom } from "@utils/chat";
 import { page } from "$app/state";
 import { debugLog } from "@utils/debug";
 import { dev } from "$app/environment";
+import { monitorConnection } from "./connection.svelte";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
@@ -110,10 +111,17 @@ export const sendMessage = async (message: ClientMessage) => {
 };
 
 export const connect = async () => {
+  if (
+    socket.isLoading ||
+    socket.value?.readyState === WebSocket.OPEN ||
+    socket.value?.readyState === WebSocket.CONNECTING
+  )
+    return;
+
   socket.isLoading = true;
 
   const session = await getSupabaseSession();
-  if (!session) throw new Error("getSocket(): unauthorized");
+  if (!session) throw new Error("connect(): not authenticated");
   const { access_token: jwt } = session;
 
   const newSocket = new WebSocket(SERVER_URL, ["synq", jwt]);
@@ -122,14 +130,13 @@ export const connect = async () => {
   socket.value = newSocket;
   socket.isLoading = false;
 
+  monitorConnection();
   // If the user is currently viewing a chat
   // when the connection is created,
   // fetch messages for that chat
   const currentChat = getCurrentChatByUrl();
   if (currentChat)
     sendMessage({ type: "REQUEST_MESSAGES", chatId: currentChat });
-
-  return newSocket;
 };
 
 export const getSocket = async (): Promise<WebSocket> => {
@@ -139,7 +146,10 @@ export const getSocket = async (): Promise<WebSocket> => {
     return await getSocket();
   }
 
-  return await connect();
+  await connect();
+  if (!socket.value)
+    throw new Error("getSocket(): socket is null after calling connect()?!?!?");
+  return socket.value;
 };
 
 export const disconnect = async () => {

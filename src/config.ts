@@ -10,6 +10,7 @@ import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { goto } from "$app/navigation";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
 import { connect, disconnect } from "$lib/stores/socket.svelte";
+import { resetSingleton } from "@utils/async-singleton";
 
 export const setupNotifications = async () => {
   if (!(await getSupabaseSession()))
@@ -58,6 +59,14 @@ const configNotifications = async () => {
 
 export const appConfig = () => {
   restoreAppState();
+
+  supabase.auth.onAuthStateChange(async (_, session) => {
+    const isUserLogged = !!session;
+    if (!isUserLogged) return;
+
+    resetSingleton("id");
+    connect();
+  });
 
   App.addListener("backButton", () => {
     goto("/");
