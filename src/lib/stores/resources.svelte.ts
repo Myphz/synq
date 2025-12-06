@@ -12,6 +12,7 @@ export const createDynamicResource = <T>(
   get: () => Promise<T>,
   opts?: { replace: boolean }
 ) => {
+  console.log("createDynamicResource:", key);
   // if (opts?.replace && resources[key]) delete resources[key];
   // Replace by default
   if (resources[key]) delete resources[key];
@@ -22,7 +23,12 @@ export const createDynamicResource = <T>(
     resources[key].isRefetching = true;
 
     resources[key].value = null;
-    resources[key].value = await get();
+    try {
+      resources[key].value = await get();
+    } catch {
+      delete resources[key];
+      return;
+    }
 
     resources[key].isRefetching = false;
   };

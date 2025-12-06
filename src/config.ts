@@ -10,7 +10,6 @@ import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { goto } from "$app/navigation";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
 import { connect, disconnect } from "$lib/stores/socket.svelte";
-import { resetSingleton } from "@utils/async-singleton";
 
 export const setupNotifications = async () => {
   if (!(await getSupabaseSession()))
@@ -64,7 +63,6 @@ export const appConfig = () => {
     const isUserLogged = !!session;
     if (!isUserLogged) return;
 
-    resetSingleton("id");
     connect();
   });
 
