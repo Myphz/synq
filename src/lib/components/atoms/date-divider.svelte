@@ -15,6 +15,7 @@
     containerWidth="1.75vw"
     containerOffset="1.5px"
     lineThickness="0.5px"
+    reversed
   >
     <span>{toDate(date)}</span>
   </CyberElement>
