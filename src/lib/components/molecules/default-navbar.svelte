@@ -23,9 +23,16 @@
     if (page.route.id !== "/") goto("/");
   };
 
-  const onInput = debounceAsync(async (e: Event) => {
+  const onInput = (e: Event) => {
+    chatResults.isLoading = true;
+    filterChats(e);
+  };
+
+  const filterChats = debounceAsync(async (e: Event) => {
     // Empty any previous chat results
-    Object.keys(chatResults).forEach((key) => delete chatResults[key]);
+    Object.keys(chatResults.chats).forEach(
+      (key) => delete chatResults.chats[key]
+    );
     // @ts-expect-error its ok
     const search = e.target.value;
     if (!search) return;
@@ -46,9 +53,9 @@
       );
 
       if (existingChat) {
-        chatResults[existingChat.chatId] = existingChat;
+        chatResults.chats[existingChat.chatId] = existingChat;
       } else {
-        chatResults[profile.id] = {
+        chatResults.chats[profile.id] = {
           // @ts-expect-error profile.id is a string not number
           chatId: profile.id,
           image: profile.avatar_url || getDefaultAvatar(profile.id),
@@ -63,7 +70,9 @@
         };
       }
     });
-  }, 1000);
+
+    chatResults.isLoading = false;
+  }, 500);
 
   const closeSearch = async () => {
     await sleep(100);

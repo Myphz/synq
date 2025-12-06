@@ -3,7 +3,9 @@
   import ChatPreview from "@atoms/chat-preview.svelte";
   import EmptyState from "@atoms/empty-state.svelte";
 
-  const chatsToShow = $derived(filter.chats === "full" ? chats : chatResults);
+  const chatsToShow = $derived(
+    filter.chats === "full" ? chats : chatResults.chats
+  );
 
   const sortedChats = $derived(
     Object.values(chatsToShow).toSorted((c1, c2) => {
@@ -20,6 +22,6 @@
       <ChatPreview chatId={chat.chatId} />
     {/each}
   </div>
-{:else}
+{:else if !chatResults.isLoading}
   <EmptyState />
 {/if}

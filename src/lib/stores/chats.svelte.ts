@@ -27,7 +27,10 @@ export type ChatWithMessages = Chat & {
 export const filter = $state<{ chats: "full" | "search" }>({ chats: "full" });
 
 export const chats = $state<Record<string, ChatWithMessages>>({});
-export const chatResults = $state<Record<string, ChatWithMessages>>({});
+export const chatResults = $state<{
+  chats: Record<string, ChatWithMessages>;
+  isLoading: boolean;
+}>({ chats: {}, isLoading: false });
 
 export const initializeChats = async (chatList: Chat[]) => {
   for (const chat of chatList) {
@@ -94,7 +97,7 @@ export const updateUser = ({ userId, chatId, ...status }: UpdateUserParams) => {
 };
 
 export const getChat = (chatId: string | number) => {
-  const ret = chatResults[chatId.toString()] || chats[chatId.toString()];
+  const ret = chatResults.chats[chatId.toString()] || chats[chatId.toString()];
   if (!ret)
     if (Capacitor.getPlatform() === "web") goto("/");
     else throwError(`getChat(): chat '${chatId}' not found`);

@@ -28,7 +28,9 @@ export const saveAppState = async () => {
   const state: Cache = {
     url: urlToSave,
     version: APP_VERSION,
-    // Override isInitialized of chats
+    // Override hasLatestUpdates of chats
+    // to make sure the client refetches them and gets the latest updates
+    // (cache might be outdated, can't be trusted!!)
     chats: Object.fromEntries(
       Object.entries(chats).map(([key, value]) => {
         return [key, { ...value, hasLatestUpdates: false }];
