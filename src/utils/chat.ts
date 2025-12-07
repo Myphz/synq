@@ -1,6 +1,6 @@
 import { page } from "$app/state";
 import { getDefaultAvatar } from "$lib/api/avatar";
-import type { Chat } from "$lib/stores/chats.svelte";
+import { chats, type Chat } from "$lib/stores/chats.svelte";
 import { getUserId } from "$lib/supabase/auth/utils";
 
 export const getChatName = async (chat: Chat) => {
@@ -23,16 +23,29 @@ export const getChatImage = async (chat: Chat) => {
   );
 };
 
-export const scrollChatToBottom = (
+export const scrollChatToBottom = async (
   behavior: "smooth" | "instant" = "smooth"
 ) => {
-  const container = document.getElementById("messages");
-  if (!container) return;
+  const chatId = getCurrentChatByUrl();
+  if (!chatId) return;
 
-  container.scrollTo({
-    top: container.scrollHeight,
-    behavior
-  });
+  const container = document.getElementById("messages")!;
+  const me = await getUserId();
+  const firstUnreadMessage = (chats[chatId]?.messages || []).find(
+    (message) => message.isRead === false && message.senderId !== me
+  );
+
+  if (!firstUnreadMessage)
+    return container.scrollTo({
+      top: container.scrollHeight,
+      behavior
+    });
+
+  const messageContainer = document.getElementById(
+    `message-${firstUnreadMessage.id}`
+  )!;
+
+  messageContainer.scrollIntoView();
 };
 
 export const scrollChatToBottomIfNear = () => {

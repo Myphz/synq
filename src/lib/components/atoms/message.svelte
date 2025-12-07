@@ -68,6 +68,7 @@
 {/if}
 
 <div
+  id="message-{message.id}"
   style="--y-size: 0.65rem"
   bind:this={container}
   class={twMerge(
