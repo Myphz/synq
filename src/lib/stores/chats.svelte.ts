@@ -86,9 +86,8 @@ export const markMessageAsRead = (chatId: number, messageId: Message["id"]) => {
 
   chats[chatId].messages[msgIdx].isRead = true;
 
-  chats[chatId].unreadMessagesCount = Math.min(
-    chats[chatId].unreadMessagesCount - 1,
-    0
+  chats[chatId].unreadMessagesCount = Math.abs(
+    chats[chatId].unreadMessagesCount - 1
   );
 };
 

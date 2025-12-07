@@ -43,6 +43,7 @@
     ourId = userId;
 
     if (message.isRead || message.senderId === userId) return;
+    if (container.checkVisibility()) return onRead();
 
     const observer = new IntersectionObserver(
       (entries) => {
