@@ -14,10 +14,17 @@
   import "../style/material-symbols.css";
   import { page } from "$app/state";
   import { connect } from "$lib/stores/socket.svelte";
+  import { afterNavigate } from "$app/navigation";
+  import { scrollChatToBottom } from "@utils/chat";
 
   onMount(() => {
     appConfig();
     connect();
+  });
+
+  afterNavigate(({ to }) => {
+    if (to?.route.id !== "/[chat]") return;
+    scrollChatToBottom("instant");
   });
 </script>
 

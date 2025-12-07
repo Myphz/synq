@@ -38,12 +38,6 @@
   const isEdgeToEdge = isEdgeToEdgeEnabled();
 
   onMount(() => {
-    if (!chat?.isNew && !chat?.hasLatestUpdates)
-      send({
-        type: "REQUEST_MESSAGES",
-        chatId
-      });
-
     // Scroll to bottom on chat load after evaluating isEdgeToEdge
     isEdgeToEdge.then(async () => {
       await tick();

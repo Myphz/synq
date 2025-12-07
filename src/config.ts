@@ -49,7 +49,7 @@ const configNotifications = async () => {
     "pushNotificationActionPerformed",
     (event) => {
       const { chatId } = event.notification.data || {};
-      if (chatId) goto(`/${chatId}`);
+      if (chatId) goto(`/${chatId}`, { replaceState: true });
     }
   );
 

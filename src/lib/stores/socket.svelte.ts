@@ -128,12 +128,6 @@ export const connect = async () => {
   socket.isLoading = false;
 
   monitorConnection();
-  // If the user is currently viewing a chat
-  // when the connection is created,
-  // fetch messages for that chat
-  const currentChat = getCurrentChatByUrl();
-  if (currentChat)
-    sendMessage({ type: "REQUEST_MESSAGES", chatId: currentChat });
 };
 
 export const getSocket = async (): Promise<WebSocket> => {
