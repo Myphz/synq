@@ -15,7 +15,6 @@ export const createDynamicResource = <T>(
   // if (opts?.replace && resources[key]) delete resources[key];
   // Replace by default
   if (resources[key]) delete resources[key];
-  if (resources[key]) return resources[key] as Resource<T>;
 
   const refetch = async () => {
     if (resources[key].isRefetching) return;
