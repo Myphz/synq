@@ -33,6 +33,12 @@
   src="/assets/chat-wave.png"
   class="absolute left-0 w-full"
 />
+
+<img
+  alt="decoration"
+  src="/assets/logo-orange.png"
+  class="absolute left-1/2 top-1/2 w-[40vw] -translate-x-1/2 -translate-y-1/2 opacity-50"
+/>
 <div
   id="messages"
   class={twMerge(

@@ -35,7 +35,7 @@ export default {
         },
         ".gradient-bg": {
           background:
-            "linear-gradient(to bottom, oklch(0.1473 0.0107 285.01), oklch(0.1848 0.0169 233.21))"
+            "linear-gradient(to bottom, oklch(0.1473 0.0107 285.01), oklch(0.2151 0.0169 233.21))"
         }
       });
     }
