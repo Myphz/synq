@@ -115,7 +115,10 @@ export const connect = async () => {
   socket.isLoading = true;
 
   const session = await getSupabaseSession();
-  if (!session) throw new Error("connect(): not authenticated");
+  if (!session) {
+    socket.isLoading = false;
+    throw new Error("connect(): not authenticated");
+  }
   const { access_token: jwt } = session;
 
   const newSocket = new WebSocket(SERVER_URL, ["synq", jwt]);

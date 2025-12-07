@@ -59,7 +59,7 @@ const configNotifications = async () => {
 export const appConfig = () => {
   restoreAppState();
 
-  supabase.auth.onAuthStateChange(async (_, session) => {
+  supabase.auth.onAuthStateChange((_, session) => {
     const isUserLogged = !!session;
     if (!isUserLogged) return;
 
