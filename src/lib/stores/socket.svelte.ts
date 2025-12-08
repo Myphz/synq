@@ -29,7 +29,6 @@ export const socket = $state<{ value: null | WebSocket; isLoading: boolean }>({
 const setupSocket = (sock: WebSocket) => {
   sock.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
-
     debugLog(message);
   });
 

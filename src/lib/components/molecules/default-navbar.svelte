@@ -19,13 +19,18 @@
   });
 
   const openSearch = () => {
+    // Empty any previous chat results
+    Object.keys(chatResults.chats).forEach(
+      (key) => delete chatResults.chats[Number(key)]
+    );
     isSearch = true;
+    chatResults.isLoading = true;
     if (page.route.id !== "/") goto("/");
   };
 
   const onInput = (e: Event) => {
-    chatResults.isLoading = true;
     filterChats(e);
+    chatResults.isLoading = true;
   };
 
   const filterChats = debounceAsync(async (e: Event) => {
@@ -33,6 +38,7 @@
     Object.keys(chatResults.chats).forEach(
       (key) => delete chatResults.chats[Number(key)]
     );
+
     // @ts-expect-error its ok
     const search = e.target.value;
     if (!search) return;
@@ -44,6 +50,7 @@
       .throwOnError();
 
     const me = await getUserId();
+
     // Remove current user from any search result
     profiles = profiles.filter((profile) => profile.id !== me);
 

@@ -33,9 +33,8 @@
 <aside
   use:clickoutside
   onclickoutside={closeMenu}
-  use:portal={"body"}
   class={twMerge(
-    "epic-transition absolute left-0 top-0 h-dvh w-0 min-w-0 overflow-hidden bg-accent pt-10 *:px-4",
+    "epic-transition fixed left-0 top-0 z-20 h-dvh w-0 min-w-0 overflow-hidden bg-accent pt-10 *:px-4",
     isOpen && "min-w-[70%]"
   )}
 >
@@ -64,6 +63,15 @@
     </ul>
   {/if}
 </aside>
+
+<div
+  use:portal={"body"}
+  class={twMerge(
+    "fixed inset-0 bg-[#000000]",
+    isOpen && "z-0 bg-opacity-50",
+    !isOpen && "-z-10 bg-opacity-0"
+  )}
+></div>
 
 <style>
   aside {
