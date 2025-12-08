@@ -62,12 +62,18 @@ export const initializeChats = async (chatList: Chat[]) => {
 
 export const setChatMessages = (chatId: number, newMessages: Message[]) => {
   if (!chats[chatId]) throw new Error("setChatMessages(): can't find chat");
-  chats[chatId].messages = newMessages;
-  chats[chatId].hasLatestUpdates = true;
+  chats[chatId] = {
+    ...chats[chatId],
+    messages: newMessages,
+    hasLatestUpdates: true
+  };
 };
 
 export const addChatMessage = async (chatId: number, message: Message) => {
-  if (!chats[chatId]) throwError("addChatMessage(): can't find chat");
+  // Ignore user updates from chat we don't know - it's probably a new chat
+  if (!chats[chatId]) return;
+  // Don't process duplicates
+  if (chats[chatId].messages.find((msg) => msg.id === message.id)) return;
 
   chats[chatId].lastMessage = message;
 
@@ -81,8 +87,9 @@ export const addChatMessage = async (chatId: number, message: Message) => {
 
 export const markMessageAsRead = (chatId: number, messageId: Message["id"]) => {
   const msgIdx =
-    chats[chatId]?.messages.findIndex((msg) => msg.id === messageId) || -1;
-  if (msgIdx === -1) throw new Error("markMessageAsRead: can't find message");
+    chats[chatId]?.messages.findIndex((msg) => msg.id === messageId) ?? -1;
+
+  if (msgIdx === -1) throwError("markMessageAsRead: can't find message");
 
   chats[chatId].messages[msgIdx].isRead = true;
 
@@ -97,7 +104,10 @@ type UpdateUserParams = { userId: string; chatId: number } & Extract<
 >["data"];
 
 export const updateUser = ({ userId, chatId, ...status }: UpdateUserParams) => {
-  const chat = chats[chatId] || throwError("updateUser(): chat not found");
+  const chat = chats[chatId];
+  // Ignore user updates from chat we don't know - it's probably a new chat
+  if (!chat) return;
+
   const memberIdx = chat.members.findIndex((member) => member.id === userId);
   if (memberIdx === -1) return;
 

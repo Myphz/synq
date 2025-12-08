@@ -1,6 +1,5 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import type { ServerMessage } from "$lib/api/protocol";
   import { getUserId } from "$lib/supabase/auth/utils";
   import { toTime } from "@utils/dates";
   import { onMount } from "svelte";
@@ -10,10 +9,8 @@
   import { sendMessage } from "$lib/stores/socket.svelte";
   import DateDivider from "./date-divider.svelte";
 
-  type Message = Extract<
-    ServerMessage,
-    { type: "GET_MESSAGES" }
-  >["data"]["messages"][number];
+  import { openLinksInBrowser } from "@utils/links";
+  import { renderMessage, type Message } from "@utils/message";
 
   type Props = Message & { prevMessageTime?: string };
 
@@ -28,6 +25,8 @@
     const currentMessageDate = new Date(message.sentAt);
     return !isSameDay(prevMessageDate, currentMessageDate);
   });
+
+  let messageHtml = $derived(renderMessage(message));
 
   const onRead = () =>
     sendMessage({
@@ -78,9 +77,10 @@
     !isFromOther && "cyberpunk-tr self-end gradient-msg"
   )}
 >
-  <span class="min-w-0 flex-1 break-words leading-[18px]">
-    {message.content}
-  </span>
+  <p use:openLinksInBrowser class="min-w-0 flex-1 break-words leading-[18px]">
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+    {@html messageHtml}
+  </p>
   <span class="shrink-0 text-small text-muted">{toTime(message.sentAt)}</span>
   {#if message.senderId === ourId}
     {#if message.isRead}

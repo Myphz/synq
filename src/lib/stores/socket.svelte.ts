@@ -4,7 +4,7 @@ import {
   type ServerMessage
 } from "$lib/api/protocol";
 
-import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
+import { getSupabaseSession } from "$lib/supabase/auth/utils";
 import { sleep } from "@utils/sleep";
 
 import {
@@ -14,11 +14,7 @@ import {
   setChatMessages,
   addChatMessage
 } from "./chats.svelte";
-import {
-  getCurrentChatByUrl,
-  scrollChatToBottom,
-  scrollChatToBottomIfNear
-} from "@utils/chat";
+import { scrollChatToBottomIfNear } from "@utils/chat";
 import { page } from "$app/state";
 import { debugLog } from "@utils/debug";
 import { clearMonitorConnection, monitorConnection } from "./connection.svelte";
@@ -37,7 +33,7 @@ const setupSocket = (sock: WebSocket) => {
     debugLog(message);
   });
 
-  // Setup sock events
+  // Setup socket server events handlers
   onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), sock);
   onMessage(
     "GET_MESSAGES",
