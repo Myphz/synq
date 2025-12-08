@@ -18,20 +18,27 @@ export const debugLog = (...args: unknown[]) => {
 
 export const debugAlert = (...args: unknown[]) => {
   if (Capacitor.getPlatform() === "web") return console.error(...args);
+  if (!dev) return;
 
-  if (dev) {
-    const formattedArgs = args.map((arg) =>
-      arg === undefined ? "undefined" : JSON.stringify(arg, null, 2)
-    );
-    alert(formattedArgs.join(" "));
-  }
+  const formattedArgs = args.map((arg) => {
+    if (arg instanceof Error) {
+      return `Error: ${arg.message}\nStack: ${arg.stack}`;
+    }
+    return arg === undefined ? "undefined" : JSON.stringify(arg, null, 2);
+  });
+
+  alert(formattedArgs.join(" "));
 };
 
 export const debugAlert_FORCE_DO_NOT_USE = (...args: unknown[]) => {
   if (Capacitor.getPlatform() === "web") return console.error(...args);
 
-  const formattedArgs = args.map((arg) =>
-    arg === undefined ? "undefined" : JSON.stringify(arg, null, 2)
-  );
+  const formattedArgs = args.map((arg) => {
+    if (arg instanceof Error) {
+      return `Error: ${arg.message}\nStack: ${arg.stack}`;
+    }
+    return arg === undefined ? "undefined" : JSON.stringify(arg, null, 2);
+  });
+
   alert(formattedArgs.join(" "));
 };

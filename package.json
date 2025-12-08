@@ -53,6 +53,7 @@
     "@capacitor/device": "^7.0.1",
     "@capacitor/filesystem": "^7.1.1",
     "@capacitor/keyboard": "^7.0.1",
+    "@capacitor/local-notifications": "^7.0.3",
     "@capacitor/network": "^7.0.1",
     "@capacitor/preferences": "^7.0.1",
     "@capacitor/push-notifications": "^7.0.1",

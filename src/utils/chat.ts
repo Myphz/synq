@@ -3,15 +3,16 @@ import { getDefaultAvatar } from "$lib/api/avatar";
 import { chats, type Chat } from "$lib/stores/chats.svelte";
 import { getUserId } from "$lib/supabase/auth/utils";
 
-export const getChatName = async (chat: Chat) => {
+export const getChatOtherMember = async (chat: Chat) => {
   const currentUserId = await getUserId();
+  if (chat.members.length > 2)
+    throw new Error("getChatOtherMember: chat has more than 2 members!");
 
-  return (
-    chat.name ||
-    chat.members.find((m) => m.id !== currentUserId)?.name ||
-    "UNKNOWN"
-  );
+  return chat.members.find((m) => m.id !== currentUserId)!;
 };
+
+export const getChatName = async (chat: Chat) =>
+  chat.name || (await getChatOtherMember(chat)).name;
 
 export const getChatImage = async (chat: Chat) => {
   const currentUserId = await getUserId();

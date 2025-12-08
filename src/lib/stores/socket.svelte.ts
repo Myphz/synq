@@ -18,6 +18,7 @@ import { scrollChatToBottomIfNear } from "@utils/chat";
 import { page } from "$app/state";
 import { debugLog } from "@utils/debug";
 import { clearMonitorConnection, monitorConnection } from "./connection.svelte";
+import { sendNotification } from "@utils/notifications";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
@@ -66,7 +67,12 @@ const setupSocket = (sock: WebSocket) => {
   );
 
   onMessage("RECEIVE_MESSAGE", async (msg) => {
-    if (page.url.pathname !== `/${msg.chatId}`) return;
+    // Send local notification if user is currently viewing other chat
+    if (page.url.pathname !== `/${msg.chatId}`)
+      return sendNotification(
+        { content: msg.data.content, id: msg.data.id },
+        msg.chatId
+      );
     scrollChatToBottomIfNear();
   });
 

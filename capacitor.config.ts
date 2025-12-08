@@ -11,6 +11,10 @@ const config: CapacitorConfig = {
   plugins: {
     Keyboard: {
       resizeOnFullScreen: true
+    },
+    LocalNotifications: {
+      smallIcon: "notification_icon",
+      iconColor: "#008C60"
     }
   }
 };

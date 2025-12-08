@@ -10,6 +10,7 @@ import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { goto } from "$app/navigation";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
 import { connect, disconnect } from "$lib/stores/socket.svelte";
+import { LocalNotifications } from "@capacitor/local-notifications";
 
 export const setupNotifications = async () => {
   if (!(await getSupabaseSession()))
@@ -32,6 +33,21 @@ const configNotifications = async () => {
     throw new Error("User denied permissions!");
   }
 
+  // Repeat setup for local notifications
+  let localPerm = await LocalNotifications.checkPermissions();
+  if (localPerm.display === "prompt") {
+    localPerm = await LocalNotifications.requestPermissions();
+  }
+  if (localPerm.display !== "granted") {
+    console.warn("Local notification permissions denied!");
+  }
+
+  await LocalNotifications.createChannel({
+    id: "local_notifications",
+    name: "Chat Messages",
+    importance: 5
+  });
+
   await PushNotifications.addListener("registration", async (token) => {
     const fcmToken = token.value;
     if (!(await getSupabaseSession())) return;
@@ -49,6 +65,14 @@ const configNotifications = async () => {
     "pushNotificationActionPerformed",
     (event) => {
       const { chatId } = event.notification.data || {};
+      if (chatId) goto(`/${chatId}`, { replaceState: true });
+    }
+  );
+
+  await LocalNotifications.addListener(
+    "localNotificationActionPerformed",
+    (event) => {
+      const { chatId } = event.notification.extra || {};
       if (chatId) goto(`/${chatId}`, { replaceState: true });
     }
   );

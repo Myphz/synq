@@ -6,6 +6,7 @@ import { supabase } from "$lib/supabase/client";
 import { Capacitor } from "@capacitor/core";
 import { getChatImage, getChatName } from "@utils/chat";
 import { debugAlert_FORCE_DO_NOT_USE } from "@utils/debug";
+import { clearNotification } from "@utils/notifications";
 import { throwError } from "@utils/throw-error";
 
 type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
@@ -96,6 +97,8 @@ export const markMessageAsRead = (chatId: number, messageId: Message["id"]) => {
   chats[chatId].unreadMessagesCount = Math.abs(
     chats[chatId].unreadMessagesCount - 1
   );
+
+  clearNotification(messageId);
 };
 
 type UpdateUserParams = { userId: string; chatId: number } & Extract<
