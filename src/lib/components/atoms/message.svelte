@@ -78,13 +78,15 @@
     !isFromOther && "cyberpunk-tr self-end gradient-msg"
   )}
 >
-  <span class="w-full break-words leading-[18px]">{message.content}</span>
-  <span class="text-small text-muted">{toTime(message.sentAt)}</span>
+  <span class="min-w-0 flex-1 break-words leading-[18px]">
+    {message.content}
+  </span>
+  <span class="shrink-0 text-small text-muted">{toTime(message.sentAt)}</span>
   {#if message.senderId === ourId}
     {#if message.isRead}
-      <Icon name="done_all" class="-ml-1" />
+      <Icon name="done_all" class="-ml-1 shrink-0" />
     {:else}
-      <Icon name="check" class="-ml-1 text-text" />
+      <Icon name="check" class="-ml-1 shrink-0 text-text" />
     {/if}
   {/if}
 </div>
