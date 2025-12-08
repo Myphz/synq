@@ -3,6 +3,7 @@ import {
   differenceInHours,
   differenceInMinutes,
   format,
+  isSameDay,
   isThisWeek,
   isThisYear,
   isYesterday,
@@ -33,12 +34,13 @@ const pluralize = (
 type FormatUserStatusParams = Omit<
   Extract<ServerMessage, { type: "UPDATE_USER_STATUS" }>["data"],
   "lastSeen"
-> & { lastSeen: string | null };
+> & { lastSeen: string | null; exact?: boolean };
 
 export const formatUserStatus = ({
   isOnline,
   isTyping,
-  lastSeen
+  lastSeen,
+  exact
 }: FormatUserStatusParams): string => {
   if (isTyping) return "TYPING...";
   if (isOnline) return "ONLINE";
@@ -49,6 +51,8 @@ export const formatUserStatus = ({
 
   const minutesDiff = differenceInMinutes(now, lastSeenDate);
   const hoursDiff = differenceInHours(now, lastSeenDate);
+
+  if (exact && isSameDay(lastSeenDate, now)) return toTime(lastSeen);
 
   if (minutesDiff < 1) return `just now`;
 

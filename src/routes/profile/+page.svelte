@@ -58,7 +58,8 @@
                 {isOnline
                   ? "Online"
                   : formatUserStatus({
-                      lastSeen: realProfile.last_seen
+                      lastSeen: realProfile.last_seen,
+                      exact: true
                     })}
               </span>
             {:else}
