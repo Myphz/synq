@@ -1,16 +1,16 @@
-import { PushNotifications } from "@capacitor/push-notifications";
 import type { Message } from "./message";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { chats } from "$lib/stores/chats.svelte";
-import { getChatName, getChatOtherMember } from "./chat";
+import { getChatName } from "./chat";
 
-const hashStr = (str) => {
+const hashStr = (str: string) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash | 0;
+    hash = Math.trunc((hash << 5) - hash + char);
   }
+
+  // eslint-disable-next-line unicorn/number-literal-case
   return hash & 0x7f_ff_ff_ff;
 };
 
@@ -21,7 +21,7 @@ export const sendNotification = async (
   const chat = chats[chatId];
   if (!chat) throw new Error("sendNotification(): can't find chat!");
 
-  const otherMember = await getChatOtherMember(chat);
+  // const otherMember = await getChatOtherMember(chat);
 
   await LocalNotifications.schedule({
     notifications: [
@@ -42,27 +42,18 @@ export const sendNotification = async (
 };
 
 export const clearNotification = async (messageId: string) => {
-  // We don't know if the notification we need to clear is a
-  // LOCAL notification (sent by the client to itself)
-  // or a SERVER notification (sent by the server when the app was offline)
-  // so we need to try both
-  const { notifications: localNotifications } =
+  const { notifications } =
     await LocalNotifications.getDeliveredNotifications();
-  const localNotificationToDelete = localNotifications.find(
-    (notification) => notification.extra?.messageId === messageId
-  );
-  if (localNotificationToDelete)
-    await LocalNotifications.removeDeliveredNotifications({
-      notifications: [localNotificationToDelete]
-    });
 
-  const { notifications: serverNotifications } =
-    await PushNotifications.getDeliveredNotifications();
-  const serverNotificationToDelete = serverNotifications.find(
-    (notification) => notification.data?.messageId === messageId
+  const notificationId = hashStr(messageId);
+
+  const notificationToDelete = notifications.find(
+    (notification) =>
+      notification.id === notificationId || notification.tag === messageId
   );
-  if (serverNotificationToDelete)
-    await PushNotifications.removeDeliveredNotifications({
-      notifications: [serverNotificationToDelete]
+
+  if (notificationToDelete)
+    await LocalNotifications.removeDeliveredNotifications({
+      notifications: [notificationToDelete]
     });
 };
