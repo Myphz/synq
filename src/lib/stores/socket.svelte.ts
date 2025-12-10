@@ -20,10 +20,11 @@ import { debugLog } from "@utils/debug";
 import { clearMonitorConnection, monitorConnection } from "./connection.svelte";
 import { sendNotification } from "@utils/notifications";
 import { toAtomic } from "@utils/atomic";
+import { restoreAppState, saveAppState } from "$lib/api/cache";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
-export const socket = $state<{ value: null | WebSocket }>({
+export const socket = $state<{ value: WebSocket | null }>({
   value: null
 });
 
@@ -31,6 +32,11 @@ const setupSocket = (sock: WebSocket) => {
   sock.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
     debugLog(message);
+  });
+
+  sock.addEventListener("close", async () => {
+    await disconnect();
+    await connect();
   });
 
   // Setup socket server events handlers
@@ -131,9 +137,14 @@ export const getSocket = async (): Promise<WebSocket> => {
   return socket.value;
 };
 
-export const disconnect = toAtomic(() => {
+export const disconnect = toAtomic(async () => {
+  // Mark all chats data as dirty
+  await saveAppState();
+  await restoreAppState();
+
   clearMonitorConnection();
   if (!socket.value) return;
+
   socket.value.close();
   socket.value = null;
 });

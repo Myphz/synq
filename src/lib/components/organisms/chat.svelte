@@ -33,7 +33,6 @@
 
   let textareaRef: Textarea;
   let shouldShowBottomPadding = $state(true);
-  let messagesRef: Messages;
 
   const isEdgeToEdge = isEdgeToEdgeEnabled();
 
@@ -85,7 +84,7 @@
   }, TYPING_TIMEOUT_MS);
 </script>
 
-<Messages bind:this={messagesRef} {chatId} />
+<Messages {chatId} />
 
 <Form
   id="chat-form"

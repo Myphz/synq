@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
   import { createChat, getChat } from "$lib/stores/chats.svelte";
+  import { isConnected } from "$lib/stores/connection.svelte";
   import { sendMessage } from "$lib/stores/socket.svelte";
   import ChatNavbar from "@molecules/chat-navbar.svelte";
   import Chat from "@organisms/chat.svelte";
@@ -21,7 +22,7 @@
   // Same for untrack() - without it, this gets called 4+ times instead of once.
   // It is probably because those values "jitter", or something.
   $effect(() => {
-    if (shouldRefetchMessages) {
+    if (isConnected.value && shouldRefetchMessages) {
       untrack(() => {
         sendMessage({ type: "REQUEST_MESSAGES", chatId });
       });
