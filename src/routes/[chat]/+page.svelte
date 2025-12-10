@@ -5,20 +5,35 @@
   import { sendMessage } from "$lib/stores/socket.svelte";
   import ChatNavbar from "@molecules/chat-navbar.svelte";
   import Chat from "@organisms/chat.svelte";
+  import { untrack } from "svelte";
 
   const chatId = $derived(Number(page.params.chat));
   const chat = $derived(getChat(chatId));
 
-  $effect(() => {
-    if (!chat?.isNew && !chat?.hasLatestUpdates)
-      sendMessage({ type: "REQUEST_MESSAGES", chatId });
+  const shouldRefetchMessages = $derived(
+    !chat?.isNew && !chat?.hasLatestUpdates
+  );
 
-    (async () => {
-      if (!chat?.isNew) return;
-      // If the chat is new, it only has 1 member (the other)
-      const realChatId = await createChat(chat.members[0].id);
-      goto(`/${realChatId}`, { replaceState: true });
-    })();
+  // NB: We need to $derive shouldRefetchMessages instead of calculating
+  // it statically inside this $effect because otherwise
+  // $effect deps checker gets confused and runs this many times.
+  // Same for untrack() - without it, this gets called 4+ times instead of once.
+  // It is probably because those values "jitter", or something.
+  $effect(() => {
+    if (shouldRefetchMessages) {
+      untrack(() => {
+        sendMessage({ type: "REQUEST_MESSAGES", chatId });
+      });
+    }
+  });
+
+  $effect(() => {
+    if (chat?.isNew)
+      (async () => {
+        // If the chat is new, it only has 1 member (the other)
+        const realChatId = await createChat(chat.members[0].id);
+        goto(`/${realChatId}`, { replaceState: true });
+      })();
   });
 </script>
 

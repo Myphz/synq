@@ -4,8 +4,8 @@ import type { ServerMessage } from "$lib/api/protocol";
 import { getUserId } from "$lib/supabase/auth/utils";
 import { supabase } from "$lib/supabase/client";
 import { Capacitor } from "@capacitor/core";
+import { atomic } from "@utils/atomic";
 import { getChatImage, getChatName } from "@utils/chat";
-import { debugAlert_FORCE_DO_NOT_USE } from "@utils/debug";
 import { clearNotification } from "@utils/notifications";
 import { throwError } from "@utils/throw-error";
 
@@ -86,7 +86,10 @@ export const addChatMessage = async (chatId: number, message: Message) => {
   chats[chatId].messages.push(message);
 };
 
-export const markMessageAsRead = (chatId: number, messageId: Message["id"]) => {
+export const markMessageAsRead = async (
+  chatId: number,
+  messageId: Message["id"]
+) => {
   const msgIdx =
     chats[chatId]?.messages.findIndex((msg) => msg.id === messageId) ?? -1;
 
@@ -94,9 +97,15 @@ export const markMessageAsRead = (chatId: number, messageId: Message["id"]) => {
 
   chats[chatId].messages[msgIdx].isRead = true;
 
-  chats[chatId].unreadMessagesCount = Math.abs(
-    chats[chatId].unreadMessagesCount - 1
-  );
+  const ourId = await getUserId();
+
+  atomic(() => {
+    chats[chatId].unreadMessagesCount = chats[chatId].messages.filter(
+      (msg) => msg.senderId !== ourId && !msg.isRead
+    ).length;
+  }, "CALCULATE_CHAT_UNREAD_MESSAGES");
+
+  if (chats[chatId].messages[msgIdx].senderId === ourId) return;
 
   clearNotification(messageId);
 };
@@ -187,7 +196,6 @@ export const isUserOnline = (userId: string) => {
 
 export const setChats = (newChats: Record<number, ChatWithMessages>) => {
   Object.entries(newChats).forEach(([key, value]) => {
-    if (chats[Number(key)]?.hasLatestUpdates) return;
     chats[Number(key)] = value;
   });
 };
