@@ -2,7 +2,6 @@ import type { Message } from "./message";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { chats } from "$lib/stores/chats.svelte";
 import { getChatName } from "./chat";
-import { debugAlert_FORCE_DO_NOT_USE } from "./debug";
 
 const hashStr = (str: string) => {
   let hash = 0;
@@ -45,8 +44,6 @@ export const sendNotification = async (
 export const clearNotification = async (messageId: string) => {
   const { notifications } =
     await LocalNotifications.getDeliveredNotifications();
-
-  debugAlert_FORCE_DO_NOT_USE(notifications);
 
   const notificationId = hashStr(messageId);
 
