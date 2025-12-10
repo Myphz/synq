@@ -5,6 +5,7 @@
   import { sendMessage } from "$lib/stores/socket.svelte";
   import ChatNavbar from "@molecules/chat-navbar.svelte";
   import Chat from "@organisms/chat.svelte";
+  import { emptyChatResults } from "@utils/chat";
   import { untrack } from "svelte";
 
   const chatId = $derived(Number(page.params.chat));
@@ -32,7 +33,8 @@
       (async () => {
         // If the chat is new, it only has 1 member (the other)
         const realChatId = await createChat(chat.members[0].id);
-        goto(`/${realChatId}`, { replaceState: true });
+        await goto(`/${realChatId}`, { replaceState: true });
+        emptyChatResults();
       })();
   });
 </script>

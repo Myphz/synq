@@ -17,10 +17,11 @@
 
   $effect(() => {
     filter.chats = isSearch ? "search" : "full";
-    if (!isSearch) emptyChatResults();
   });
 
   const openSearch = () => {
+    emptyChatResults();
+
     isSearch = true;
     chatResults.isLoading = true;
 
