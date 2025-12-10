@@ -37,10 +37,7 @@ const setupSocket = (sock: WebSocket) => {
   onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), sock);
   onMessage(
     "GET_MESSAGES",
-    (msg) => {
-      setChatMessages(msg.chatId, msg.data.messages.toReversed());
-      scrollChatToBottomIfNear();
-    },
+    (msg) => setChatMessages(msg.chatId, msg.data.messages.toReversed()),
     sock
   );
   onMessage("RECEIVE_MESSAGE", (msg) => {

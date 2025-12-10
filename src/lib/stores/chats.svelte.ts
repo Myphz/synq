@@ -5,9 +5,15 @@ import { getUserId } from "$lib/supabase/auth/utils";
 import { supabase } from "$lib/supabase/client";
 import { Capacitor } from "@capacitor/core";
 import { atomic } from "@utils/atomic";
-import { getChatImage, getChatName } from "@utils/chat";
+import {
+  getChatImage,
+  getChatName,
+  scrollChatToBottom,
+  scrollChatToBottomIfNear
+} from "@utils/chat";
 import { clearNotification } from "@utils/notifications";
 import { throwError } from "@utils/throw-error";
+import { tick } from "svelte";
 
 type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 
@@ -61,13 +67,24 @@ export const initializeChats = async (chatList: Chat[]) => {
   }
 };
 
-export const setChatMessages = (chatId: number, newMessages: Message[]) => {
+export const setChatMessages = async (
+  chatId: number,
+  newMessages: Message[]
+) => {
   if (!chats[chatId]) throw new Error("setChatMessages(): can't find chat");
+
+  const hadMessages = chats[chatId].messages.length > 0;
+
   chats[chatId] = {
     ...chats[chatId],
     messages: newMessages,
     hasLatestUpdates: true
   };
+
+  await tick();
+
+  if (!hadMessages) scrollChatToBottom("instant");
+  else scrollChatToBottomIfNear();
 };
 
 export const addChatMessage = async (chatId: number, message: Message) => {
