@@ -13,34 +13,21 @@ import { connect, disconnect } from "$lib/stores/socket.svelte";
 import { LocalNotifications } from "@capacitor/local-notifications";
 
 export const setupNotifications = async () => {
-  if (!(await getSupabaseSession()))
-    return supabase.auth.onAuthStateChange((event, session) => {
-      if (event !== "SIGNED_IN" || !session) return;
-      configNotifications();
-    });
+  if (await getSupabaseSession()) return configNotifications();
 
-  configNotifications();
+  const listener = supabase.auth.onAuthStateChange((_, session) => {
+    if (!session) return;
+    configNotifications();
+    listener.data.subscription.unsubscribe();
+  });
 };
 
 const configNotifications = async () => {
-  let permStatus = await PushNotifications.checkPermissions();
+  if ((await PushNotifications.checkPermissions()).receive === "prompt")
+    await PushNotifications.requestPermissions();
 
-  if (permStatus.receive === "prompt") {
-    permStatus = await PushNotifications.requestPermissions();
-  }
-
-  if (permStatus.receive !== "granted") {
-    throw new Error("User denied permissions!");
-  }
-
-  // Repeat setup for local notifications
-  let localPerm = await LocalNotifications.checkPermissions();
-  if (localPerm.display === "prompt") {
-    localPerm = await LocalNotifications.requestPermissions();
-  }
-  if (localPerm.display !== "granted") {
-    console.warn("Local notification permissions denied!");
-  }
+  if ((await LocalNotifications.checkPermissions()).display === "prompt")
+    await LocalNotifications.requestPermissions();
 
   await LocalNotifications.createChannel({
     id: "local_notifications",

@@ -1,6 +1,6 @@
 import { page } from "$app/state";
 import { getDefaultAvatar } from "$lib/api/avatar";
-import { chats, type Chat } from "$lib/stores/chats.svelte";
+import { chatResults, chats, type Chat } from "$lib/stores/chats.svelte";
 import { getUserId } from "$lib/supabase/auth/utils";
 
 export const getChatOtherMember = async (chat: Chat) => {
@@ -66,4 +66,10 @@ export const scrollChatToBottomIfNear = () => {
 export const getCurrentChatByUrl = () => {
   const regex = /^\/\d+$/;
   if (regex.test(page.url.pathname)) return Number(page.url.pathname.slice(1));
+};
+
+export const emptyChatResults = () => {
+  Object.keys(chatResults.chats).forEach(
+    (key) => delete chatResults.chats[Number(key)]
+  );
 };

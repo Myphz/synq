@@ -19,12 +19,12 @@ import { page } from "$app/state";
 import { debugLog } from "@utils/debug";
 import { clearMonitorConnection, monitorConnection } from "./connection.svelte";
 import { sendNotification } from "@utils/notifications";
+import { toAtomic } from "@utils/atomic";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
-export const socket = $state<{ value: null | WebSocket; isLoading: boolean }>({
-  value: null,
-  isLoading: false
+export const socket = $state<{ value: null | WebSocket }>({
+  value: null
 });
 
 const setupSocket = (sock: WebSocket) => {
@@ -105,48 +105,38 @@ export const sendMessage = async (message: ClientMessage) => {
   sock.send(JSON.stringify(message));
 };
 
-export const connect = async () => {
+export const connect = toAtomic(async () => {
   if (
-    socket.isLoading ||
     socket.value?.readyState === WebSocket.OPEN ||
     socket.value?.readyState === WebSocket.CONNECTING
   )
     return;
 
-  socket.isLoading = true;
-
   const session = await getSupabaseSession();
-  if (!session) {
-    socket.isLoading = false;
-    throw new Error("connect(): not authenticated");
-  }
+  if (!session) throw new Error("connect(): not authenticated");
+
   const { access_token: jwt } = session;
 
   const newSocket = new WebSocket(SERVER_URL, ["synq", jwt]);
   setupSocket(newSocket);
 
   socket.value = newSocket;
-  socket.isLoading = false;
 
   monitorConnection();
-};
+});
 
 export const getSocket = async (): Promise<WebSocket> => {
   if (socket.value) return socket.value;
-  if (socket.isLoading) {
-    while (socket.isLoading) await sleep(50);
-    return await getSocket();
-  }
-
   await connect();
+
   if (!socket.value)
     throw new Error("getSocket(): socket is null after calling connect()?!?!?");
   return socket.value;
 };
 
-export const disconnect = async () => {
+export const disconnect = toAtomic(() => {
   clearMonitorConnection();
   if (!socket.value) return;
   socket.value.close();
   socket.value = null;
-};
+});

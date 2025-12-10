@@ -96,7 +96,6 @@ export const markMessageAsRead = async (
   if (msgIdx === -1) throwError("markMessageAsRead: can't find message");
 
   chats[chatId].messages[msgIdx].isRead = true;
-
   const ourId = await getUserId();
 
   atomic(() => {
@@ -106,7 +105,6 @@ export const markMessageAsRead = async (
   }, "CALCULATE_CHAT_UNREAD_MESSAGES");
 
   if (chats[chatId].messages[msgIdx].senderId === ourId) return;
-
   clearNotification(messageId);
 };
 

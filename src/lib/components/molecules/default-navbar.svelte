@@ -9,6 +9,7 @@
   import Input from "@atoms/input.svelte";
   import NavbarBase from "@atoms/navbar-base.svelte";
   import Menu from "@organisms/menu";
+  import { emptyChatResults } from "@utils/chat";
   import { debounceAsync } from "@utils/debounce";
   import { sleep } from "@utils/sleep";
 
@@ -16,15 +17,13 @@
 
   $effect(() => {
     filter.chats = isSearch ? "search" : "full";
+    if (!isSearch) emptyChatResults();
   });
 
   const openSearch = () => {
-    // Empty any previous chat results
-    Object.keys(chatResults.chats).forEach(
-      (key) => delete chatResults.chats[Number(key)]
-    );
     isSearch = true;
     chatResults.isLoading = true;
+
     if (page.route.id !== "/") goto("/");
   };
 
@@ -34,10 +33,7 @@
   };
 
   const filterChats = debounceAsync(async (e: Event) => {
-    // Empty any previous chat results
-    Object.keys(chatResults.chats).forEach(
-      (key) => delete chatResults.chats[Number(key)]
-    );
+    emptyChatResults();
 
     // @ts-expect-error its ok
     const search = e.target.value;
