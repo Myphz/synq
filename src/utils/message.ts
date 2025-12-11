@@ -16,3 +16,6 @@ export const renderMessage = (message: Message) => {
     })
   );
 };
+
+export const getImageUrl = (id: string) =>
+  `https://synq.ddaniel.dev/${encodeURIComponent(id)}`;

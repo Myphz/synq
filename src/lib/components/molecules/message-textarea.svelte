@@ -6,8 +6,9 @@
 <script lang="ts">
   import type { HTMLTextareaAttributes } from "svelte/elements";
   import { twMerge } from "tailwind-merge";
-  import Icon from "./icon.svelte";
   import { sleep } from "@utils/sleep";
+  import { sendImage } from "$lib/api/media";
+  import Icon from "@atoms/icon.svelte";
 
   type Props = HTMLTextareaAttributes & {
     cyberpunkStyle?: string;
@@ -68,6 +69,7 @@
   )}
 >
   <textarea
+    placeholder="Message"
     {...textareaProps}
     oninput={onInput}
     bind:this={textareaEl}
@@ -80,6 +82,10 @@
   {#if value}
     <button type="submit" class="!absolute bottom-2 right-4 text-h-4">
       <Icon name="send" class="align-bottom text-[1.2em]" />
+    </button>
+  {:else}
+    <button onclick={sendImage} class="!absolute bottom-2 right-4 text-h-4">
+      <Icon name="image" class="align-bottom text-[1.2em]" />
     </button>
   {/if}
 </div>

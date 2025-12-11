@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const messageSchema = z.object({
-  id: z.string().uuid(),
+  id: z.uuid(),
   sentAt: z.string(),
   senderId: z.string(),
   content: z.string(),
@@ -13,7 +13,7 @@ const readMessageSchema = z.object({
   type: z.literal("READ_MESSAGE"),
   chatId: z.number(),
   data: z.object({
-    messageId: z.string().uuid()
+    messageId: z.uuid()
   })
 });
 
@@ -23,9 +23,9 @@ const sharedMessagesSchema = z.discriminatedUnion("type", [readMessageSchema]);
 const receiveMessageSchema = z.object({
   type: z.literal("RECEIVE_MESSAGE"),
   chatId: z.number(),
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   data: z.object({
-    id: z.string().uuid(),
+    id: z.uuid(),
     content: z.string(),
     sentAt: z.string()
   })
@@ -56,7 +56,7 @@ const initialSyncSchema = z.object({
 
 const updateUserStatusSchema = z.object({
   type: z.literal("UPDATE_USER_STATUS"),
-  userId: z.string().uuid(),
+  userId: z.uuid(),
   chatId: z.number(),
   data: z.object({
     isOnline: z.boolean().optional(),
@@ -73,12 +73,21 @@ const getMessagesSchema = z.object({
   })
 });
 
+const uploadPermitGrantedSchema = z.object({
+  type: z.literal("UPLOAD_PERMIT_GRANTED"),
+  data: z.object({
+    signedUrl: z.string(),
+    key: z.string()
+  })
+});
+
 export const serverMessageSchema = sharedMessagesSchema.or(
   z.discriminatedUnion("type", [
     initialSyncSchema,
     updateUserStatusSchema,
     getMessagesSchema,
-    receiveMessageSchema
+    receiveMessageSchema,
+    uploadPermitGrantedSchema
   ])
 );
 
@@ -96,7 +105,8 @@ const sendMessageSchema = z.object({
   type: z.literal("SEND_MESSAGE"),
   chatId: z.number(),
   data: z.object({
-    content: z.string()
+    content: z.string(),
+    image: z.url().optional()
   })
 });
 
@@ -105,11 +115,17 @@ const requestMessagesSchema = z.object({
   chatId: z.number()
 });
 
+const requestUploadSchema = z.object({
+  type: z.literal("REQUEST_UPLOAD"),
+  chatId: z.number()
+});
+
 export const clientMessageSchema = sharedMessagesSchema.or(
   z.discriminatedUnion("type", [
     updateUserTypingSchema,
     sendMessageSchema,
-    requestMessagesSchema
+    requestMessagesSchema,
+    requestUploadSchema
   ])
 );
 

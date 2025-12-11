@@ -13,10 +13,10 @@
   import { isEdgeToEdgeEnabled } from "@utils/edge-to-edge";
   import { Keyboard } from "@capacitor/keyboard";
   import { Capacitor } from "@capacitor/core";
-  import Textarea from "@atoms/textarea.svelte";
   import { sendMessage } from "$lib/stores/socket.svelte";
   import { scrollChatToBottom } from "@utils/chat";
   import { getChat } from "$lib/stores/chats.svelte";
+  import MessageTextarea from "@molecules/message-textarea.svelte";
 
   type Props = {
     chatId: number;
@@ -31,7 +31,7 @@
     return sendMessage(...props);
   };
 
-  let textareaRef: Textarea;
+  let textareaRef: MessageTextarea;
   let shouldShowBottomPadding = $state(true);
 
   const isEdgeToEdge = isEdgeToEdgeEnabled();
@@ -65,7 +65,7 @@
       type: "SEND_MESSAGE",
       chatId,
       data: {
-        content: message
+        content: message.trim()
       }
     };
 
@@ -92,12 +92,11 @@
   {schema}
   onsubmit={onSubmit}
 >
-  <Textarea
+  <MessageTextarea
     bind:this={textareaRef}
     oninput={onTyping}
     onresize={(forced) => scrollChatToBottom(forced ? "smooth" : "instant")}
     name="message"
-    placeholder="Type message..."
   />
   {#await isEdgeToEdge then edgeToEdge}
     {#if edgeToEdge && shouldShowBottomPadding}

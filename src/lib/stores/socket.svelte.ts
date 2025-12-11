@@ -22,7 +22,7 @@ import { sendNotification } from "@utils/notifications";
 import { toAtomic } from "@utils/atomic";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
 
-const SERVER_URL = "wss://synq.fly.dev";
+const SERVER_URL = "ws://localhost:3000";
 
 export const socket = $state<{ value: WebSocket | null }>({
   value: null
@@ -99,6 +99,26 @@ export const onMessage = async <T extends ServerMessage["type"]>(
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
     // @ts-expect-error its ok
     if (message.type === type) fn(message);
+  });
+};
+
+export const waitForMessage = async <T extends ServerMessage["type"]>(
+  type: T
+): Promise<Extract<ServerMessage, { type: T }>> => {
+  const socket = await getSocket();
+
+  return await new Promise((res) => {
+    socket.addEventListener(
+      "message",
+      (msg) => {
+        const message = serverMessageSchema.parse(JSON.parse(msg.data));
+        if (message.type === type) {
+          // @ts-expect-error its ok
+          res(message);
+        }
+      },
+      { once: true }
+    );
   });
 };
 
