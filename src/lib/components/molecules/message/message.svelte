@@ -1,16 +1,15 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { getUserId } from "$lib/supabase/auth/utils";
-  import { toTime } from "@utils/dates";
   import { onMount } from "svelte";
   import { twMerge } from "tailwind-merge";
-  import Icon from "./icon.svelte";
   import { isSameDay } from "date-fns";
   import { sendMessage } from "$lib/stores/socket.svelte";
   import DateDivider from "./date-divider.svelte";
 
-  import { openLinksInBrowser } from "@utils/links";
-  import { renderMessage, type Message } from "@utils/message";
+  import { type Message } from "@utils/message";
+  import MessageText from "./message-text.svelte";
+  import MessageMetadata from "./message-metadata.svelte";
 
   type Props = Message & { prevMessageTime?: string };
 
@@ -18,15 +17,14 @@
   let container: HTMLDivElement;
 
   let ourId = $state("");
-  let isFromOther = $derived(message.senderId !== ourId);
-  let shouldDisplayDividerDate = $derived.by(() => {
+  const isFromOther = $derived(message.senderId !== ourId);
+
+  const shouldDisplayDividerDate = $derived.by(() => {
     if (!prevMessageTime) return true;
     const prevMessageDate = new Date(prevMessageTime);
     const currentMessageDate = new Date(message.sentAt);
     return !isSameDay(prevMessageDate, currentMessageDate);
   });
-
-  let messageHtml = $derived(renderMessage(message));
 
   const onRead = () =>
     sendMessage({
@@ -72,21 +70,19 @@
   style="--y-size: 0.65rem"
   bind:this={container}
   class={twMerge(
-    "cyberpunk flex w-fit max-w-[70dvw] items-end gap-2 whitespace-pre-wrap p-2 first-of-type:mt-2",
+    "cyberpunk relative flex w-fit max-w-[70dvw] items-end gap-2 whitespace-pre-wrap first-of-type:mt-2",
+    !message.image && "p-2",
     isFromOther && "cyberpunk-br bg-accent",
     !isFromOther && "cyberpunk-tr self-end gradient-msg"
   )}
 >
-  <p use:openLinksInBrowser class="min-w-0 flex-1 break-words leading-[18px]">
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    {@html messageHtml}
-  </p>
-  <span class="shrink-0 text-small text-muted">{toTime(message.sentAt)}</span>
-  {#if message.senderId === ourId}
-    {#if message.isRead}
-      <Icon name="done_all" class="-ml-1 shrink-0" />
-    {:else}
-      <Icon name="check" class="-ml-1 shrink-0 text-text" />
-    {/if}
+  {#if message.image}
+    <img src={message.image} alt="message" />
+    <div class="absolute right-0 z-10 flex gap-2 bg-accent/50 p-1">
+      <MessageMetadata {...message} />
+    </div>
+  {:else}
+    <MessageText {...message} />
+    <MessageMetadata {...message} />
   {/if}
 </div>

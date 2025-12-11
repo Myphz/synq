@@ -7,15 +7,16 @@ export type Message = Extract<
   { type: "GET_MESSAGES" }
 >["data"]["messages"][number];
 
-export const renderMessage = (message: Message) => {
-  return DOMPurify.sanitize(
-    linkifyHtml(message.content, {
-      defaultProtocol: "https",
-      target: "_blank",
-      className: "underline"
-    })
+export const renderMessage = (message: Message) =>
+  DOMPurify.sanitize(
+    (() => {
+      return linkifyHtml(message.content, {
+        defaultProtocol: "https",
+        target: "_blank",
+        className: "underline"
+      });
+    })()
   );
-};
 
 export const getImageUrl = (id: string) =>
   `https://synq.ddaniel.dev/${encodeURIComponent(id)}`;

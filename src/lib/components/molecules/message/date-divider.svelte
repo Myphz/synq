@@ -1,6 +1,6 @@
 <script lang="ts">
+  import CyberElement from "@atoms/cyber-element.svelte";
   import { toDate } from "@utils/dates";
-  import CyberElement from "./cyber-element.svelte";
 
   type Props = {
     date: string;

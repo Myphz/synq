@@ -22,7 +22,7 @@ import { sendNotification } from "@utils/notifications";
 import { toAtomic } from "@utils/atomic";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
 
-const SERVER_URL = "ws://localhost:3000";
+const SERVER_URL = "wss://synq.fly.dev";
 
 export const socket = $state<{ value: WebSocket | null }>({
   value: null

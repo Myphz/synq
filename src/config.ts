@@ -11,6 +11,7 @@ import { goto } from "$app/navigation";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
 import { connect, disconnect } from "$lib/stores/socket.svelte";
 import { LocalNotifications } from "@capacitor/local-notifications";
+import { addDebugInputFile } from "@utils/files/debug";
 
 export const setupNotifications = async () => {
   if (await getSupabaseSession()) return configNotifications();
@@ -97,7 +98,7 @@ export const appConfig = () => {
     }
   });
 
-  if (Capacitor.getPlatform() === "web") return;
+  if (Capacitor.getPlatform() === "web") return addDebugInputFile();
 
   StatusBar.setOverlaysWebView({ overlay: true });
   StatusBar.setStyle({ style: Style.Dark });

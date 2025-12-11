@@ -1,6 +1,6 @@
 import { sendMessage, waitForMessage } from "$lib/stores/socket.svelte";
 import { getCurrentChatByUrl } from "@utils/chat";
-import { pickImage } from "@utils/files/pick";
+import { pickFiles } from "@utils/files/pick";
 import { readImageAndCompress } from "@utils/files/read";
 import { getImageUrl } from "@utils/message";
 
@@ -21,7 +21,7 @@ export const sendImage = async () => {
   const chatId = getCurrentChatByUrl();
   if (!chatId) throw new Error("uploadImage: unknown chat id");
 
-  const image = await pickImage();
+  const [image] = await pickFiles({ type: "image" });
   if (!image) return;
 
   const { data: blob } = await readImageAndCompress(image);

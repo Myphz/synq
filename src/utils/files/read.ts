@@ -1,11 +1,15 @@
 import { Filesystem } from "@capacitor/filesystem";
 import { throwError } from "@utils/throw-error";
 import { base64ToBuffer } from "./base64";
-import type { PickedFile } from "@capawesome/capacitor-file-picker";
 import { convertImageToWebP } from "./convert";
+import { Capacitor } from "@capacitor/core";
+import type { PickedFile } from "./pick";
 
 export const readFileAsBase64 = async (file: PickedFile) => {
-  if (!file.path) throw new Error("file has no path");
+  // For debugging purposes
+  if (Capacitor.getPlatform() === "web")
+    return (file as unknown as { data: string }).data;
+
   const { data } = await Filesystem.readFile({ path: file.path });
   if (!data)
     return throwError(
