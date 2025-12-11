@@ -8,11 +8,95 @@ import { PushNotifications } from "@capacitor/push-notifications";
 import { supabase } from "$lib/supabase/client";
 import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { goto } from "$app/navigation";
+import posthog from "posthog-js";
 import { getAppState, restoreAppState, saveAppState } from "$lib/api/cache";
 import { connect, disconnect } from "$lib/stores/socket.svelte";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { addDebugInputFile } from "@utils/files/debug";
 import { finishSendImage } from "$lib/api/media";
+import { ErrorWithToast } from "@utils/throw-error";
+import { APP_VERSION } from "./version";
+import { debugAlert } from "@utils/debug";
+import { dev } from "$app/environment";
+
+const setupErrorHandlers = () => {
+  window.addEventListener("error", (event: ErrorEvent) => {
+    if (event.error instanceof ErrorWithToast) {
+      posthog.captureException(event.error, {
+        is_expected: true,
+        version: APP_VERSION,
+        devMsg: event.error.devMsg
+      });
+
+      // return fail(event.error.userMsg);
+      return;
+    }
+
+    // fail("Unexpected error");
+    posthog.captureException(event.error, {
+      is_expected: false,
+      version: APP_VERSION,
+      message: event.message
+    });
+
+    const errorMessage = `Error: ${event.message}
+Source: ${event.filename}
+Line: ${event.lineno}, Column: ${event.colno}
+Error Object: ${event.error ? event.error.stack : "N/A"}`;
+
+    debugAlert("Global Error Handler:", errorMessage);
+    event.preventDefault();
+  });
+
+  window.addEventListener(
+    "unhandledrejection",
+    (event: PromiseRejectionEvent) => {
+      if (event.reason instanceof ErrorWithToast) {
+        posthog.captureException(event.reason, {
+          is_expected: true,
+          version: APP_VERSION,
+          devMsg: event.reason.devMsg
+        });
+
+        // return fail(event.reason.userMsg);
+        return;
+      }
+
+      const rejectionMessage = `Unhandled Promise Rejection: ${event.reason}`;
+      debugAlert("Global Promise Rejection Handler:", rejectionMessage);
+
+      // fail("Unexpected error");
+      posthog.captureException(event.reason, {
+        is_expected: false,
+        version: APP_VERSION
+      });
+
+      event.preventDefault();
+    }
+  );
+};
+
+export const setupPosthog = async () => {
+  if (dev) return;
+
+  posthog.init("phc_tKX0jtOhZ6WOJSU1TZ4L7BmGeaMF5WQl8jhfdGHxD7W", {
+    api_host: "https://eu.i.posthog.com",
+    person_profiles: "identified_only",
+    capture_pageview: false,
+    capture_pageleave: false,
+    autocapture: false
+  });
+
+  const session = await getSupabaseSession();
+  if (!session) return;
+
+  posthog.identify(session.user.email, {
+    email: session.user.email,
+    version: APP_VERSION
+  });
+
+  posthog.capture("Open App");
+};
 
 export const setupNotifications = async () => {
   if (await getSupabaseSession()) return configNotifications();
@@ -88,6 +172,9 @@ export const appConfig = () => {
       webClientId: GOOGLE_CLIENT_ID_WEB
     }
   });
+
+  setupErrorHandlers();
+  setupPosthog();
 
   App.addListener("appStateChange", async ({ isActive }) => {
     if (isActive) {
