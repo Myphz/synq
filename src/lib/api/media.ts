@@ -22,7 +22,7 @@ export const sendImage = async () => {
   if (!chatId) throw new Error("uploadImage: unknown chat id");
 
   const [image] = await pickFiles({ type: "image" });
-  if (!image) return;
+  if (!image) throw new Error("no image");
 
   const { data: blob } = await readImageAndCompress(image);
 

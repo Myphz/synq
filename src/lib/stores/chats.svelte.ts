@@ -8,12 +8,14 @@ import { atomic } from "@utils/atomic";
 import {
   getChatImage,
   getChatName,
+  getCurrentChatByUrl,
   scrollChatToBottom,
   scrollChatToBottomIfNear
 } from "@utils/chat";
 import { clearNotification } from "@utils/notifications";
 import { throwError } from "@utils/throw-error";
 import { tick } from "svelte";
+import { sendMessage } from "./socket.svelte";
 
 type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 
@@ -73,7 +75,7 @@ export const setChatMessages = async (
 ) => {
   if (!chats[chatId]) throw new Error("setChatMessages(): can't find chat");
 
-  const hadMessages = chats[chatId].messages.length > 0;
+  const hadLatestUpdates = chats[chatId].hasLatestUpdates;
 
   chats[chatId] = {
     ...chats[chatId],
@@ -83,7 +85,7 @@ export const setChatMessages = async (
 
   await tick();
 
-  if (!hadMessages) scrollChatToBottom("instant");
+  if (!hadLatestUpdates) scrollChatToBottom("instant");
   else scrollChatToBottomIfNear();
 };
 
@@ -98,9 +100,14 @@ export const addChatMessage = async (chatId: number, message: Message) => {
   if (message.senderId !== (await getUserId()))
     chats[chatId].unreadMessagesCount++;
 
-  // Don't push messages if the chat was not initialized, the chat doesn't contain any message!
-  if (!chats[chatId].hasLatestUpdates) return;
   chats[chatId].messages.push(message);
+
+  // This is needed because the $effect who should
+  // always request messages if needed is extremely flaky
+  // and does not work in cases such as when uploading an image
+  // (in that case, the app becomes temporarily not active and active again)
+  if (!chats[chatId].hasLatestUpdates && getCurrentChatByUrl() === chatId)
+    sendMessage({ type: "REQUEST_MESSAGES", chatId });
 };
 
 export const markMessageAsRead = async (

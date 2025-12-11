@@ -21,6 +21,7 @@
   // $effect deps checker gets confused and runs this many times.
   // Same for untrack() - without it, this gets called 4+ times instead of once.
   // It is probably because those values "jitter", or something.
+  // NB: This is still flaky, doesn't work for image upload on phone.
   $effect(() => {
     if (isConnected.value && shouldRefetchMessages) {
       untrack(() => {

@@ -34,10 +34,7 @@ const setupSocket = (sock: WebSocket) => {
     debugLog(message);
   });
 
-  sock.addEventListener("close", async () => {
-    await disconnect();
-    await connect();
-  });
+  sock.addEventListener("close", onSocketClose);
 
   // Setup socket server events handlers
   onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), sock);
@@ -157,7 +154,12 @@ export const getSocket = async (): Promise<WebSocket> => {
   return socket.value;
 };
 
-export const disconnect = toAtomic(async () => {
+export const onSocketClose = async () => {
+  await resetSocket();
+  await connect();
+};
+
+export const resetSocket = async () => {
   // Mark all chats data as dirty
   await saveAppState();
   await restoreAppState();
@@ -167,4 +169,9 @@ export const disconnect = toAtomic(async () => {
 
   socket.value.close();
   socket.value = null;
+};
+
+export const disconnect = toAtomic(async () => {
+  socket.value?.removeEventListener("close", onSocketClose);
+  await resetSocket();
 });

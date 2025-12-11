@@ -70,15 +70,32 @@
   style="--y-size: 0.65rem"
   bind:this={container}
   class={twMerge(
-    "cyberpunk relative flex w-fit max-w-[70dvw] items-end gap-2 whitespace-pre-wrap first-of-type:mt-2",
+    "cyberpunk relative flex max-h-[70dvw] w-fit max-w-[70dvw] items-end gap-2 whitespace-pre-wrap first-of-type:mt-2",
     !message.image && "p-2",
     isFromOther && "cyberpunk-br bg-accent",
     !isFromOther && "cyberpunk-tr self-end gradient-msg"
   )}
 >
   {#if message.image}
-    <img src={message.image} alt="message" />
-    <div class="absolute right-0 z-10 flex gap-2 bg-accent/50 p-1">
+    <img
+      src={message.image}
+      loading="lazy"
+      alt="message"
+      class="h-full"
+      onload={() =>
+        document.getElementById(`message-${message.id}-placeholder`)?.remove()}
+    />
+    <!-- Placeholder to make sure message has its height even before images loads -->
+    <div
+      class="aspect-square h-[70dvw]"
+      id="message-{message.id}-placeholder"
+    ></div>
+    <div
+      class={twMerge(
+        "absolute right-0 z-10 flex gap-2 bg-accent/50 p-1",
+        isFromOther && "pr-2"
+      )}
+    >
       <MessageMetadata {...message} />
     </div>
   {:else}
