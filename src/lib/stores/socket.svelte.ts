@@ -134,7 +134,7 @@ export const connect = toAtomic(async () => {
     return;
 
   const session = await getSupabaseSession();
-  if (!session) return throwError("connect(): not authenticated");
+  if (!session) return;
 
   const { access_token: jwt } = session;
 
