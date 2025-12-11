@@ -73,7 +73,7 @@ export const setChatMessages = async (
   chatId: number,
   newMessages: Message[]
 ) => {
-  if (!chats[chatId]) throw new Error("setChatMessages(): can't find chat");
+  if (!chats[chatId]) throwError("setChatMessages(): can't find chat");
 
   const hadLatestUpdates = chats[chatId].hasLatestUpdates;
 

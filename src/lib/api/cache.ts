@@ -1,5 +1,6 @@
 import { APP_VERSION } from "../../version";
 import { Preferences } from "@capacitor/preferences";
+import { page } from "$app/state";
 import {
   chats,
   setChats,
@@ -13,12 +14,29 @@ import {
 // });
 
 type Cache = {
+  url: string;
   version: string;
   chats: Record<string, ChatWithMessages>;
 };
 
+export const getAppState = async () => {
+  const { value: stateString } = await Preferences.get({ key: "state" });
+  if (!stateString) return;
+
+  try {
+    return JSON.parse(stateString) as Cache;
+  } catch {
+    Preferences.remove({ key: "state" });
+  }
+};
+
 export const saveAppState = async () => {
+  const urlToSave = /^\/\d+\/?$/.test(page.url.pathname)
+    ? page.url.pathname
+    : "/";
+
   const state: Cache = {
+    url: urlToSave,
     version: APP_VERSION,
     // Override hasLatestUpdates of chats
     // to make sure the client refetches them and gets the latest updates
@@ -42,13 +60,7 @@ export const saveAppState = async () => {
 };
 
 export const restoreAppState = async () => {
-  const { value: stateString } = await Preferences.get({ key: "state" });
-  if (!stateString) return;
-
-  try {
-    const { chats } = JSON.parse(stateString) as Cache;
-    setChats(chats);
-  } catch {
-    Preferences.remove({ key: "state" });
-  }
+  const state = await getAppState();
+  if (!state) return;
+  setChats(state.chats);
 };

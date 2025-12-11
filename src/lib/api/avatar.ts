@@ -3,6 +3,7 @@ import { supabase } from "$lib/supabase/client";
 import { readImageAndCompress } from "@utils/files/read";
 import { refetchUserProfileResource } from "$lib/stores/me.svelte";
 import { pickFiles } from "@utils/files/pick";
+import { throwError } from "@utils/throw-error";
 
 export const getDefaultAvatar = (id: string) =>
   `https://api.dicebear.com/9.x/identicon/svg?seed=${id}&flip=true&backgroundRotation=0&backgroundColor=ffdfbf,ffd5dc,d1d4f9,c0aede,b6e3f4`;
@@ -54,7 +55,7 @@ export const deleteAvatar = async () => {
   const marker = `/storage/v1/object/public/avatars/`;
 
   const idx = url.indexOf(marker);
-  if (idx === -1) throw new Error("Can't get avatar object path?");
+  if (idx === -1) return throwError("Can't get avatar object path?");
 
   const objectPath = url.slice(idx + marker.length);
 

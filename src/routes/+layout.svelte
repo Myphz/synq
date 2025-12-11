@@ -29,7 +29,11 @@
 </script>
 
 {#if !NO_NAVBAR_PAGES.includes(page.route.id || "")}
-  <div class="bg-accent pt-8" id="main-navbar"></div>
+  <div
+    class="bg-accent"
+    id="main-navbar"
+    style="padding-top: var(--inset-top)"
+  ></div>
   <DefaultNavbar />
 {:else}
   <div class="mt-16"></div>

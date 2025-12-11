@@ -6,11 +6,10 @@
   import type { ClientMessage } from "$lib/api/protocol";
   import Form from "@atoms/form.svelte";
   import Messages from "@molecules/messages.svelte";
-  import { onMount, tick } from "svelte";
+  import { onMount } from "svelte";
   import z from "zod";
   import { debounceWithStartStop } from "@utils/debounce";
   import { twMerge } from "tailwind-merge";
-  import { isEdgeToEdgeEnabled } from "@utils/edge-to-edge";
   import { Keyboard } from "@capacitor/keyboard";
   import { Capacitor } from "@capacitor/core";
   import { sendMessage } from "$lib/stores/socket.svelte";
@@ -34,14 +33,8 @@
   let textareaRef: MessageTextarea;
   let shouldShowBottomPadding = $state(true);
 
-  const isEdgeToEdge = isEdgeToEdgeEnabled();
-
   onMount(() => {
-    // Scroll to bottom on chat load after evaluating isEdgeToEdge
-    isEdgeToEdge.then(async () => {
-      await tick();
-      scrollChatToBottom("instant");
-    });
+    scrollChatToBottom("instant");
 
     if (Capacitor.getPlatform() === "web") return;
 
@@ -98,9 +91,7 @@
     onresize={(forced) => scrollChatToBottom(forced ? "smooth" : "instant")}
     name="message"
   />
-  {#await isEdgeToEdge then edgeToEdge}
-    {#if edgeToEdge && shouldShowBottomPadding}
-      <div class="h-12 w-full bg-background"></div>
-    {/if}
-  {/await}
+  {#if shouldShowBottomPadding}
+    <div class="h-12 w-full bg-background"></div>
+  {/if}
 </Form>

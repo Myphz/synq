@@ -2,11 +2,12 @@ import { page } from "$app/state";
 import { getDefaultAvatar } from "$lib/api/avatar";
 import { chatResults, chats, type Chat } from "$lib/stores/chats.svelte";
 import { getUserId } from "$lib/supabase/auth/utils";
+import { throwError } from "./throw-error";
 
 export const getChatOtherMember = async (chat: Chat) => {
   const currentUserId = await getUserId();
   if (chat.members.length > 2)
-    throw new Error("getChatOtherMember: chat has more than 2 members!");
+    throwError("getChatOtherMember: chat has more than 2 members!");
 
   return chat.members.find((m) => m.id !== currentUserId)!;
 };

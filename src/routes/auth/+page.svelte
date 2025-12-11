@@ -9,7 +9,7 @@
   });
 </script>
 
-<div class="relative mb-16 mt-8 flex justify-center">
+<div class="relative mb-16 flex justify-center">
   <HexagonLogo />
   <span
     class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-logo text-[4rem] text-primary"

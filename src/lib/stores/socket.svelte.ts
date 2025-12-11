@@ -21,6 +21,7 @@ import { clearMonitorConnection, monitorConnection } from "./connection.svelte";
 import { sendNotification } from "@utils/notifications";
 import { toAtomic } from "@utils/atomic";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
+import { throwError } from "@utils/throw-error";
 
 const SERVER_URL = "wss://synq.fly.dev";
 
@@ -133,7 +134,7 @@ export const connect = toAtomic(async () => {
     return;
 
   const session = await getSupabaseSession();
-  if (!session) throw new Error("connect(): not authenticated");
+  if (!session) return throwError("connect(): not authenticated");
 
   const { access_token: jwt } = session;
 
@@ -150,7 +151,9 @@ export const getSocket = async (): Promise<WebSocket> => {
   await connect();
 
   if (!socket.value)
-    throw new Error("getSocket(): socket is null after calling connect()?!?!?");
+    return throwError(
+      "getSocket(): socket is null after calling connect()?!?!?"
+    );
   return socket.value;
 };
 

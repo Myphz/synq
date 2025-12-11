@@ -18,6 +18,7 @@ export const pickFiles = async (props: PickFileProps) => {
   if (Capacitor.getPlatform() === "web")
     return await pickFiles_web({ type, multiple });
 
+  await checkPermissions();
   const pickFn =
     type === "image" ? FilePicker.pickImages : FilePicker.pickFiles;
 
@@ -29,4 +30,9 @@ export const pickFiles = async (props: PickFileProps) => {
     );
 
   return files as PickedFile[];
+};
+
+const checkPermissions = async () => {
+  const { readExternalStorage } = await FilePicker.checkPermissions();
+  if (readExternalStorage !== "granted") await FilePicker.requestPermissions();
 };

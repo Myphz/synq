@@ -2,16 +2,17 @@ import "core-js/actual"; // Polyfills
 import { SocialLogin } from "@capgo/capacitor-social-login";
 import { GOOGLE_CLIENT_ID_WEB } from "./constants";
 import { App } from "@capacitor/app";
-import { StatusBar, Style } from "@capacitor/status-bar";
-import { Capacitor } from "@capacitor/core";
+import { StatusBar } from "@capacitor/status-bar";
+import { Capacitor, SystemBars, SystemBarsStyle } from "@capacitor/core";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { supabase } from "$lib/supabase/client";
 import { getSupabaseSession, getUserId } from "$lib/supabase/auth/utils";
 import { goto } from "$app/navigation";
-import { restoreAppState, saveAppState } from "$lib/api/cache";
+import { getAppState, restoreAppState, saveAppState } from "$lib/api/cache";
 import { connect, disconnect } from "$lib/stores/socket.svelte";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { addDebugInputFile } from "@utils/files/debug";
+import { finishSendImage } from "$lib/api/media";
 
 export const setupNotifications = async () => {
   if (await getSupabaseSession()) return configNotifications();
@@ -101,7 +102,21 @@ export const appConfig = () => {
   if (Capacitor.getPlatform() === "web") return addDebugInputFile();
 
   StatusBar.setOverlaysWebView({ overlay: true });
-  StatusBar.setStyle({ style: Style.Dark });
+  SystemBars.setStyle({ style: SystemBarsStyle.Dark });
+
+  App.addListener("appRestoredResult", async (data) => {
+    if (!data.success || data.pluginId !== "FilePicker") return;
+
+    const state = await getAppState();
+    if (!state) return;
+
+    if (state.url) await goto(state.url);
+
+    const images = data.data?.files;
+    if (!images.length) return;
+
+    await finishSendImage(images[0]);
+  });
 
   setupNotifications();
 };

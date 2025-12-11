@@ -20,8 +20,8 @@
     children
   }: Props = $props();
 
-  const yAxis = reversed ? "top" : "bottom";
-  const oppositeYAxis = reversed ? "bottom" : "top";
+  const yAxis = $derived(reversed ? "top" : "bottom");
+  const oppositeYAxis = $derived(reversed ? "bottom" : "top");
 </script>
 
 <div class="p-[3px]">

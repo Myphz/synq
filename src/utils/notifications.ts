@@ -2,6 +2,7 @@ import type { Message } from "./message";
 import { LocalNotifications } from "@capacitor/local-notifications";
 import { chats } from "$lib/stores/chats.svelte";
 import { getChatName } from "./chat";
+import { throwError } from "./throw-error";
 
 const hashStr = (str: string) => {
   let hash = 0;
@@ -19,7 +20,7 @@ export const sendNotification = async (
   chatId: number
 ) => {
   const chat = chats[chatId];
-  if (!chat) throw new Error("sendNotification(): can't find chat!");
+  if (!chat) throwError("sendNotification(): can't find chat!");
 
   // const otherMember = await getChatOtherMember(chat);
 

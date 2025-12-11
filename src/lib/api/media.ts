@@ -1,8 +1,9 @@
 import { sendMessage, waitForMessage } from "$lib/stores/socket.svelte";
 import { getCurrentChatByUrl } from "@utils/chat";
-import { pickFiles } from "@utils/files/pick";
+import { pickFiles, type PickedFile } from "@utils/files/pick";
 import { readImageAndCompress } from "@utils/files/read";
 import { getImageUrl } from "@utils/message";
+import { throwError } from "@utils/throw-error";
 
 const uploadToR2 = async (url: string, blob: Blob) => {
   const uploadResponse = await fetch(url, {
@@ -14,15 +15,22 @@ const uploadToR2 = async (url: string, blob: Blob) => {
   });
 
   if (!uploadResponse.ok)
-    throw new Error(`Cloudflare upload failed: ${uploadResponse.statusText}`);
+    throwError(`Cloudflare upload failed: ${uploadResponse.statusText}`);
 };
 
 export const sendImage = async () => {
   const chatId = getCurrentChatByUrl();
-  if (!chatId) throw new Error("uploadImage: unknown chat id");
+  if (!chatId) throwError("uploadImage: unknown chat id");
 
   const [image] = await pickFiles({ type: "image" });
-  if (!image) throw new Error("no image");
+  if (!image) return;
+
+  await finishSendImage(image);
+};
+
+export const finishSendImage = async (image: PickedFile) => {
+  const chatId = getCurrentChatByUrl();
+  if (!chatId) return throwError("uploadImage: unknown chat id");
 
   const { data: blob } = await readImageAndCompress(image);
 
