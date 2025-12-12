@@ -1,10 +1,6 @@
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { Keyboard } from "@capacitor/keyboard";
-  import { Capacitor } from "@capacitor/core";
   import { twMerge } from "tailwind-merge";
   import { getChat } from "$lib/stores/chats.svelte";
-  import { scrollChatToBottom } from "@utils/chat";
   import Message from "./message/message.svelte";
 
   type Props = {
@@ -14,18 +10,6 @@
   const { chatId }: Props = $props();
   const chat = $derived(getChat(chatId));
   const messages = $derived(chat?.messages || []);
-
-  onMount(() => {
-    if (Capacitor.getPlatform() === "web") return;
-
-    Keyboard.addListener("keyboardDidShow", () =>
-      scrollChatToBottom("instant")
-    );
-
-    return () => {
-      Keyboard.removeAllListeners();
-    };
-  });
 </script>
 
 <img

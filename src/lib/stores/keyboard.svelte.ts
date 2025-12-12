@@ -1,8 +1,13 @@
 import { Keyboard } from "@capacitor/keyboard";
+import { scrollChatToBottom } from "@utils/chat";
 
 export const isKeyboardOpen = $state({ value: false });
 
 export const setKeyboardStoreListeners = () => {
-  Keyboard.addListener("keyboardDidShow", () => (isKeyboardOpen.value = true));
-  Keyboard.addListener("keyboardDidHide", () => (isKeyboardOpen.value = false));
+  Keyboard.addListener("keyboardWillShow", () => (isKeyboardOpen.value = true));
+  Keyboard.addListener(
+    "keyboardWillHide",
+    () => (isKeyboardOpen.value = false)
+  );
+  Keyboard.addListener("keyboardDidShow", () => scrollChatToBottom("smooth"));
 };

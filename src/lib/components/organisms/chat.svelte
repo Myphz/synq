@@ -10,12 +10,11 @@
   import z from "zod";
   import { debounceWithStartStop } from "@utils/debounce";
   import { twMerge } from "tailwind-merge";
-  import { Keyboard } from "@capacitor/keyboard";
-  import { Capacitor } from "@capacitor/core";
   import { sendMessage } from "$lib/stores/socket.svelte";
   import { scrollChatToBottom } from "@utils/chat";
   import { getChat } from "$lib/stores/chats.svelte";
   import MessageTextarea from "@molecules/message-textarea.svelte";
+    import { isKeyboardOpen } from "$lib/stores/keyboard.svelte";
 
   type Props = {
     chatId: number;
@@ -31,22 +30,9 @@
   };
 
   let textareaRef: MessageTextarea;
-  let shouldShowBottomPadding = $state(true);
 
   onMount(() => {
-    scrollChatToBottom("instant");
-
-    if (Capacitor.getPlatform() === "web") return;
-
-    Keyboard.addListener("keyboardWillShow", () => {
-      shouldShowBottomPadding = false;
-    });
-
-    Keyboard.addListener("keyboardWillHide", () => {
-      shouldShowBottomPadding = true;
-    });
-
-    return Keyboard.removeAllListeners;
+    scrollChatToBottom();
   });
 
   const schema = z.object({
@@ -91,7 +77,7 @@
     onresize={(forced) => scrollChatToBottom(forced ? "smooth" : "instant")}
     name="message"
   />
-  {#if shouldShowBottomPadding}
+  {#if !isKeyboardOpen.value}
     <div class="h-12 w-full bg-background"></div>
   {/if}
 </Form>

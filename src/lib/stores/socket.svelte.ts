@@ -106,17 +106,16 @@ export const waitForMessage = async <T extends ServerMessage["type"]>(
   const socket = await getSocket();
 
   return await new Promise((res) => {
-    socket.addEventListener(
-      "message",
-      (msg) => {
-        const message = serverMessageSchema.parse(JSON.parse(msg.data));
-        if (message.type === type) {
-          // @ts-expect-error its ok
-          res(message);
-        }
-      },
-      { once: true }
-    );
+    const onMessage = (msg: MessageEvent) => {
+      const message = serverMessageSchema.parse(JSON.parse(msg.data));
+      if (message.type === type) {
+        // @ts-expect-error its ok
+        res(message);
+        socket.removeEventListener("message", onMessage);
+      }
+    };
+
+    socket.addEventListener("message", onMessage);
   });
 };
 

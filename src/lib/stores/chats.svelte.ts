@@ -85,7 +85,7 @@ export const setChatMessages = async (
 
   await tick();
 
-  if (!hadLatestUpdates) scrollChatToBottom("instant");
+  if (!hadLatestUpdates) scrollChatToBottom();
   else scrollChatToBottomIfNear();
 };
 

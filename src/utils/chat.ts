@@ -26,7 +26,7 @@ export const getChatImage = async (chat: Chat) => {
 };
 
 export const scrollChatToBottom = async (
-  behavior: "smooth" | "instant" = "smooth"
+  behavior: "smooth" | "instant" = "instant"
 ) => {
   const chatId = getCurrentChatByUrl();
   if (!chatId) return;
@@ -61,7 +61,7 @@ export const scrollChatToBottomIfNear = () => {
     IS_NEAR_BOTTOM_THRESHOLD;
 
   // Scroll to view the last message if the user is near bottom
-  if (isNearBottom) scrollChatToBottom();
+  if (isNearBottom) scrollChatToBottom("smooth");
 };
 
 export const getCurrentChatByUrl = () => {

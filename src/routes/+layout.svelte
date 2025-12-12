@@ -24,7 +24,7 @@ onMount(() => {
 
   afterNavigate(({ to }) => {
     if (to?.route.id !== "/[chat]") return;
-    scrollChatToBottom("instant");
+    scrollChatToBottom();
   });
 </script>
 
