@@ -25,13 +25,8 @@ const getResizedDimensions = (
   return { width, height };
 };
 
-export const convertImageToWebP = async (buffer: ArrayBufferLike) => {
-  // TypeError only when running `npm run check` - no error with LSP and build is fine
-  // (Type 'ArrayBufferLike' is not assignable to type 'BlobPart')
-  // ...hope it's safe to ignore
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const imageBitmap = await createImageBitmap(new Blob([buffer]));
+export const convertImageToWebP = async (blob: Blob) => {
+  const imageBitmap = await createImageBitmap(blob);
   const { width, height } = getResizedDimensions(
     imageBitmap.width,
     imageBitmap.height

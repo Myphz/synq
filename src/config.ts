@@ -18,6 +18,7 @@ import { ErrorWithToast } from "@utils/throw-error";
 import { APP_VERSION } from "./version";
 import { debugAlert } from "@utils/debug";
 import { dev } from "$app/environment";
+import { setKeyboardStoreListeners } from "$lib/stores/keyboard.svelte";
 
 const setupErrorHandlers = () => {
   window.addEventListener("error", (event: ErrorEvent) => {
@@ -187,6 +188,8 @@ export const appConfig = () => {
   });
 
   if (Capacitor.getPlatform() === "web") return addDebugInputFile();
+
+  setKeyboardStoreListeners();
 
   StatusBar.setOverlaysWebView({ overlay: true });
   SystemBars.setStyle({ style: SystemBarsStyle.Dark });

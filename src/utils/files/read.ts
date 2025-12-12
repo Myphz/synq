@@ -6,6 +6,7 @@ import { Capacitor } from "@capacitor/core";
 import type { PickedFile } from "./pick";
 
 export const readFileAsBase64 = async (file: PickedFile) => {
+  if (file.data) return file.data;
   // For debugging purposes
   if (Capacitor.getPlatform() === "web")
     return (file as unknown as { data: string }).data;
@@ -31,10 +32,10 @@ export const readFileAsBlob = async (file: PickedFile) => {
 };
 
 export const readImageAndCompress = async (image: PickedFile) => {
-  const baseImage = await readFileAsBuffer(image);
+  const blob = await readFileAsBlob(image);
   // Important: get metadata from raw image, before compression!
   // (compression removes metadata)
-  const compressed = await convertImageToWebP(baseImage);
+  const compressed = await convertImageToWebP(blob);
   const name = image.name || "blob";
 
   return { data: compressed, name };

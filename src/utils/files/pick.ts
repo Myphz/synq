@@ -5,6 +5,8 @@ import {
 } from "@capawesome/capacitor-file-picker";
 import { throwError } from "@utils/throw-error";
 import { pickFiles_web } from "./debug";
+import { Keyboard } from "@capacitor/keyboard";
+import { isKeyboardOpen } from "$lib/stores/keyboard.svelte";
 
 export type PickFileProps = {
   type: "image" | "file";
@@ -14,22 +16,29 @@ export type PickFileProps = {
 export type PickedFile = Omit<_PickedFile, "path"> & { path: string };
 
 export const pickFiles = async (props: PickFileProps) => {
-  const { multiple = props.type !== "image", type } = props || {};
-  if (Capacitor.getPlatform() === "web")
-    return await pickFiles_web({ type, multiple });
+  const wasKeyboardOpen = isKeyboardOpen.value;
 
-  await checkPermissions();
-  const pickFn =
-    type === "image" ? FilePicker.pickImages : FilePicker.pickFiles;
+  try {
+    const { multiple = props.type !== "image", type } = props || {};
+    if (Capacitor.getPlatform() === "web")
+      return await pickFiles_web({ type, multiple });
 
-  const { files } = await pickFn({ limit: multiple ? 0 : 1 });
-  if (files.some((file) => !file.path))
-    return throwError(
-      "pickImages() - file doesn't have a path??",
-      "Error reading images"
-    );
+    await checkPermissions();
+    const pickFn =
+      type === "image" ? FilePicker.pickImages : FilePicker.pickFiles;
 
-  return files as PickedFile[];
+    const { files } = await pickFn({ limit: multiple ? 0 : 1, readData: true });
+
+    if (files.some((file) => !file.path))
+      return throwError(
+        "pickImages() - file doesn't have a path??",
+        "Error reading images"
+      );
+
+    return files as PickedFile[];
+  } finally {
+    if (wasKeyboardOpen) Keyboard.show();
+  }
 };
 
 const checkPermissions = async () => {

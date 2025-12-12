@@ -1,4 +1,8 @@
-import { sendMessage, waitForMessage } from "$lib/stores/socket.svelte";
+import {
+  sendMessage,
+  waitForConnection,
+  waitForMessage
+} from "$lib/stores/socket.svelte";
 import { getCurrentChatByUrl } from "@utils/chat";
 import { pickFiles, type PickedFile } from "@utils/files/pick";
 import { readImageAndCompress } from "@utils/files/read";
@@ -34,18 +38,21 @@ export const finishSendImage = async (image: PickedFile) => {
 
   const { data: blob } = await readImageAndCompress(image);
 
-  sendMessage({
+  await waitForConnection();
+
+  const promise = waitForMessage("UPLOAD_PERMIT_GRANTED");
+  await sendMessage({
     type: "REQUEST_UPLOAD",
     chatId
   });
 
   const {
     data: { key, signedUrl }
-  } = await waitForMessage("UPLOAD_PERMIT_GRANTED");
+  } = await promise;
 
   await uploadToR2(signedUrl, blob);
 
-  sendMessage({
+  await sendMessage({
     type: "SEND_MESSAGE",
     chatId,
     data: {

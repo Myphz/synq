@@ -16,7 +16,7 @@ import {
 } from "./chats.svelte";
 import { scrollChatToBottomIfNear } from "@utils/chat";
 import { page } from "$app/state";
-import { debugLog } from "@utils/debug";
+import { debugAlert_FORCE_DO_NOT_USE, debugLog } from "@utils/debug";
 import { clearMonitorConnection, monitorConnection } from "./connection.svelte";
 import { sendNotification } from "@utils/notifications";
 import { toAtomic } from "@utils/atomic";
@@ -120,9 +120,14 @@ export const waitForMessage = async <T extends ServerMessage["type"]>(
   });
 };
 
+export const waitForConnection = async () => {
+  const socket = await getSocket();
+  while (socket.readyState !== WebSocket.OPEN) await sleep(50);
+  return socket;
+};
+
 export const sendMessage = async (message: ClientMessage) => {
-  const sock = await getSocket();
-  while (sock.readyState !== WebSocket.OPEN) await sleep(50);
+  const sock = await waitForConnection();
   sock.send(JSON.stringify(message));
 };
 
@@ -146,7 +151,7 @@ export const connect = toAtomic(async () => {
   monitorConnection();
 });
 
-export const getSocket = async (): Promise<WebSocket> => {
+export const getSocket = async () => {
   if (socket.value) return socket.value;
   await connect();
 

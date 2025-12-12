@@ -9,8 +9,8 @@
   import { sleep } from "@utils/sleep";
   import { sendImage } from "$lib/api/media";
   import Icon from "@atoms/icon.svelte";
-
-  type Props = HTMLTextareaAttributes & {
+    
+type Props = HTMLTextareaAttributes & {
     cyberpunkStyle?: string;
     class?: string;
     onresize?: (forced?: boolean) => unknown;
@@ -82,7 +82,9 @@
   {#if value}
     <button type="submit" class="!absolute bottom-2 right-4 text-h-4">
       <Icon name="send" class="align-bottom text-[1.2em]" />
-    </button>
+
+
+      </button>
   {:else}
     <button onclick={sendImage} class="!absolute bottom-2 right-4 text-h-4">
       <Icon name="image" class="align-bottom text-[1.2em]" />
