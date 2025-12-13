@@ -1,6 +1,6 @@
 <script lang="ts">
   import { latestMessageLog } from "$lib/stores/debug.svelte";
-  import { socket } from "$lib/stores/socket.svelte";
+  import { getSocket } from "$lib/stores/socket.svelte";
   import { onMount } from "svelte";
 
   const SOCKET_READY_STATE_LABELS: Record<number, string> = {
@@ -18,14 +18,15 @@
 </script>
 
 {#key rerenderKey}
+  {@const socket = getSocket()}
   <div
     class="bg-background/50 pointer-events-none absolute top-2 right-2 w-[50vw] p-4"
   >
-    {#if !socket.value}
+    {#if !socket}
       <div>Socket IS UNDEFINED!</div>
     {:else}
       <div>
-        Connection status: {SOCKET_READY_STATE_LABELS[socket.value.readyState]}
+        Connection status: {SOCKET_READY_STATE_LABELS[socket.readyState]}
       </div>
     {/if}
 

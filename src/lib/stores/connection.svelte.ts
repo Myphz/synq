@@ -1,4 +1,4 @@
-import { socket } from "./socket.svelte";
+import { getSocket } from "./socket.svelte";
 
 let intervalId: NodeJS.Timeout | null = null;
 export const isConnected = $state<{ value: boolean }>({ value: false });
@@ -12,7 +12,7 @@ export const monitorConnection = () => {
   clearMonitorConnection();
 
   intervalId = setInterval(() => {
-    isConnected.value =
-      !!socket.value && socket.value.readyState === WebSocket.OPEN;
+    const socket = getSocket();
+    isConnected.value = !!socket && socket.readyState === WebSocket.OPEN;
   }, 100);
 };

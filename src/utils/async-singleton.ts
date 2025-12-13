@@ -1,6 +1,6 @@
-import { sleep } from "./sleep";
+import { withMutex_anonymous } from "./mutex";
 
-const singletons: Record<string, { value: unknown; isFetching: boolean }> = {};
+const singletons: Record<string, unknown> = {};
 
 export const toAsyncSingleton = <T>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,26 +9,20 @@ export const toAsyncSingleton = <T>(
 ) => {
   const singletonId = id || Date.now().toString();
 
-  return async () => {
-    if (!singletons[singletonId])
-      singletons[singletonId] = { value: null, isFetching: false };
+  return async () =>
+    await withMutex_anonymous(async () => {
+      if (singletons[singletonId]) return singletons[singletonId] as T;
 
-    while (singletons[singletonId].isFetching) await sleep(100);
+      try {
+        singletons[singletonId] = await fn();
+      } catch (err) {
+        delete singletons[singletonId];
+        throw err;
+      }
 
-    if (singletons[singletonId].value)
-      return singletons[singletonId].value as T;
-
-    singletons[singletonId].isFetching = true;
-    try {
-      singletons[singletonId].value = await fn();
-    } catch (err) {
-      delete singletons[singletonId];
-      throw err;
-    }
-    singletons[singletonId].isFetching = false;
-
-    return singletons[singletonId].value as T;
-  };
+      return singletons[singletonId] as T;
+    }, singletonId);
 };
 
 export const resetSingleton = (id: string) => delete singletons[id];
+export const getSingleton = (id: string) => singletons[id];
