@@ -14,7 +14,7 @@
   import { scrollChatToBottom } from "@utils/chat";
   import { getChat } from "$lib/stores/chats.svelte";
   import MessageTextarea from "@molecules/message-textarea.svelte";
-    import { isKeyboardOpen } from "$lib/stores/keyboard.svelte";
+  import { isKeyboardOpen } from "$lib/stores/keyboard.svelte";
 
   type Props = {
     chatId: number;
@@ -78,6 +78,6 @@
     name="message"
   />
   {#if !isKeyboardOpen.value}
-    <div class="h-12 w-full bg-background"></div>
+    <div class="bg-background h-12 w-full"></div>
   {/if}
 </Form>

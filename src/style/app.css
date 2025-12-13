@@ -1,13 +1,26 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-* {
-  line-height: 1.2;
-}
+@theme {
+  /* -- Font Family -- */
+  --font-header: "Rajdhani", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-logo: "Audiowide", sans-serif;
 
-[class*="text-h-"] {
-  @apply font-header !font-semibold;
+  /* -- Font Size -- */
+  --text-h-1: 2.5rem;
+  --text-h-2: 2.25rem;
+  --text-h-3: 1.75rem;
+  --text-h-4: 1.25rem;
+  --text-body: 0.75rem;
+  --text-small: 0.625rem;
+
+  /* -- Colors -- */
+  --color-background: #070d12;
+  --color-primary: #00ff9c;
+  --color-secondary: #ff5f1f;
+  --color-accent: #112029;
+  --color-text: #f2f2f2;
+  --color-muted: #d2d4d7;
 }
 
 :root {
@@ -21,44 +34,71 @@
   );
 }
 
-.cyberpunk {
-  clip-path: polygon(
-    var(--cp-top-left-x) 0%,
-    var(--cp-top-right-x) 0%,
-    100% var(--cp-right-top-y),
-    100% var(--cp-right-bottom-y),
-    var(--cp-bottom-right-x) 100%,
-    var(--cp-bottom-left-x) 100%,
-    0% var(--cp-left-bottom-y),
-    0% var(--cp-left-top-y)
-  );
-
-  --cp-top-left-x: 0%;
-  --cp-top-right-x: 100%;
-
-  --cp-right-top-y: 0%;
-  --cp-right-bottom-y: 100%;
-
-  --cp-bottom-right-x: 100%;
-  --cp-bottom-left-x: 0%;
-
-  --cp-left-bottom-y: 100%;
-  --cp-left-top-y: 0%;
+* {
+  line-height: 1.2;
 }
 
-.cyberpunk-br {
-  --cp-right-bottom-y: calc(100% - var(--y-size));
-  --cp-bottom-right-x: calc(100% - var(--x-size));
+[class*="text-h-"] {
+  @apply font-header font-semibold!;
 }
 
-.cyberpunk-tr {
-  --cp-top-right-x: calc(100% - var(--x-size));
-  --cp-right-top-y: var(--y-size);
-}
+@layer utilities {
+  .gradient-bg {
+    background: linear-gradient(
+      to bottom,
+      oklch(0.1473 0.0107 285.01),
+      oklch(0.2151 0.0169 233.21)
+    );
+  }
 
-.cyberpunk-tl {
-  --cp-top-left-x: var(--x-size);
-  --cp-left-top-y: var(--y-size);
+  .gradient-msg {
+    background: linear-gradient(87.6deg, #ed4f10 0%, #2e1703 116.89%);
+  }
+
+  .cyberpunk {
+    clip-path: polygon(
+      var(--cp-top-left-x) 0%,
+      var(--cp-top-right-x) 0%,
+      100% var(--cp-right-top-y),
+      100% var(--cp-right-bottom-y),
+      var(--cp-bottom-right-x) 100%,
+      var(--cp-bottom-left-x) 100%,
+      0% var(--cp-left-bottom-y),
+      0% var(--cp-left-top-y)
+    );
+
+    --cp-top-left-x: 0%;
+    --cp-top-right-x: 100%;
+
+    --cp-right-top-y: 0%;
+    --cp-right-bottom-y: 100%;
+
+    --cp-bottom-right-x: 100%;
+    --cp-bottom-left-x: 0%;
+
+    --cp-left-bottom-y: 100%;
+    --cp-left-top-y: 0%;
+  }
+
+  .cyberpunk-br {
+    --cp-right-bottom-y: calc(100% - var(--y-size));
+    --cp-bottom-right-x: calc(100% - var(--x-size));
+  }
+
+  .cyberpunk-tr {
+    --cp-top-right-x: calc(100% - var(--x-size));
+    --cp-right-top-y: var(--y-size);
+  }
+
+  .cyberpunk-tl {
+    --cp-top-left-x: var(--x-size);
+    --cp-left-top-y: var(--y-size);
+  }
+
+  .escape-x {
+    left: -1rem;
+    width: 100dvw;
+  }
 }
 
 /* Instead of handling navbar styling through context and stores */
@@ -73,9 +113,4 @@
 
 #main-navbar > *:last-child {
   display: block;
-}
-
-.escape-x {
-  left: -1rem;
-  width: 100dvw;
 }

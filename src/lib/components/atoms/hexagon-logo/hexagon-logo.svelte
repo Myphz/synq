@@ -4,5 +4,5 @@
 
 <div class="relative">
   <BaseHexagon />
-  <BaseHexagon strokeWidth={10} class="absolute left-0 top-0 blur-md" />
+  <BaseHexagon strokeWidth={10} class="absolute top-0 left-0 blur-md" />
 </div>

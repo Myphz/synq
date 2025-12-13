@@ -36,7 +36,7 @@
     <div class="size-4">
       {#if chat.unreadMessagesCount > 0}
         <span
-          class="relative flex size-4 items-center justify-center rounded-full bg-primary font-header font-semibold text-background after:absolute after:inset-0 after:-z-10 after:rounded-full after:bg-primary after:blur-md"
+          class="bg-primary font-header text-background after:bg-primary relative flex size-4 items-center justify-center rounded-full font-semibold after:absolute after:inset-0 after:-z-10 after:rounded-full after:blur-md"
         >
           {chat.unreadMessagesCount}
         </span>

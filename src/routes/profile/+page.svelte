@@ -41,7 +41,7 @@
           {/if}
         </div>
         <div class="flex flex-col gap-4">
-          <div class="flex flex-col gap-1 *:leading-none">
+          <div class="flex flex-col gap-1 *:leading-none!">
             <span class="text-h-3">{realProfile.name}</span>
             <span class="text-primary">@{realProfile.username}</span>
           </div>

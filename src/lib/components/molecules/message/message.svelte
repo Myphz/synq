@@ -73,7 +73,7 @@
     "cyberpunk relative flex max-h-[70dvw] w-fit max-w-[70dvw] items-end gap-2 whitespace-pre-wrap first-of-type:mt-2",
     !message.image && "p-2",
     isFromOther && "cyberpunk-br bg-accent",
-    !isFromOther && "cyberpunk-tr self-end gradient-msg"
+    !isFromOther && "cyberpunk-tr gradient-msg self-end"
   )}
 >
   {#if message.image}
@@ -92,7 +92,7 @@
     ></div>
     <div
       class={twMerge(
-        "absolute right-0 z-10 flex gap-2 bg-accent/50 p-1",
+        "bg-accent/50 absolute right-0 z-10 flex gap-2 p-1",
         isFromOther && "pr-2"
       )}
     >

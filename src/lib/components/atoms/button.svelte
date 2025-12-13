@@ -6,24 +6,24 @@
     children: Snippet;
   } & HTMLButtonAttributes;
 
-  const { children, class: className, ...rest }: Props = $props();
+  const { children, ...rest }: Props = $props();
 </script>
 
 <button
-  class="relative flex w-full -skew-x-[20deg] items-center justify-center border-4 border-[#6BD0DA66] bg-accent py-1.5 text-h-3 text-primary"
+  class="bg-accent text-h-3 text-primary relative flex w-full -skew-x-20 items-center justify-center border-4 border-[#6BD0DA66] py-1.5"
   {...rest}
 >
-  <div class="skew-x-[20deg]">
+  <div class="skew-x-20">
     {@render children()}
   </div>
 
-  <div class="absolute -bottom-2 -right-2 aspect-square w-[10%]">
-    <div class="absolute bottom-0 right-0 h-full w-px bg-primary"></div>
-    <div class="absolute bottom-0 right-0 h-px w-full bg-primary"></div>
+  <div class="absolute -right-2 -bottom-2 aspect-square w-[10%]">
+    <div class="bg-primary absolute right-0 bottom-0 h-full w-px"></div>
+    <div class="bg-primary absolute right-0 bottom-0 h-px w-full"></div>
   </div>
 
-  <div class="absolute -left-2 -top-2 aspect-square w-[10%]">
-    <div class="absolute left-0 top-0 h-full w-px bg-primary"></div>
-    <div class="absolute left-0 top-0 h-px w-full bg-primary"></div>
+  <div class="absolute -top-2 -left-2 aspect-square w-[10%]">
+    <div class="bg-primary absolute top-0 left-0 h-full w-px"></div>
+    <div class="bg-primary absolute top-0 left-0 h-px w-full"></div>
   </div>
 </button>

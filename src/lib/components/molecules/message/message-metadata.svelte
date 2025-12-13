@@ -12,7 +12,7 @@
   getUserId().then((userId) => (ourId = userId));
 </script>
 
-<span class="shrink-0 text-small text-muted">{toTime(message.sentAt)}</span>
+<span class="text-small text-muted shrink-0">{toTime(message.sentAt)}</span>
 {#if message.senderId === ourId}
   <ViewIndicator {...message} />
 {/if}

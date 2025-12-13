@@ -9,8 +9,8 @@
   import { sleep } from "@utils/sleep";
   import { sendImage } from "$lib/api/media";
   import Icon from "@atoms/icon.svelte";
-    
-type Props = HTMLTextareaAttributes & {
+
+  type Props = HTMLTextareaAttributes & {
     cyberpunkStyle?: string;
     class?: string;
     onresize?: (forced?: boolean) => unknown;
@@ -64,7 +64,7 @@ type Props = HTMLTextareaAttributes & {
 
 <div
   class={twMerge(
-    `cyberpunk ${cyberpunkStyle} relative flex items-center gap-2 bg-secondary p-3 *:relative *:z-10 after:absolute after:inset-px after:bg-accent`,
+    `cyberpunk ${cyberpunkStyle} bg-secondary after:bg-accent relative flex items-center gap-2 p-3 *:relative *:z-10 after:absolute after:inset-px`,
     className
   )}
 >
@@ -76,17 +76,15 @@ type Props = HTMLTextareaAttributes & {
     bind:value
     autocomplete="off"
     rows="1"
-    class="epic-transition max-h-[20vh] min-h-0 w-[90%] resize-none break-words bg-accent placeholder:text-muted"
+    class="epic-transition bg-accent placeholder:text-muted max-h-[20vh] min-h-0 w-[90%] resize-none wrap-break-word"
   ></textarea>
 
   {#if value}
-    <button type="submit" class="!absolute bottom-2 right-4 text-h-4">
+    <button type="submit" class="text-h-4 absolute! right-4 bottom-2">
       <Icon name="send" class="align-bottom text-[1.2em]" />
-
-
-      </button>
+    </button>
   {:else}
-    <button onclick={sendImage} class="!absolute bottom-2 right-4 text-h-4">
+    <button onclick={sendImage} class="text-h-4 absolute! right-4 bottom-2">
       <Icon name="image" class="align-bottom text-[1.2em]" />
     </button>
   {/if}

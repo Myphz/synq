@@ -75,6 +75,7 @@
     id
   }: Props = $props();
 
+  // svelte-ignore state_referenced_locally
   setContext("defaultValues", defaultValues);
   setContext("isSubmitting", isSubmitting);
 </script>

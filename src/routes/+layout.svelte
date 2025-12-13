@@ -16,8 +16,8 @@
   import { connect } from "$lib/stores/socket.svelte";
   import { afterNavigate } from "$app/navigation";
   import { scrollChatToBottom } from "@utils/chat";
-    
-onMount(() => {
+
+  onMount(() => {
     appConfig();
     connect();
   });

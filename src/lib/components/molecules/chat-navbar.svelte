@@ -29,11 +29,11 @@
   <NavbarBase>
     <div class="flex items-center gap-2">
       <button onclick={() => window.history.back()}>
-        <Icon name="arrow_back_ios" class="w-fit text-h-2" />
+        <Icon name="arrow_back_ios" class="text-h-2 w-fit" />
       </button>
       <a href="/profile?id={otherMember?.id}" class="flex gap-2">
         <CyberImage src={chat.image} class="size-[42.67px]" />
-        <div class="flex flex-col justify-between *:leading-none">
+        <div class="flex flex-col justify-between *:leading-none!">
           <span class="text-h-2">
             {chat?.name}
           </span>

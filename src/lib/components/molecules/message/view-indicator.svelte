@@ -9,5 +9,5 @@
 {#if message.isRead}
   <Icon name="done_all" class="-ml-1 shrink-0" />
 {:else}
-  <Icon name="check" class="-ml-1 shrink-0 text-text" />
+  <Icon name="check" class="text-text -ml-1 shrink-0" />
 {/if}

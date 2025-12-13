@@ -12,7 +12,7 @@
 <div class="relative mb-16 flex justify-center overflow-visible pt-8">
   <HexagonLogo />
   <span
-    class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-logo text-[4rem] text-primary"
+    class="font-logo text-primary absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[4rem]"
   >
     SYNQ
   </span>
