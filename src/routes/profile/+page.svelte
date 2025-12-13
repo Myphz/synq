@@ -25,7 +25,7 @@
   const isOnline = $derived(userId ? isUserOnline(userId) : true);
 </script>
 
-<section class="flex flex-col gap-8">
+<section class="mt-4 flex flex-col gap-8">
   <header class="text-h-2">Profile</header>
 
   {#if profile}
