@@ -16,8 +16,10 @@
   import { connect } from "$lib/stores/socket.svelte";
   import { afterNavigate } from "$app/navigation";
   import { scrollChatToBottom } from "@utils/chat";
+  import { setupSocketEventHandlers } from "$lib/api/events";
 
   onMount(() => {
+    setupSocketEventHandlers();
     appConfig();
     connect();
   });

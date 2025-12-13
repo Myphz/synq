@@ -4,7 +4,7 @@ import type { ServerMessage } from "$lib/api/protocol";
 import { getUserId } from "$lib/supabase/auth/utils";
 import { supabase } from "$lib/supabase/client";
 import { Capacitor } from "@capacitor/core";
-import { atomic } from "@utils/atomic";
+import { withMutex_anonymous } from "@utils/mutex";
 import {
   getChatImage,
   getChatName,
@@ -122,7 +122,7 @@ export const markMessageAsRead = async (
   chats[chatId].messages[msgIdx].isRead = true;
   const ourId = await getUserId();
 
-  atomic(() => {
+  withMutex_anonymous(() => {
     chats[chatId].unreadMessagesCount = chats[chatId].messages.filter(
       (msg) => msg.senderId !== ourId && !msg.isRead
     ).length;

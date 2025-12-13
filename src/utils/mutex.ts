@@ -2,7 +2,7 @@ import { Mutex } from "async-mutex";
 
 const locks = new Map<string, Mutex>();
 
-export const toAtomic = <T, K extends unknown[]>(
+export const withMutex = <T, K extends unknown[]>(
   fn: (...args: K) => T
 ): ((...args: K) => Promise<Awaited<T>>) => {
   const mutex = new Mutex();
@@ -12,7 +12,7 @@ export const toAtomic = <T, K extends unknown[]>(
   };
 };
 
-export const atomic = async <T>(
+export const withMutex_anonymous = async <T>(
   fn: () => T,
   key: string
 ): Promise<Awaited<T>> => {

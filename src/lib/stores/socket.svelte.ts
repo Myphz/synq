@@ -7,23 +7,18 @@ import {
 import { getSupabaseSession } from "$lib/supabase/auth/utils";
 import { sleep } from "@utils/sleep";
 
-import {
-  initializeChats,
-  markMessageAsRead,
-  updateUser,
-  setChatMessages,
-  addChatMessage
-} from "./chats.svelte";
-import { scrollChatToBottomIfNear } from "@utils/chat";
-import { page } from "$app/state";
-import { debugAlert_FORCE_DO_NOT_USE, debugLog } from "@utils/debug";
+import { debugLog } from "@utils/debug";
 import { clearMonitorConnection, monitorConnection } from "./connection.svelte";
-import { sendNotification } from "@utils/notifications";
-import { toAtomic } from "@utils/atomic";
+import { withMutex } from "@utils/mutex";
 import { restoreAppState, saveAppState } from "$lib/api/cache";
 import { throwError } from "@utils/throw-error";
 
 const SERVER_URL = "wss://synq.fly.dev";
+
+const listeners = new Map<
+  ServerMessage["type"],
+  ((msg: ServerMessage) => unknown)[]
+>();
 
 export const socket = $state<{ value: WebSocket | null }>({
   value: null
@@ -33,72 +28,27 @@ const setupSocket = (sock: WebSocket) => {
   sock.addEventListener("message", (msg) => {
     const message = serverMessageSchema.parse(JSON.parse(msg.data));
     debugLog(message);
+    listeners.get(message.type)?.forEach((fn) => fn(message));
   });
 
   sock.addEventListener("close", onSocketClose);
-
-  // Setup socket server events handlers
-  onMessage("INITIAL_SYNC", (msg) => initializeChats(msg.chats), sock);
-  onMessage(
-    "GET_MESSAGES",
-    (msg) => setChatMessages(msg.chatId, msg.data.messages.toReversed()),
-    sock
-  );
-  onMessage("RECEIVE_MESSAGE", (msg) => {
-    addChatMessage(msg.chatId, {
-      ...msg.data,
-      senderId: msg.userId,
-      isRead: false
-    });
-  });
-  onMessage(
-    "READ_MESSAGE",
-    (msg) => markMessageAsRead(msg.chatId, msg.data.messageId),
-    sock
-  );
-  onMessage(
-    "UPDATE_USER_STATUS",
-    (msg) =>
-      updateUser({
-        chatId: msg.chatId,
-        userId: msg.userId,
-        ...msg.data
-      }),
-    sock
-  );
-
-  onMessage("RECEIVE_MESSAGE", async (msg) => {
-    // Send local notification if user is currently viewing other chat
-    if (page.url.pathname !== `/${msg.chatId}`)
-      return sendNotification(
-        { content: msg.data.content, id: msg.data.id },
-        msg.chatId
-      );
-    scrollChatToBottomIfNear();
-  });
 
   sock.addEventListener("error", (e) => {
     console.error("SOCK ERROR", e);
   });
 };
 
-export const onMessage = async <T extends ServerMessage["type"]>(
-  type: T,
-  fn: (
-    message: T extends string
-      ? Extract<ServerMessage, { type: T }>
-      : ServerMessage
-  ) => unknown,
-  sock?: WebSocket
-) => {
-  const socket = sock || (await getSocket());
-
-  socket.addEventListener("message", (msg) => {
-    const message = serverMessageSchema.parse(JSON.parse(msg.data));
+export const addEventListener = withMutex(
+  <T extends ServerMessage["type"]>(
+    type: T,
+    listener: (msg: Extract<ServerMessage, { type: T }>) => unknown
+  ) => {
+    const existingListeners = listeners.get(type);
+    const newListeners = [...(existingListeners || []), listener];
     // @ts-expect-error its ok
-    if (message.type === type) fn(message);
-  });
-};
+    listeners.set(type, newListeners);
+  }
+);
 
 export const waitForMessage = async <T extends ServerMessage["type"]>(
   type: T
@@ -130,7 +80,7 @@ export const sendMessage = async (message: ClientMessage) => {
   sock.send(JSON.stringify(message));
 };
 
-export const connect = toAtomic(async () => {
+export const connect = withMutex(async () => {
   if (
     socket.value?.readyState === WebSocket.OPEN ||
     socket.value?.readyState === WebSocket.CONNECTING
@@ -178,7 +128,7 @@ export const resetSocket = async () => {
   socket.value = null;
 };
 
-export const disconnect = toAtomic(async () => {
+export const disconnect = withMutex(async () => {
   socket.value?.removeEventListener("close", onSocketClose);
   await resetSocket();
 });
