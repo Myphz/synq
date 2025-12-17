@@ -19,6 +19,7 @@ import { APP_VERSION } from "./version";
 import { debugAlert } from "@utils/debug";
 import { dev } from "$app/environment";
 import { setKeyboardStoreListeners } from "$lib/stores/keyboard.svelte";
+import { NOTIFICATION_CHANNEL_ID } from "@utils/notifications";
 
 const setupErrorHandlers = () => {
   window.addEventListener("error", (event: ErrorEvent) => {
@@ -117,9 +118,12 @@ const configNotifications = async () => {
     await LocalNotifications.requestPermissions();
 
   await LocalNotifications.createChannel({
-    id: "local_notifications",
+    id: NOTIFICATION_CHANNEL_ID,
     name: "Chat Messages",
-    importance: 5
+    importance: 5,
+    description: "Messages Notifications",
+    visibility: 0,
+    vibration: true
   });
 
   await PushNotifications.addListener("registration", async (token) => {

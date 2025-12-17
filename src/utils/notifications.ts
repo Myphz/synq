@@ -4,6 +4,8 @@ import { chats } from "$lib/stores/chats.svelte";
 import { getChatName } from "./chat";
 import { throwError } from "./throw-error";
 
+export const NOTIFICATION_CHANNEL_ID = "notifications";
+
 const hashStr = (str: string) => {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -29,7 +31,7 @@ export const sendNotification = async (
       {
         id: hashStr(message.id),
         title: await getChatName(chat),
-        channelId: "local_notifications",
+        channelId: NOTIFICATION_CHANNEL_ID,
         body: message.content,
         extra: {
           chatId: chatId.toString(),
