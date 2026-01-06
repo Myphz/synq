@@ -15,6 +15,8 @@
   import { getChat } from "$lib/stores/chats.svelte";
   import MessageTextarea from "@molecules/message-textarea.svelte";
   import { isKeyboardOpen } from "$lib/stores/keyboard.svelte";
+  import { closeExpandedImage, expandedImage } from "$lib/stores/image.svelte";
+  import Icon from "@atoms/icon.svelte";
 
   type Props = {
     chatId: number;
@@ -81,3 +83,21 @@
     <div class="bg-background h-12 w-full"></div>
   {/if}
 </Form>
+
+{#if expandedImage.value}
+  {@const url = chat?.messages?.find(
+    (msg) => msg.id === expandedImage.value
+  )?.image}
+  <div class="fixed inset-0 bg-black">
+    <nav class="m-4">
+      <button onclick={closeExpandedImage}>
+        <Icon class="text-h-3" name="arrow_back_ios" />
+      </button>
+    </nav>
+    <img
+      src={url}
+      alt="fullscreen"
+      class="absolute top-1/2 max-h-full w-full -translate-y-1/2"
+    />
+  </div>
+{/if}

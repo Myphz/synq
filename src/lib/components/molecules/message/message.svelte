@@ -10,6 +10,7 @@
   import { type Message } from "@utils/message";
   import MessageText from "./message-text.svelte";
   import MessageMetadata from "./message-metadata.svelte";
+  import { expandImage } from "$lib/stores/image.svelte";
 
   type Props = Message & { prevMessageTime?: string };
 
@@ -77,14 +78,18 @@
   )}
 >
   {#if message.image}
-    <img
-      src={message.image}
-      loading="lazy"
-      alt="message"
-      class="h-full"
-      onload={() =>
-        document.getElementById(`message-${message.id}-placeholder`)?.remove()}
-    />
+    <button onclick={() => expandImage(message.id)}>
+      <img
+        src={message.image}
+        loading="lazy"
+        alt="message"
+        class="h-full"
+        onload={() =>
+          document
+            .getElementById(`message-${message.id}-placeholder`)
+            ?.remove()}
+      />
+    </button>
     <!-- Placeholder to make sure message has its height even before images loads -->
     <div
       class="aspect-square h-[70dvw]"

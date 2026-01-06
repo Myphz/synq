@@ -20,6 +20,7 @@ import { debugAlert } from "@utils/debug";
 import { dev } from "$app/environment";
 import { setKeyboardStoreListeners } from "$lib/stores/keyboard.svelte";
 import { NOTIFICATION_CHANNEL_ID } from "@utils/notifications";
+import { closeExpandedImage } from "$lib/stores/image.svelte";
 
 const setupErrorHandlers = () => {
   window.addEventListener("error", (event: ErrorEvent) => {
@@ -169,6 +170,7 @@ export const appConfig = () => {
   });
 
   App.addListener("backButton", () => {
+    if (closeExpandedImage()) return;
     goto("/");
   });
 
