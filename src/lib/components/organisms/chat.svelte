@@ -17,6 +17,7 @@
   import { isKeyboardOpen } from "$lib/stores/keyboard.svelte";
   import { closeExpandedImage, expandedImage } from "$lib/stores/image.svelte";
   import Icon from "@atoms/icon.svelte";
+  import ZoomableImage from "@molecules/zoomable-image.svelte";
 
   type Props = {
     chatId: number;
@@ -94,10 +95,6 @@
         <Icon class="text-h-3" name="arrow_back_ios" />
       </button>
     </nav>
-    <img
-      src={url}
-      alt="fullscreen"
-      class="absolute top-1/2 max-h-full w-full -translate-y-1/2"
-    />
+    <ZoomableImage src={url!} />
   </div>
 {/if}
